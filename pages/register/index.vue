@@ -4,14 +4,35 @@ definePageMeta({
 });
 
 import { toTypedSchema } from '@vee-validate/zod';
-import { useField, useForm } from 'vee-validate';
+import { useForm } from 'vee-validate';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import * as z from 'zod';
+import type { PostalCode } from '~/models/masterData';
+import { LoaderCircle } from 'lucide-vue-next';
 
+const router = useRouter();
 const route = useRoute();
+const dataInit = useFetchDataInit();
+const system = useSystemStore();
 
 const email = route.query.email;
 const token = route.query.token;
+const postalCode = ref<PostalCode>();
+const isLoadPostalCode = ref(false);
+
+onMounted(() => {
+  if (!email || !token) {
+    router.push('/login');
+  }
+});
+
+const kaigoSoftware = computed(() => {
+  return dataInit.masterData?.kaigoSoftwares;
+});
+
+const errors = computed(() => {
+  return system.errors;
+});
 
 const formSchema = toTypedSchema(
   z.object({
@@ -36,7 +57,7 @@ const formSchema = toTypedSchema(
       .default(email?.toString() ?? ''),
     password: z.string().min(8, { message: MESSAGES.notEmpty }),
     confirmPassword: z.string().min(8, { message: MESSAGES.notEmpty }),
-    kaigoSoftware: z.string().min(8, { message: MESSAGES.notEmpty }),
+    kaigoSoftware: z.number().min(1, { message: MESSAGES.notEmpty }),
     kaipokeCompanyId: z.string().min(8, { message: MESSAGES.notEmpty }),
     kaipokeUserId: z.string().min(8, { message: MESSAGES.notEmpty }),
     kaipokeUserPassword: z.string().min(8, { message: MESSAGES.notEmpty }),
@@ -49,6 +70,14 @@ const formSchema = toTypedSchema(
   })
 );
 
+const {
+  handleSubmit,
+  values: formValues,
+  setFieldValue
+} = useForm({
+  validationSchema: formSchema
+});
+
 const passwordVisible = ref(false);
 const togglePasswordVisibility = () => {
   passwordVisible.value = !passwordVisible.value;
@@ -59,9 +88,33 @@ const togglePasswordConfirmVisibility = () => {
   passwordConfirmVisible.value = !passwordConfirmVisible.value;
 };
 
-const { handleSubmit } = useForm({
-  validationSchema: formSchema
-});
+const searchPostalCode = async () => {
+  if (!formValues?.companyPostCode) {
+    system.setError({
+      message: '郵便番号が存在しません。',
+      type: TYPE_MESSAGE.success
+    });
+
+    return;
+  }
+  isLoadPostalCode.value = true;
+
+  const res = await system.searchPostalCode(formValues?.companyPostCode);
+
+  if (res?.data) {
+    postalCode.value = res.data;
+    const companyAddress = res.data.prefecture + ' ' + res.data.city;
+
+    setFieldValue('companyAddress', companyAddress);
+  } else {
+    system.setError({
+      message: '郵便番号が存在しません。',
+      type: TYPE_MESSAGE.error
+    });
+  }
+
+  isLoadPostalCode.value = false;
+};
 
 const onSubmit = handleSubmit((values) => {
   console.log('values', values);
@@ -71,11 +124,10 @@ const onSubmit = handleSubmit((values) => {
 <template>
   <div class="login-page flex flex-col items-center justify-center !h-[100vh] overflow-hidden">
     <div class="logo">LOGO</div>
+    <div class="form flex flex-col gap-[5px] w-[770px] bg-white px-12 pt-4 pb-8 h-[90%]">
+      <ShareErrorMessage />
+      <h1 class="text-sm font-bold mb-[20px]">会員登録</h1>
 
-    <div class="form flex flex-col gap-[20px] w-[770px] bg-white px-12 py-8 h-[90%]">
-      <h1 class="text-sm font-bold">会員登録</h1>
-
-      <!-- focus:outline-none focus:ring-2 focus:ring-ring -->
       <form
         class="register flex flex-col gap-[25px]"
         @submit="onSubmit"
@@ -156,10 +208,15 @@ const onSubmit = handleSubmit((values) => {
                     />
                   </FormControl>
                   <Button
+                    @click="searchPostalCode"
                     type="button"
                     variant="cancel_btn"
                     class="!m-[0px] !rounded-3xl"
                   >
+                    <LoaderCircle
+                      v-if="isLoadPostalCode"
+                      class="w-4 h-4 mr-2 animate-spin"
+                    />
                     ログイン
                   </Button>
                 </div>
@@ -583,9 +640,12 @@ const onSubmit = handleSubmit((values) => {
                       <SelectValue placeholder="Select an option" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="apple"> Apple </SelectItem>
-                      <SelectItem value="banana"> Banana </SelectItem>
-                      <SelectItem value="blueberry"> Blueberry </SelectItem>
+                      <SelectItem
+                        :value="`${company.id}`"
+                        v-for="company of kaigoSoftware"
+                      >
+                        {{ company.name }}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -766,7 +826,7 @@ const onSubmit = handleSubmit((values) => {
                       :checked="value"
                       @update:checked="handleChange"
                       :class="{
-                        'border-red-500': errors.length && !value
+                        'border-red-500': errors.length
                       }"
                     />
                   </div>

@@ -1,7 +1,6 @@
-import { apis } from "~/apis"
 import type { MasterData } from "~/models/masterData"
 
-export const useFetchDataInit = defineStore('auth', () => {
+export const useFetchDataInit = defineStore('initData', () => {
     const masterData = ref<MasterData | undefined>(undefined)
 
     const initData = async () => {

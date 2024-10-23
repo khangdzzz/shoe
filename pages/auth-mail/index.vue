@@ -6,6 +6,8 @@ import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
 
+const authStore = useAuthStore();
+
 const formSchema = toTypedSchema(
   z.object({
     email: z.string(formatMessage(MESSAGES.ERR001, 'email')).email({ message: MESSAGES.ERR004 })
@@ -16,10 +18,8 @@ const { handleSubmit } = useForm({
   validationSchema: formSchema
 });
 
-const authStore = useAuthStore();
-
-const onSubmit = handleSubmit((values) => {
-  authStore.verifyEmail(values.email);
+const onSubmit = handleSubmit(async (values) => {
+  await authStore.verifyEmail(values.email);
 });
 </script>
 
@@ -27,10 +27,11 @@ const onSubmit = handleSubmit((values) => {
   <div class="login-page flex flex-col items-center justify-center h-[100vh]">
     <div class="logo">LOGO</div>
 
-    <div class="flex flex-col gap-[20px] min-w-[500px] bg-white px-12 py-8">
-      <h1 class="text-sm font-bold">会員登録メール認証</h1>
+    <div class="flex flex-col min-w-[500px] bg-white px-12 pt-4 pb-8">
+      <ShareErrorMessage />
+      <h1 class="text-sm font-bold mt-[10px] mb-[20px]">会員登録メール認証</h1>
 
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-2 mb-[20px]">
         <p class="text-xs">会員登録のメールアドレスを入力してください。</p>
       </div>
 

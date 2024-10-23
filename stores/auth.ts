@@ -1,4 +1,3 @@
-import { apis } from "~/apis"
 
 export const useAuthStore = defineStore('auth', () => {
     const verifyEmail = async (email: string) => {
