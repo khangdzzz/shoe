@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-vue-next';
+import { ja } from 'date-fns/locale';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
-import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-vue-next';
-
 interface DatePicker {
   year: number;
   month: number;
@@ -74,6 +74,8 @@ watch(date, () => {
         v-model="date"
         month-picker
         auto-apply
+        :format-locale="ja"
+        format="E"
       >
         <template #trigger>
           <div class="h-[30px] flex items-center justify-between px-4 bg-white rounded cursor-pointer">

@@ -2,10 +2,16 @@
 definePageMeta({
   layout: false
 });
+
 import { toTypedSchema } from '@vee-validate/zod';
-import { useForm } from 'vee-validate';
+import { useField, useForm } from 'vee-validate';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import * as z from 'zod';
+
+const route = useRoute();
+
+const email = route.query.email;
+const token = route.query.token;
 
 const formSchema = toTypedSchema(
   z.object({
@@ -24,7 +30,10 @@ const formSchema = toTypedSchema(
     picFamilyNameKana: z.string().min(1, { message: MESSAGES.notEmpty }),
     picGiveNameKana: z.string().min(1, { message: MESSAGES.notEmpty }),
     phoneNumber: z.string().min(1, { message: MESSAGES.notEmpty }),
-    email: z.string().min(1, { message: MESSAGES.notEmpty }),
+    email: z
+      .string()
+      .min(1, { message: MESSAGES.notEmpty })
+      .default(email?.toString() ?? ''),
     password: z.string().min(8, { message: MESSAGES.notEmpty }),
     confirmPassword: z.string().min(8, { message: MESSAGES.notEmpty }),
     kaigoSoftware: z.string().min(8, { message: MESSAGES.notEmpty }),
@@ -33,7 +42,10 @@ const formSchema = toTypedSchema(
     kaipokeUserPassword: z.string().min(8, { message: MESSAGES.notEmpty }),
     registerReason: z.string().min(1, { message: MESSAGES.notEmpty }).max(1000),
     paymentMethod: z.string().min(1, { message: MESSAGES.notEmpty }),
-    terms: z.string().min(1, { message: MESSAGES.notEmpty })
+    terms: z.string().min(1, { message: MESSAGES.notEmpty }),
+    term: z.boolean().refine((val) => val === true, {
+      message: 'You must accept the terms and conditions'
+    })
   })
 );
 
@@ -60,7 +72,7 @@ const onSubmit = handleSubmit((values) => {
   <div class="login-page flex flex-col items-center justify-center !h-[100vh] overflow-hidden">
     <div class="logo">LOGO</div>
 
-    <div class="flex flex-col gap-[20px] w-[770px] bg-white px-12 py-8 h-[95%]">
+    <div class="form flex flex-col gap-[20px] w-[770px] bg-white px-12 py-8 h-[90%]">
       <h1 class="text-sm font-bold">会員登録</h1>
 
       <!-- focus:outline-none focus:ring-2 focus:ring-ring -->
@@ -68,7 +80,7 @@ const onSubmit = handleSubmit((values) => {
         class="register flex flex-col gap-[25px]"
         @submit="onSubmit"
       >
-        <div class="form flex flex-col gap-[25px] pb-[20px] h-[58%] overflow-y-auto scroll">
+        <div class="form flex flex-col gap-[25px] pb-[20px] overflow-y-auto scroll">
           <ShareRequireLabel
             label="必須項目です"
             position="left"
@@ -144,6 +156,7 @@ const onSubmit = handleSubmit((values) => {
                     />
                   </FormControl>
                   <Button
+                    type="button"
                     variant="cancel_btn"
                     class="!m-[0px] !rounded-3xl"
                   >
@@ -452,8 +465,10 @@ const onSubmit = handleSubmit((values) => {
                 <div class="relative w-[71%] !m-[0px] !mr-[25px]">
                   <FormControl>
                     <Input
+                      disabled
                       type="text"
                       v-bind="componentField"
+                      class="bg-[#ccc]"
                       :class="{
                         'border-red-500': errors.length
                       }"
@@ -713,7 +728,7 @@ const onSubmit = handleSubmit((values) => {
 
           <div class="space"></div>
 
-          <div class="terms contact flex flex-col gap-6">
+          <div class="terms contact flex flex-col">
             <FormField
               v-slot="{ componentField, errors }"
               name="terms"
@@ -733,10 +748,27 @@ const onSubmit = handleSubmit((values) => {
                       class="resize-none h-[100px]"
                     />
                   </FormControl>
+                </div>
+              </FormItem>
+            </FormField>
+            <FormField
+              v-slot="{ value, handleChange, errors }"
+              type="checkbox"
+              name="term"
+            >
+              <FormItem class="flex gap-5">
+                <div class="w-[145px]"></div>
+                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
                   <div class="flex gap-5 items-center !m-[0px] pt-[10px]">
                     <span class="label">利用規約確認</span>
                     <span class="text-red-500">※</span>
-                    <Checkbox id="terms" />
+                    <Checkbox
+                      :checked="value"
+                      @update:checked="handleChange"
+                      :class="{
+                        'border-red-500': errors.length && !value
+                      }"
+                    />
                   </div>
                 </div>
               </FormItem>
@@ -748,14 +780,13 @@ const onSubmit = handleSubmit((values) => {
           <Button
             type="submit"
             class="flex self-center"
-            @click="$router.push('/register/success')"
           >
             アカウントを登録する
           </Button>
 
           <Button
-            type="submit"
             variant="cancel_btn"
+            type="button"
             class="flex self-center min-w-[188px]"
           >
             キャンセル
@@ -767,6 +798,7 @@ const onSubmit = handleSubmit((values) => {
 </template>
 <style lang="scss" scoped>
 .register {
+  min-height: calc(100vh - 330px);
   > .form > .space {
     border: 0.5px solid #c7c7c7;
   }

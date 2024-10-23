@@ -7,7 +7,7 @@
     </div>
     <UsersSearch></UsersSearch>
     <div class="body-content flex py-4 w-full gap-2">
-      <UsersSearchCharacter class="px-5 py-8 min-w-[230px]" />
+      <UsersSearchCharacter class="px-5 py-10 min-w-[230px]" />
       <UsersTable class="w-full" />
     </div>
   </div>

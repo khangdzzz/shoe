@@ -16,8 +16,10 @@ const { handleSubmit } = useForm({
   validationSchema: formSchema
 });
 
+const authStore = useAuthStore();
+
 const onSubmit = handleSubmit((values) => {
-  console.log('values', values);
+  authStore.verifyEmail(values.email);
 });
 </script>
 
@@ -55,7 +57,6 @@ const onSubmit = handleSubmit((values) => {
         <Button
           type="submit"
           class="flex self-center"
-          @click="$router.push('/invite-member-success')"
         >
           メールを送信
         </Button>
