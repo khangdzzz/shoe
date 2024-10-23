@@ -20,9 +20,9 @@ const togglePasswordConfirmVisibility = () => {
 const formSchema = toTypedSchema(
   z
     .object({
-      password: z.string(formatMessage(MESSAGES.ERR001, 'password')).min(8, { message: MESSAGES.ERR007 }).max(50),
+      password: z.string(formatMessage(MESSAGES.ERR001, FIELDS.password)).min(8, { message: MESSAGES.ERR007 }).max(50),
       passwordConfirmation: z
-        .string(formatMessage(MESSAGES.ERR001, 'password'))
+        .string(formatMessage(MESSAGES.ERR001, FIELDS.confirmPassword))
         .min(8, { message: MESSAGES.ERR007 })
         .max(50)
     })
@@ -113,14 +113,13 @@ const onSubmit = handleSubmit((values) => {
                   </template>
                 </button>
               </div>
+              <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
             </FormControl>
-            <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
           </FormItem>
         </FormField>
         <Button
           type="submit"
           class="flex self-center w-[132px]"
-          @click="$router.push('/confirm-email-change-password')"
         >
           保存
         </Button>

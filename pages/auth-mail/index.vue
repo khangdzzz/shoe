@@ -3,14 +3,20 @@ definePageMeta({
   layout: false
 });
 import { toTypedSchema } from '@vee-validate/zod';
+import { LoaderCircle } from 'lucide-vue-next';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
 
 const authStore = useAuthStore();
+const system = useSystemStore();
+const router = useRouter();
+
+const { errors } = storeToRefs(system);
+const isLoading = ref(false);
 
 const formSchema = toTypedSchema(
   z.object({
-    email: z.string(formatMessage(MESSAGES.ERR001, 'email')).email({ message: MESSAGES.ERR004 })
+    email: z.string(formatMessage(MESSAGES.ERR001, FIELDS.email)).email({ message: MESSAGES.ERR004 })
   })
 );
 
@@ -19,7 +25,14 @@ const { handleSubmit } = useForm({
 });
 
 const onSubmit = handleSubmit(async (values) => {
+  isLoading.value = true;
   await authStore.verifyEmail(values.email);
+
+  if (!errors.value?.message) {
+    router.push('/register/success');
+  }
+
+  isLoading.value = false;
 });
 </script>
 
@@ -59,6 +72,10 @@ const onSubmit = handleSubmit(async (values) => {
           type="submit"
           class="flex self-center"
         >
+          <LoaderCircle
+            v-if="isLoading"
+            class="w-4 h-4 mr-2 animate-spin"
+          />
           メールを送信
         </Button>
 

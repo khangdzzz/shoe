@@ -14,8 +14,8 @@ const togglePasswordVisibility = () => {
 
 const formSchema = toTypedSchema(
   z.object({
-    email: z.string(formatMessage(MESSAGES.ERR001, 'email')).email({ message: MESSAGES.ERR004 }),
-    password: z.string(formatMessage(MESSAGES.ERR001, 'password')).min(2).max(50)
+    email: z.string(formatMessage(MESSAGES.ERR001, FIELDS.email)).email({ message: MESSAGES.ERR004 }),
+    password: z.string(formatMessage(MESSAGES.ERR001, FIELDS.password)).min(2).max(50)
   })
 );
 
