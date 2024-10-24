@@ -1,4 +1,8 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+definePageMeta({
+  middleware: ['auth', 'auth-redirect']
+});
+</script>
 
 <template>
   <div class="user-list px-4">

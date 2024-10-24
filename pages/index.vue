@@ -1,5 +1,7 @@
-<template>
-  <h1>Welcome to AIP-archaic</h1>
-</template>
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+definePageMeta({
+  middleware: ['auth-redirect']
+});
+</script>
+<template></template>
 <style lang="scss" scoped></style>

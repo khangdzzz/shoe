@@ -26,3 +26,31 @@ export interface RegisterNewUser {
   verifyToken: string;
   terms: string;
 }
+
+export interface Company {
+   id: number;
+    companyName: string;
+    companyNameKana: string;
+    companyPostCode: string;
+    companyAddress: string;
+    phoneNumber: string;
+    picFamilyName: string;
+    picFamilyNameKana: string;
+    picGivenName: string;
+    picGivenNameKana: string;
+    picPosition: string;
+    frontPicFamilyName: string;
+    frontPicFamilyNameKana: string;
+    frontPicGivenName: string;
+    frontPicGivenNameKana: string;
+    frontPicPosition: string;
+    kaipokeUserId: string;
+    kaipokeUserPassword: string;
+    kaipokeCompanyId: string;
+    kaigoSoftware: number;
+    paymentMethod: number;
+    registerReason: string;
+    createdAt: string;
+    updatedAt: string;
+    status: number;
+}

@@ -3,6 +3,20 @@ export const TYPE_MESSAGE = {
   success: 2
 }
 
+export const ROLES = {
+  admin: 1,
+  user: 0
+}
+
+export const ROUTES_USER = ['/mypage', '/user-list']
+export const ROUTES_ADMIN = ['/customer']
+
+export const LOCAL_STORAGE_KEYS = {
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  role: 'role',
+}
+
 export const MESSAGES: { [key: string]: string } = {
   ERR001: '{項目名}を入力してください', // field required
   ERR002: '{項目名}を選択してください',

@@ -1,8 +1,11 @@
 <script setup lang="ts">
 const useFetchInitData = useFetchDataInit();
 
+const permissionService = usePermission();
+
 onMounted(async () => {
   await useFetchInitData.initData();
+  await permissionService.initPermissions();
 });
 </script>
 

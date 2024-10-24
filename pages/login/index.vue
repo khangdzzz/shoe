@@ -1,7 +1,9 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: false
+  layout: false,
+  middleware: ['auth-redirect']
 });
+
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
@@ -9,6 +11,8 @@ import { Eye, EyeOff, LoaderCircle } from 'lucide-vue-next';
 
 const authStore = useAuthStore();
 const system = useSystemStore();
+const commonService = useCommon();
+const permissionService = usePermission();
 const router = useRouter();
 
 const { errors } = storeToRefs(system);
@@ -35,13 +39,27 @@ const { handleSubmit } = useForm({
 
 const onSubmit = handleSubmit(async (values) => {
   isLoading.value = true;
-  await authStore.login(values);
+  const res = await authStore.login(values);
 
-  if (!errors.value?.message) {
-    router.push('/');
+  if (errors.value?.message) return;
+
+  const accessToken = res?.data?.accessToken;
+
+  if (accessToken) {
+    commonService.setLocalStorage(LOCAL_STORAGE_KEYS.accessToken, accessToken);
   }
 
+  await permissionService.initPermissions();
+
   isLoading.value = false;
+
+  if (authStore.currentUser) {
+    if (authStore.isAdmin) {
+      router.push('/customer');
+    } else {
+      router.push('/user-list');
+    }
+  }
 });
 </script>
 

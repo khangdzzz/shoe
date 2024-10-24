@@ -1,5 +1,8 @@
 import type { ResponseApi } from '~/models/common';
 export const useApi = (baseUrl?: string) => {
+  const commonService = useCommon();
+  const system = useSystemStore();
+
   const BASE_URL = baseUrl || 'http://localhost:5000/';
 
   const getHeaders = (): Record<string, string> => {
@@ -8,7 +11,7 @@ export const useApi = (baseUrl?: string) => {
       'Content-Type': 'application/json; charset=utf-8'
     };
 
-    const token = localStorage.getItem('token');
+    const token = commonService.getLocalStorage(LOCAL_STORAGE_KEYS.accessToken);
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
@@ -28,11 +31,19 @@ export const useApi = (baseUrl?: string) => {
 
       return response;
     } catch (error: any) {
-      const system = useSystemStore();
+      const { messageCode, messageText, status } = error.data;
+
+      if (status === 401) {
+        commonService.removeKeysWhenTokenExpired();
+
+        location.href = '/login';
+
+        return;
+      }
 
       system.setError({
-        code: error.data.messageCode || null,
-        message: error.data.messageText || 'エラーが発生しました。',
+        code: messageCode || null,
+        message: messageText || 'エラーが発生しました。',
         type: TYPE_MESSAGE.error
       });
     }

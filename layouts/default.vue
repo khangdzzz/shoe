@@ -3,6 +3,10 @@ import { ArrowLeftToLine, Menu } from 'lucide-vue-next';
 
 const isOpen = ref(true);
 
+const route = useRoute();
+
+const currentRoute = computed(() => route.path);
+
 const toggleSidebar = () => {
   isOpen.value = !isOpen.value;
 };
@@ -18,7 +22,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex h-screen bg-white">
+  <div
+    class="flex h-screen bg-white"
+  >
     <aside
       class="transition-all duration-300 overflow-hidden"
       :class="isOpen ? 'sidebar-open' : 'sidebar-closed'"
@@ -81,7 +87,10 @@ onMounted(() => {
 
     <main class="flex-1 h-[100vh] overflow-hidden">
       <div class="flex flex-col h-full">
-        <div class="breadcrumb h-[50px] flex items-center">
+        <div
+          v-if="currentRoute !== '/'"
+          class="breadcrumb min-h-[50px] flex items-center"
+        >
           <ShareBreadcrumb />
         </div>
         <slot />
