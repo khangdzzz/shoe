@@ -29,7 +29,7 @@ const onSubmit = handleSubmit(async (values) => {
   await authStore.verifyEmail(values.email);
 
   if (!errors.value?.message) {
-    router.push('/register/success');
+    router.push('/invite-member-success');
   }
 
   isLoading.value = false;

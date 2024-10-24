@@ -25,7 +25,7 @@ const isLoadPostalCode = ref(false);
 const isLoadingRegister = ref(false);
 
 const isMatchPassword = ref(true);
-const confirmPassword = ref('password');
+const confirmPassword = ref('');
 
 const kaipokeUserPasswordVisible = ref(false);
 const passwordConfirmVisible = ref(false);
@@ -87,11 +87,13 @@ const formSchema = toTypedSchema(
     kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1),
     kaipokeCompanyId: z.string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeCompanyId)).min(1),
     kaipokeUserId: z.string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserId)).min(1),
-    kaipokeUserPassword: z.string({ message: MESSAGES.ERR007 }).min(8, { message: MESSAGES.ERR007 }),
+    kaipokeUserPassword: z
+      .string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserPassword))
+      .min(8, { message: MESSAGES.ERR007 }),
     registerReason: z.string(formatMessage(MESSAGES.ERR001, FIELDS.registerReason)).min(1).max(1000),
     paymentMethod: z.string(formatMessage(MESSAGES.ERR001, FIELDS.paymentMethod)).min(1),
     terms: z.string(formatMessage(MESSAGES.ERR001, FIELDS.terms)).min(1),
-    term: z.boolean().refine((value) => value, {
+    term: z.boolean({ message: MESSAGES.ERR003 }).refine((value) => value, {
       message: MESSAGES.ERR003
     })
   })
@@ -154,29 +156,42 @@ watch(confirmPassword, () => {
   isMatchPassword.value = formValues?.password === confirmPassword.value;
 });
 
-const onSubmit = handleSubmit(async (values) => {
-  if (!isMatchPassword.value) {
+const onSubmit = handleSubmit(
+  async (values) => {
+    if (!isMatchPassword.value) {
+      system.setError({
+        message: MESSAGES.ERR006,
+        type: TYPE_MESSAGE.error
+      });
+      return;
+    }
+
+    isLoadingRegister.value = true;
+
+    const { term, ...rest } = values;
+
+    const body = {
+      ...rest,
+      kaigoSoftware: parseInt(values.kaigoSoftware),
+      verifyToken: token?.toString() ?? ''
+    };
+
+    await company.registerNewUser(body);
+
+    if (!errors.value?.message) {
+      router.push('/register/success');
+    }
+
+    isLoadingRegister.value = false;
+  },
+  ({ errors }) => {
+    const message = Object.values(errors)[0];
     system.setError({
-      message: MESSAGES.ERR006,
+      message,
       type: TYPE_MESSAGE.error
     });
-    return;
   }
-
-  isLoadingRegister.value = true;
-
-  const { term, ...rest } = values;
-
-  const body = {
-    ...rest,
-    kaigoSoftware: parseInt(values.kaigoSoftware),
-    verifyToken: token?.toString() ?? ''
-  };
-
-  await company.registerNewUser(body);
-
-  isLoadingRegister.value = false;
-});
+);
 </script>
 
 <template>
@@ -339,7 +354,7 @@ const onSubmit = handleSubmit(async (values) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center text-[10px]"
+                                class="placeholder:flex placeholder:text-center text-center"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -359,7 +374,7 @@ const onSubmit = handleSubmit(async (values) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center text-[10px]"
+                                class="placeholder:flex placeholder:text-center text-center"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -386,7 +401,7 @@ const onSubmit = handleSubmit(async (values) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center text-[10px]"
+                                class="placeholder:flex placeholder:text-center text-center"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -406,7 +421,7 @@ const onSubmit = handleSubmit(async (values) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center text-[10px]"
+                                class="placeholder:flex placeholder:text-center text-center"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -458,7 +473,7 @@ const onSubmit = handleSubmit(async (values) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center text-[10px]"
+                                class="placeholder:flex placeholder:text-center text-center"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -478,7 +493,7 @@ const onSubmit = handleSubmit(async (values) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center text-[10px]"
+                                class="placeholder:flex placeholder:text-center text-center"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -505,7 +520,7 @@ const onSubmit = handleSubmit(async (values) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center text-[10px]"
+                                class="placeholder:flex placeholder:text-center text-center"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -525,7 +540,7 @@ const onSubmit = handleSubmit(async (values) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center text-[10px]"
+                                class="placeholder:flex placeholder:text-center text-center"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length

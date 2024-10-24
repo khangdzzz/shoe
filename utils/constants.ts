@@ -4,8 +4,6 @@ export const TYPE_MESSAGE = {
 }
 
 export const MESSAGES: { [key: string]: string } = {
-  notEmpty: 'This field is required',
-  invalidEmail: 'メールアドレスを入力してください。',
   ERR001: '{項目名}を入力してください', // field required
   ERR002: '{項目名}を選択してください',
   ERR003: '利用規約をご確認の上、利用規約確認をチェックしてください。',

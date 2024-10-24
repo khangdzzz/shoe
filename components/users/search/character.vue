@@ -55,12 +55,12 @@ const characters = ref([
 
 const getClass = (char: Character) => {
   if (char.disabled) {
-    return 'py-[5px] px-[8px] bg-gray-400 text-white rounded-md cursor-not-allowed';
+    return 'h-[25px] w-[25px] bg-gray-400 text-white rounded-md cursor-not-allowed ';
   }
   if (char.selected) {
-    return 'py-[5px] px-[8px] border border-blue-500 text-blue-500 rounded-md';
+    return 'h-[25px] w-[25px] border border-blue-500 text-blue-500 rounded-md ';
   }
-  return 'py-[5px] px-[8px] border border-black rounded-md hover:bg-gray-100';
+  return 'h-[25px] w-[25px] border border-black rounded-md hover:bg-gray-100 ';
 };
 
 const handleClick = (char: Character) => {

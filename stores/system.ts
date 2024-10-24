@@ -15,11 +15,12 @@ export const useSystemStore = defineStore('system', () => {
   };
 
   const setError = ({ code, field, message, type }: ValidationError) => {
+
     errors.value = {
       code,
       field,
       type,
-      message: code ? MESSAGES[code] : message
+      message: code && MESSAGES[code] ? MESSAGES[code] : message
     };
 
     setTimeout(() => {

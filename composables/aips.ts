@@ -30,18 +30,11 @@ export const useApi = (baseUrl?: string) => {
     } catch (error: any) {
       const system = useSystemStore();
 
-      if (error.messageCode) {
-        system.setError({
-          code: error.messageCode,
-          message: error.messageText,
-          type: TYPE_MESSAGE.error
-        });
-      } else {
-        system.setError({
-          message: 'エラーが発生しました。',
-          type: TYPE_MESSAGE.error
-        });
-      }
+      system.setError({
+        code: error.data.messageCode || null,
+        message: error.data.messageText || 'エラーが発生しました。',
+        type: TYPE_MESSAGE.error
+      });
     }
   };
 

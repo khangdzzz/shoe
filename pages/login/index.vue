@@ -5,9 +5,17 @@ definePageMeta({
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
-import { Eye, EyeOff } from 'lucide-vue-next';
+import { Eye, EyeOff, LoaderCircle } from 'lucide-vue-next';
+
+const authStore = useAuthStore();
+const system = useSystemStore();
+const router = useRouter();
+
+const { errors } = storeToRefs(system);
 
 const passwordVisible = ref(false);
+const isLoading = ref(false);
+
 const togglePasswordVisibility = () => {
   passwordVisible.value = !passwordVisible.value;
 };
@@ -15,7 +23,9 @@ const togglePasswordVisibility = () => {
 const formSchema = toTypedSchema(
   z.object({
     email: z.string(formatMessage(MESSAGES.ERR001, FIELDS.email)).email({ message: MESSAGES.ERR004 }),
-    password: z.string(formatMessage(MESSAGES.ERR001, FIELDS.password)).min(2).max(50)
+    password: z
+      .string(formatMessage(MESSAGES.ERR001, FIELDS.password))
+      .min(1, formatMessage(MESSAGES.ERR001, FIELDS.password))
   })
 );
 
@@ -23,8 +33,15 @@ const { handleSubmit } = useForm({
   validationSchema: formSchema
 });
 
-const onSubmit = handleSubmit((values) => {
-  console.log('values', values);
+const onSubmit = handleSubmit(async (values) => {
+  isLoading.value = true;
+  await authStore.login(values);
+
+  if (!errors.value?.message) {
+    router.push('/');
+  }
+
+  isLoading.value = false;
 });
 </script>
 
@@ -34,14 +51,15 @@ const onSubmit = handleSubmit((values) => {
 
     <div class="min-w-[500px]">
       <form
-        class="bg-white flex flex-col gap-8 px-12 py-8"
+        class="bg-white flex flex-col px-12 py-8"
         @submit="onSubmit"
       >
+        <ShareErrorMessage />
         <FormField
           v-slot="{ componentField }"
           name="email"
         >
-          <FormItem class="relative">
+          <FormItem class="relative mb-8">
             <span class="font-medium">メールアドレス</span>
             <FormControl>
               <Input
@@ -57,7 +75,7 @@ const onSubmit = handleSubmit((values) => {
           v-slot="{ componentField }"
           name="password"
         >
-          <FormItem class="relative">
+          <FormItem class="relative mb-8">
             <span class="font-medium">パスワード</span>
             <FormControl>
               <div class="relative">
@@ -88,6 +106,10 @@ const onSubmit = handleSubmit((values) => {
           type="submit"
           class="flex self-center"
         >
+          <LoaderCircle
+            v-if="isLoading"
+            class="w-4 h-4 mr-2 animate-spin"
+          />
           ログイン
         </Button>
       </form>

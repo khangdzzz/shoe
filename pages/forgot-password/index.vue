@@ -4,11 +4,19 @@ definePageMeta({
 });
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
+import { LoaderCircle } from 'lucide-vue-next';
 import * as z from 'zod';
+
+const authStore = useAuthStore();
+const system = useSystemStore();
+const router = useRouter();
+
+const { errors } = storeToRefs(system);
+const isLoading = ref(false);
 
 const formSchema = toTypedSchema(
   z.object({
-    email: z.string(formatMessage(MESSAGES.ERR001, 'email')).email({ message: MESSAGES.ERR004 })
+    email: z.string(formatMessage(MESSAGES.ERR001, FIELDS.email)).email({ message: MESSAGES.ERR004 })
   })
 );
 
@@ -16,8 +24,18 @@ const { handleSubmit } = useForm({
   validationSchema: formSchema
 });
 
-const onSubmit = handleSubmit((values) => {
-  console.log('values', values);
+const onSubmit = handleSubmit(async (values) => {
+  const email = values.email;
+
+  isLoading.value = true;
+
+  await authStore.forgotPassword(email);
+
+  if (!errors.value?.message) {
+    router.push('/confirm-email-reset-password');
+  }
+
+  isLoading.value = false;
 });
 </script>
 
@@ -25,10 +43,11 @@ const onSubmit = handleSubmit((values) => {
   <div class="login-page flex flex-col items-center justify-center h-[100vh]">
     <div class="logo">LOGO</div>
 
-    <div class="flex flex-col gap-[20px] min-w-[500px] bg-white px-12 py-8">
-      <h1 class="text-sm font-bold">パスワードを忘れた場合</h1>
+    <div class="flex flex-col min-w-[500px] bg-white px-12 pt-4 pb-8">
+      <ShareErrorMessage />
+      <h1 class="text-sm font-bold mb-[20px] mt-2">パスワードを忘れた場合</h1>
 
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-2 mb-[20px]">
         <p class="text-xs">登録済みのメールアドレスを入力してください。</p>
         <p class="text-xs">パスワード再設定用のURLを送信します。</p>
       </div>
@@ -56,8 +75,11 @@ const onSubmit = handleSubmit((values) => {
         <Button
           type="submit"
           class="flex self-center"
-          @click="$router.push('/confirm-email-reset-password')"
         >
+          <LoaderCircle
+            v-if="isLoading"
+            class="w-4 h-4 mr-2 animate-spin"
+          />
           メールを送信
         </Button>
 
