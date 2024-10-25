@@ -1,6 +1,4 @@
 export default defineNuxtPlugin(async (to) => {
-  console.log('auth middleware redirect');
-
   const router = useRouter();
   const commonService = useCommon();
 
@@ -19,7 +17,7 @@ export default defineNuxtPlugin(async (to) => {
     const isAdmin = role === ROLES.admin.toString();
     const validRoutes = isAdmin ? ROUTES_ADMIN : ROUTES_USER;
 
-    const fallbackRoute = isAdmin ? '/customers' : '/user-list';
+    const fallbackRoute = isAdmin ? '/customer' : '/user-list';
 
     const isValidRoute = validRoutes.includes(currentPath);
     if (!isValidRoute) {

@@ -1,5 +1,4 @@
 export default defineNuxtPlugin(async (to) => {
-  console.log('auth middleware');
   const commonService = useCommon();
 
   const currentPath = to.path;

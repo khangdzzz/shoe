@@ -24,6 +24,7 @@ const postalCode = ref<PostalCode>();
 const isLoadPostalCode = ref(false);
 const isLoadingRegister = ref(false);
 
+const password = ref('');
 const isMatchPassword = ref(true);
 const confirmPassword = ref('');
 
@@ -152,8 +153,12 @@ const searchPostalCode = async () => {
   isLoadPostalCode.value = false;
 };
 
-watch(confirmPassword, () => {
-  isMatchPassword.value = formValues?.password === confirmPassword.value;
+watch([confirmPassword, password], () => {
+  if (!password.value || !confirmPassword.value) {
+    isMatchPassword.value = true;
+    return;
+  }
+  isMatchPassword.value = password.value === confirmPassword.value;
 });
 
 const onSubmit = handleSubmit(
@@ -631,6 +636,7 @@ const onSubmit = handleSubmit(
                           'border-red-500': errors.length
                         }"
                         class="placeholder:text-[10px]"
+                        v-model="password"
                       />
                       <button
                         type="button"
@@ -719,7 +725,7 @@ const onSubmit = handleSubmit(
                           'border-red-500': errors.length && !componentField.modelValue
                         }"
                       >
-                        <SelectValue placeholder="Select an option" />
+                        <SelectValue placeholder="" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem

@@ -3,9 +3,11 @@ import { ArrowLeftToLine, Menu } from 'lucide-vue-next';
 
 const isOpen = ref(true);
 
+const authStore = useAuthStore();
 const route = useRoute();
 
 const currentRoute = computed(() => route.path);
+const isAdmin = computed(() => authStore.isAdmin);
 
 const toggleSidebar = () => {
   isOpen.value = !isOpen.value;
@@ -53,7 +55,7 @@ onMounted(() => {
       <div class="menu flex flex-col cursor-pointer">
         <nav>
           <div
-            v-show="isOpen"
+            v-show="isOpen && !isAdmin"
             class="w-full flex items-center h-[46px] px-2 hover:bg-gray-100 text-base font-bold"
           >
             <NuxtLink
@@ -65,18 +67,31 @@ onMounted(() => {
         </nav>
         <span
           class="space"
-          v-show="isOpen"
+          v-show="isOpen && !isAdmin"
         ></span>
 
         <nav>
           <div
-            v-show="isOpen"
+            v-show="isOpen && !isAdmin"
             class="w-full flex items-center h-[46px] px-2 hover:bg-gray-100 text-base font-bold"
           >
             <NuxtLink
               to="/mypage"
               class="w-full h-full flex items-center"
               >マイページ</NuxtLink
+            >
+          </div>
+        </nav>
+
+        <nav>
+          <div
+            v-show="isOpen && isAdmin"
+            class="w-full flex items-center h-[46px] px-2 hover:bg-gray-100 text-base font-bold"
+          >
+            <NuxtLink
+              to="/customer"
+              class="w-full h-full flex items-center"
+              >顧客管理</NuxtLink
             >
           </div>
         </nav>

@@ -44,9 +44,11 @@ const onSubmit = handleSubmit(async (values) => {
   if (errors.value?.message) return;
 
   const accessToken = res?.data?.accessToken;
+  const refreshToken = res?.data?.refreshToken;
 
-  if (accessToken) {
+  if (accessToken && refreshToken) {
     commonService.setLocalStorage(LOCAL_STORAGE_KEYS.accessToken, accessToken);
+    commonService.setLocalStorage(LOCAL_STORAGE_KEYS.refreshToken, refreshToken);
   }
 
   await permissionService.initPermissions();

@@ -2,6 +2,7 @@ import type { ResponseApi } from '~/models/common';
 export const useApi = (baseUrl?: string) => {
   const commonService = useCommon();
   const system = useSystemStore();
+  const permissionService = usePermission();
 
   const BASE_URL = baseUrl || 'http://localhost:5000/';
 
@@ -11,7 +12,9 @@ export const useApi = (baseUrl?: string) => {
       'Content-Type': 'application/json; charset=utf-8'
     };
 
-    const token = commonService.getLocalStorage(LOCAL_STORAGE_KEYS.accessToken);
+    const accessToken = commonService.getLocalStorage(LOCAL_STORAGE_KEYS.accessToken);
+    const refreshToken = commonService.getLocalStorage(LOCAL_STORAGE_KEYS.refreshToken);
+    const token = accessToken || refreshToken;
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
@@ -34,9 +37,8 @@ export const useApi = (baseUrl?: string) => {
       const { messageCode, messageText, status } = error.data;
 
       if (status === 401) {
-        commonService.removeKeysWhenTokenExpired();
-
-        location.href = '/login';
+        commonService.removeLocalStorage(LOCAL_STORAGE_KEYS.accessToken);
+        await handleRefreshToken();
 
         return;
       }
@@ -46,6 +48,37 @@ export const useApi = (baseUrl?: string) => {
         message: messageText || 'エラーが発生しました。',
         type: TYPE_MESSAGE.error
       });
+    }
+  };
+
+  const handleRefreshToken = async () => {
+    const refreshToken = commonService.getLocalStorage(LOCAL_STORAGE_KEYS.refreshToken);
+    if (!refreshToken) {
+      commonService.removeKeysWhenTokenExpired();
+      location.href = '/login';
+      return;
+    }
+
+    try {
+      const res: ResponseApi<{ accessToken: string; refreshToken: string }> = await $fetch(`${BASE_URL}auth/refresh`, {
+        method: 'POST',
+        headers: {
+          ...getHeaders()
+        }
+      });
+
+      const accessToken = res?.data?.accessToken;
+      const refreshToken = res?.data?.refreshToken;
+
+      if (accessToken && refreshToken) {
+        commonService.setLocalStorage(LOCAL_STORAGE_KEYS.accessToken, accessToken);
+        commonService.setLocalStorage(LOCAL_STORAGE_KEYS.refreshToken, refreshToken);
+      }
+
+      await permissionService.initPermissions();
+    } catch (error) {
+      commonService.removeKeysWhenTokenExpired();
+      location.href = '/login';
     }
   };
 
