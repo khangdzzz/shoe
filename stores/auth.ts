@@ -21,12 +21,17 @@ export const useAuthStore = defineStore('auth', () => {
     return await apis.archaic?.get('auth/me');
   }
 
+  const resetPassword = async (password: string, token: string) => {
+    return await apis.archaic?.post('auth/reset-password', { password, token });
+  };
+
   return {
     isAdmin,
     currentUser,
     login,
     verifyEmail,
     forgotPassword,
-    getCurrentUser
+    getCurrentUser,
+    resetPassword
   };
 });

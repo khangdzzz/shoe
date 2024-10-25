@@ -5,7 +5,25 @@ definePageMeta({
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
-import { Eye, EyeOff } from 'lucide-vue-next';
+import { Eye, EyeOff, LoaderCircle } from 'lucide-vue-next';
+
+const route = useRoute();
+const router = useRouter();
+const authStore = useAuthStore();
+const system = useSystemStore();
+
+const token = route.query.token;
+const isLoading = ref(false);
+
+const errors = computed(() => {
+  return system.errors;
+});
+
+onMounted(() => {
+  if (!token) {
+    router.push('/login');
+  }
+});
 
 const passwordVisible = ref(false);
 const passwordConfirmVisible = ref(false);
@@ -36,8 +54,17 @@ const { handleSubmit } = useForm({
   validationSchema: formSchema
 });
 
-const onSubmit = handleSubmit((values) => {
-  console.log('values', values);
+const onSubmit = handleSubmit(async (values) => {
+  isLoading.value = true;
+  const { password } = values;
+
+  await authStore.resetPassword(password, token as string);
+
+  if (!errors.value?.message) {
+    router.push('/confirm-email-change-password');
+  }
+
+  isLoading.value = false;
 });
 </script>
 
@@ -45,9 +72,10 @@ const onSubmit = handleSubmit((values) => {
   <div class="login-page flex flex-col items-center justify-center h-[100vh]">
     <div class="logo">LOGO</div>
 
-    <div class="flex flex-col gap-[35px] min-w-[500px] bg-white px-12 py-8">
-      <h1 class="text-sm font-bold">メール送信完了</h1>
-      <div class="flex flex-col gap-2">
+    <div class="flex flex-col min-w-[500px] bg-white px-12 py-8">
+      <ShareErrorMessage />
+      <h1 class="text-sm font-bold mb-[30px]">メール送信完了</h1>
+      <div class="flex flex-col gap-2 mb-[30px]">
         <p class="text-xs">パスワードは英小文字、数字を含む、半角英数字８文字以上を設定してください。</p>
       </div>
 
@@ -121,6 +149,10 @@ const onSubmit = handleSubmit((values) => {
           type="submit"
           class="flex self-center w-[132px]"
         >
+          <LoaderCircle
+            v-if="isLoading"
+            class="w-4 h-4 mr-2 animate-spin"
+          />
           保存
         </Button>
 
