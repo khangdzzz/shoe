@@ -8,7 +8,7 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default: 'bg-[#515151] text-primary-foreground hover:bg-primary/90',
-        cancel_btn: 'flex self-center bg-white !border-solid border-2 border-black text-[#515151] hover:bg-[#ebebebe6]',
+        cancel_btn: 'flex self-center bg-white !border-solid border border-black text-[#515151] hover:bg-[#ebebebe6]',
         destructive:
           'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline:

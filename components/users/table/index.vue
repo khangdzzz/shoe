@@ -84,7 +84,15 @@ const data = shallowRef<Report[]>([
   {
     userNameKanji: 'm5gr84i9',
     birthday: '平成2年01月02日',
-    reportStatus: 0,
+    reportStatus: 3,
+    reportDate: '平成2年01月02日',
+    planStatus: 0,
+    planDate: '平成2年01月02日'
+  },
+  {
+    userNameKanji: 'm5gr84i9',
+    birthday: '平成2年01月02日',
+    reportStatus: 2,
     reportDate: '平成2年01月02日',
     planStatus: 0,
     planDate: '平成2年01月02日'
@@ -100,9 +108,25 @@ const data = shallowRef<Report[]>([
   {
     userNameKanji: 'm5gr84i9',
     birthday: '平成2年01月02日',
+    reportStatus: 3,
+    reportDate: '平成2年01月02日',
+    planStatus: 0,
+    planDate: '平成2年01月02日'
+  },
+  {
+    userNameKanji: 'm5gr84i9',
+    birthday: '平成2年01月02日',
     reportStatus: 2,
     reportDate: '平成2年01月02日',
-    planStatus: 2,
+    planStatus: 0,
+    planDate: '平成2年01月02日'
+  },
+  {
+    userNameKanji: 'm5gr84i9',
+    birthday: '平成2年01月02日',
+    reportStatus: 1,
+    reportDate: '平成2年01月02日',
+    planStatus: 1,
     planDate: '平成2年01月02日'
   },
   {
@@ -110,13 +134,13 @@ const data = shallowRef<Report[]>([
     birthday: '平成2年01月02日',
     reportStatus: 3,
     reportDate: '平成2年01月02日',
-    planStatus: 3,
+    planStatus: 0,
     planDate: '平成2年01月02日'
   },
   {
     userNameKanji: 'm5gr84i9',
     birthday: '平成2年01月02日',
-    reportStatus: 0,
+    reportStatus: 2,
     reportDate: '平成2年01月02日',
     planStatus: 0,
     planDate: '平成2年01月02日'
@@ -124,7 +148,15 @@ const data = shallowRef<Report[]>([
   {
     userNameKanji: 'm5gr84i9',
     birthday: '平成2年01月02日',
-    reportStatus: 0,
+    reportStatus: 1,
+    reportDate: '平成2年01月02日',
+    planStatus: 1,
+    planDate: '平成2年01月02日'
+  },
+  {
+    userNameKanji: 'm5gr84i9',
+    birthday: '平成2年01月02日',
+    reportStatus: 3,
     reportDate: '平成2年01月02日',
     planStatus: 0,
     planDate: '平成2年01月02日'
@@ -132,7 +164,7 @@ const data = shallowRef<Report[]>([
   {
     userNameKanji: 'm5gr84i9',
     birthday: '平成2年01月02日',
-    reportStatus: 0,
+    reportStatus: 2,
     reportDate: '平成2年01月02日',
     planStatus: 0,
     planDate: '平成2年01月02日'
@@ -140,7 +172,15 @@ const data = shallowRef<Report[]>([
   {
     userNameKanji: 'm5gr84i9',
     birthday: '平成2年01月02日',
-    reportStatus: 0,
+    reportStatus: 1,
+    reportDate: '平成2年01月02日',
+    planStatus: 1,
+    planDate: '平成2年01月02日'
+  },
+  {
+    userNameKanji: 'm5gr84i9',
+    birthday: '平成2年01月02日',
+    reportStatus: 3,
     reportDate: '平成2年01月02日',
     planStatus: 0,
     planDate: '平成2年01月02日'
@@ -148,7 +188,7 @@ const data = shallowRef<Report[]>([
   {
     userNameKanji: 'm5gr84i9',
     birthday: '平成2年01月02日',
-    reportStatus: 0,
+    reportStatus: 2,
     reportDate: '平成2年01月02日',
     planStatus: 0,
     planDate: '平成2年01月02日'
@@ -156,7 +196,15 @@ const data = shallowRef<Report[]>([
   {
     userNameKanji: 'm5gr84i9',
     birthday: '平成2年01月02日',
-    reportStatus: 0,
+    reportStatus: 1,
+    reportDate: '平成2年01月02日',
+    planStatus: 1,
+    planDate: '平成2年01月02日'
+  },
+  {
+    userNameKanji: 'm5gr84i9',
+    birthday: '平成2年01月02日',
+    reportStatus: 3,
     reportDate: '平成2年01月02日',
     planStatus: 0,
     planDate: '平成2年01月02日'
@@ -164,7 +212,7 @@ const data = shallowRef<Report[]>([
   {
     userNameKanji: 'm5gr84i9',
     birthday: '平成2年01月02日',
-    reportStatus: 0,
+    reportStatus: 2,
     reportDate: '平成2年01月02日',
     planStatus: 0,
     planDate: '平成2年01月02日'
@@ -172,41 +220,9 @@ const data = shallowRef<Report[]>([
   {
     userNameKanji: 'm5gr84i9',
     birthday: '平成2年01月02日',
-    reportStatus: 0,
+    reportStatus: 1,
     reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 0,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 0,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 0,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 0,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
+    planStatus: 1,
     planDate: '平成2年01月02日'
   }
 ]);
@@ -231,7 +247,7 @@ const data = shallowRef<Report[]>([
           <Checkbox id="terms" />
           <span
             for="terms"
-            class="flex w-m text-xs leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            class="flex text-xs flex-shrink-0"
           >
             和暦表示
           </span>
@@ -283,7 +299,7 @@ const data = shallowRef<Report[]>([
               </td>
               <td>
                 <span
-                  class="px-[20px] py-[10px] rounded-sm"
+                  class="px-[18px] py-[8px] rounded-sm"
                   :class="getStatusColor(row.reportStatus)"
                   >{{ STATUS[row.reportStatus] }}</span
                 >
@@ -293,7 +309,7 @@ const data = shallowRef<Report[]>([
               </td>
               <td>
                 <span
-                  class="px-[20px] py-[10px] rounded-sm"
+                  class="px-[18px] py-[8px] rounded-sm"
                   :class="getStatusColor(row.planStatus)"
                   >{{ STATUS[row.planStatus] }}</span
                 >
@@ -322,6 +338,7 @@ const data = shallowRef<Report[]>([
 .table-container {
   max-height: calc(100vh - 330px);
   overflow-y: auto;
+  overflow-x: auto;
 }
 
 thead th {
@@ -329,5 +346,9 @@ thead th {
   top: 0;
   background-color: #afeeee;
   z-index: 1;
+}
+
+.table-fixed {
+  min-width: 1180px;
 }
 </style>

@@ -1,9 +1,14 @@
 <script lang="ts" setup>
 definePageMeta({
-  middleware: ['auth']
+  middleware: ['auth', 'auth-redirect']
 });
 </script>
 <template>
-  <h1>my page</h1>
+  <div class="user-list px-4">
+    <div class="header flex items-center h-[40px] border-b border-b-[#e2e2e2]">
+      <span class="text-base font-bold">プロフィール設定</span>
+    </div>
+    <MypageForm />
+  </div>
 </template>
 <style lang="scss" scoped></style>
