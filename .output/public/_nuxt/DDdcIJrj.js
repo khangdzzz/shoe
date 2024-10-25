@@ -1,0 +1,1 @@
+import{ag as e,A as s}from"./gFyQHj-4.js";const i=e(async n=>{console.log("auth middleware");const t=s(),a=n.path,o="/login";if(!t.hasLogged()&&a!==o){window.location.href=o;return}});export{i as default};
