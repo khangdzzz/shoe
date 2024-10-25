@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false,
-  modules: ['shadcn-nuxt', '@nuxtjs/tailwindcss', '@nuxt/image', [
+  modules: ['shadcn-nuxt', '@nuxtjs/tailwindcss',  [
       '@pinia/nuxt',
       {
         autoImports: [
@@ -22,9 +22,6 @@ export default defineNuxtConfig({
         }
       }
     }
-  },
-  image: {
-    dir: 'assets/images'
   },
   postcss: {
     plugins: {

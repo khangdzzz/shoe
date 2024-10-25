@@ -22,9 +22,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div
-    class="flex h-screen bg-white"
-  >
+  <div class="flex h-screen bg-white">
     <aside
       class="transition-all duration-300 overflow-hidden"
       :class="isOpen ? 'sidebar-open' : 'sidebar-closed'"
@@ -38,8 +36,8 @@ onMounted(() => {
           class="logo"
           v-if="isOpen"
         >
-          <NuxtImg
-            src="logo.jpg"
+          <img
+            src="~/assets/images/logo.jpg"
             class="h-[46px] w-auto"
           />
         </a>
