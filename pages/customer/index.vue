@@ -3,7 +3,16 @@ definePageMeta({
   middleware: ['auth', 'auth-redirect']
 });
 </script>
+
 <template>
-  <h1>PAGE OF ADMIN</h1>
+  <div class="user-list px-4">
+    <div class="header flex items-center h-[40px] border-b border-b-[#e2e2e2]">
+      <span class="text-base font-bold">利用者選択</span>
+    </div>
+    <CustomerSearch />
+    <div class="body-content flex py-4 w-full gap-2">
+      <CustomerTable class="w-full" />
+    </div>
+  </div>
 </template>
 <style lang="scss" scoped></style>
