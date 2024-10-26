@@ -1,1 +1,0 @@
-import{ag as R,p as g,L as m,A as S,ah as f,ai as h,aj as L}from"./y0evPSAL.js";const A=R(async n=>{const o=g(),t=S(),s=n.fullPath,e=t.getLocalStorage(m.role),i=t.hasLogged(),c=()=>{s!=="/login"&&o.push("/login")},r=u=>{const a=u===f.admin.toString(),l=a?h:L,d=a?"/customer":"/user-list";l.includes(s)||o.push(d)};if(!e||!i){c();return}r(e)});export{A as default};
