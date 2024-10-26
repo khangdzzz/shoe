@@ -5,7 +5,12 @@ export const useCompanyStore = defineStore('company', () => {
     return await apis.archaic?.post('company/register', { ...body });
   };
 
+  const getCompanyUseStatus = async () => {
+    return await apis.archaic?.get('company-user-status');
+  };
+
   return {
-    registerNewUser
+    registerNewUser,
+    getCompanyUseStatus
   };
 });

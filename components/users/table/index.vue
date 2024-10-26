@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { Search } from 'lucide-vue-next';
-
 export interface Report {
   userNameKanji: string;
   birthday: string;
@@ -9,6 +8,12 @@ export interface Report {
   planStatus: number;
   planDate: string;
 }
+
+const companyStore = useCompanyStore();
+
+onMounted(async () => {
+  await companyStore.getCompanyUseStatus();
+});
 
 const headers = [
   {
