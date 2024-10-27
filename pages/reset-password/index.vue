@@ -15,8 +15,8 @@ const system = useSystemStore();
 const token = route.query.token;
 const isLoading = ref(false);
 
-const errors = computed(() => {
-  return system.errors;
+const notify = computed(() => {
+  return system.notify;
 });
 
 onMounted(() => {
@@ -60,7 +60,7 @@ const onSubmit = handleSubmit(async (values) => {
 
   await authStore.resetPassword(password, token as string);
 
-  if (!errors.value?.message) {
+  if (!notify.value?.message) {
     router.push('/confirm-email-change-password');
   }
 

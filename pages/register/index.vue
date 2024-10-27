@@ -44,8 +44,8 @@ const kaigoSoftware = computed(() => {
   return dataInit.masterData?.kaigoSoftwares;
 });
 
-const errors = computed(() => {
-  return system.errors;
+const notify = computed(() => {
+  return system.notify;
 });
 
 const formSchema = toTypedSchema(
@@ -127,7 +127,7 @@ const searchPostalCode = async () => {
   const companyPostCode = formValues?.companyPostCode;
 
   if (!companyPostCode) {
-    system.setError({
+    system.setNotify({
       message: '郵便番号が存在しません。',
       type: TYPE_MESSAGE.error
     });
@@ -144,7 +144,7 @@ const searchPostalCode = async () => {
     setFieldValue('companyAddress', companyAddress);
     postalCode.value = res.data;
   } else {
-    system.setError({
+    system.setNotify({
       message: '郵便番号が存在しません。',
       type: TYPE_MESSAGE.error
     });
@@ -164,7 +164,7 @@ watch([confirmPassword, password], () => {
 const onSubmit = handleSubmit(
   async (values) => {
     if (!isMatchPassword.value) {
-      system.setError({
+      system.setNotify({
         message: MESSAGES.ERR006,
         type: TYPE_MESSAGE.error
       });
@@ -183,7 +183,7 @@ const onSubmit = handleSubmit(
 
     await company.registerNewUser(body);
 
-    if (!errors.value?.message) {
+    if (!notify.value?.message) {
       router.push('/register/success');
     }
 
@@ -191,7 +191,7 @@ const onSubmit = handleSubmit(
   },
   ({ errors }) => {
     const message = Object.values(errors)[0];
-    system.setError({
+    system.setNotify({
       message,
       type: TYPE_MESSAGE.error
     });

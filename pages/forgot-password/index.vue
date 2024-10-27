@@ -11,7 +11,7 @@ const authStore = useAuthStore();
 const system = useSystemStore();
 const router = useRouter();
 
-const { errors } = storeToRefs(system);
+const { notify } = storeToRefs(system);
 const isLoading = ref(false);
 
 const formSchema = toTypedSchema(
@@ -31,7 +31,7 @@ const onSubmit = handleSubmit(async (values) => {
 
   await authStore.forgotPassword(email);
 
-  if (!errors.value?.message) {
+  if (!notify.value?.message) {
     router.push('/confirm-email-reset-password');
   }
 

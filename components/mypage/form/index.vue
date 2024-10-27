@@ -1,28 +1,32 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: false
-});
-
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import * as z from 'zod';
 import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
+import type { CompanyUpdateBody } from '~/models/company';
 
-const router = useRouter();
-const route = useRoute();
+interface InitialFormValues {
+  [key: string]: any;
+}
+
 const dataInit = useFetchDataInit();
 const system = useSystemStore();
-const company = useCompanyStore();
+const authStore = useAuthStore();
+const companyStore = useCompanyStore();
+const permissionService = usePermission();
 
 const postalCode = ref<PostalCode>();
 
 const isLoadPostalCode = ref(false);
 const isLoadingRegister = ref(false);
 
+const password = ref('');
 const isMatchPassword = ref(true);
 const confirmPassword = ref('');
+const initialFormValues = ref<InitialFormValues>({});
+const changeFields = ref<string[]>([]);
 
 const kaipokeUserPasswordVisible = ref(false);
 const passwordConfirmVisible = ref(false);
@@ -30,12 +34,16 @@ const passwordVisible = ref(false);
 
 const katakanaRegex = /^[\u30A0-\u30FF]+$/;
 
+const isDisableButton = computed(() => {
+  return changeFields.value.length == 0;
+});
+
 const kaigoSoftware = computed(() => {
   return dataInit.masterData?.kaigoSoftwares;
 });
 
-const errors = computed(() => {
-  return system.errors;
+const notify = computed(() => {
+  return system.notify;
 });
 
 const formSchema = toTypedSchema(
@@ -71,22 +79,15 @@ const formSchema = toTypedSchema(
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
     phoneNumber: z.string(formatMessage(MESSAGES.ERR001, FIELDS.phoneNumber)).min(1),
     email: z.string(formatMessage(MESSAGES.ERR001, FIELDS.email)).min(1),
-    password: z.string(formatMessage(MESSAGES.ERR001, FIELDS.password)).min(8, { message: MESSAGES.ERR007 }),
-    confirmPassword: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.confirmPassword))
-      .min(8, { message: MESSAGES.ERR007 }),
+    password: z.string().min(8, { message: MESSAGES.ERR007 }).optional(),
+    confirmPassword: z.string().min(8, { message: MESSAGES.ERR007 }).optional(),
     kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1),
     kaipokeCompanyId: z.string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeCompanyId)).min(1),
     kaipokeUserId: z.string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserId)).min(1),
     kaipokeUserPassword: z
       .string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserPassword))
       .min(8, { message: MESSAGES.ERR007 }),
-    registerReason: z.string(formatMessage(MESSAGES.ERR001, FIELDS.registerReason)).min(1).max(1000),
-    paymentMethod: z.string(formatMessage(MESSAGES.ERR001, FIELDS.paymentMethod)).min(1),
-    terms: z.string(formatMessage(MESSAGES.ERR001, FIELDS.terms)).min(1),
-    term: z.boolean({ message: MESSAGES.ERR003 }).refine((value) => value, {
-      message: MESSAGES.ERR003
-    })
+    paymentMethod: z.string(formatMessage(MESSAGES.ERR001, FIELDS.paymentMethod)).min(1)
   })
 );
 
@@ -96,6 +97,47 @@ const {
   setFieldValue
 } = useForm({
   validationSchema: formSchema
+});
+
+const currentUser = computed(() => {
+  return authStore.currentUser;
+});
+
+const initDataUser = () => {
+  if (currentUser.value) {
+    const { email, company } = currentUser.value;
+    setFieldValue('companyName', company.companyName);
+    setFieldValue('companyNameKana', company.companyNameKana);
+    setFieldValue('companyPostCode', company.companyPostCode);
+    setFieldValue('companyAddress', company.companyAddress);
+    setFieldValue('phoneNumber', company.phoneNumber);
+    setFieldValue('picFamilyName', company.picFamilyName);
+    setFieldValue('picFamilyNameKana', company.picFamilyNameKana);
+    setFieldValue('picGivenName', company.picGivenName);
+    setFieldValue('picGivenNameKana', company.picGivenNameKana);
+    setFieldValue('picPosition', company.picPosition);
+    setFieldValue('frontPicFamilyName', company.frontPicFamilyName);
+    setFieldValue('frontPicFamilyNameKana', company.frontPicFamilyNameKana);
+    setFieldValue('frontPicGivenName', company.frontPicGivenName);
+    setFieldValue('frontPicGivenNameKana', company.frontPicGivenNameKana);
+    setFieldValue('frontPicPosition', company.frontPicPosition);
+    setFieldValue('kaipokeUserId', company.kaipokeUserId);
+    setFieldValue('kaipokeUserPassword', company.kaipokeUserPassword);
+    setFieldValue('kaipokeCompanyId', company.kaipokeCompanyId);
+    setFieldValue('kaigoSoftware', company.kaigoSoftware.toString());
+    setFieldValue('paymentMethod', company.paymentMethod);
+    setFieldValue('email', email);
+
+    initialFormValues.value = { ...formValues };
+  }
+};
+
+onMounted(() => {
+  initDataUser();
+});
+
+watch(currentUser, () => {
+  initDataUser();
 });
 
 const togglePasswordVisibility = () => {
@@ -114,7 +156,7 @@ const searchPostalCode = async () => {
   const companyPostCode = formValues?.companyPostCode;
 
   if (!companyPostCode) {
-    system.setError({
+    system.setNotify({
       message: '郵便番号が存在しません。',
       type: TYPE_MESSAGE.error
     });
@@ -131,7 +173,7 @@ const searchPostalCode = async () => {
     setFieldValue('companyAddress', companyAddress);
     postalCode.value = res.data;
   } else {
-    system.setError({
+    system.setNotify({
       message: '郵便番号が存在しません。',
       type: TYPE_MESSAGE.error
     });
@@ -140,20 +182,83 @@ const searchPostalCode = async () => {
   isLoadPostalCode.value = false;
 };
 
-watch(confirmPassword, () => {
-  isMatchPassword.value = formValues?.password === confirmPassword.value;
+watch([confirmPassword, password], () => {
+  if (!password.value || !confirmPassword.value) {
+    isMatchPassword.value = true;
+    return;
+  }
+  isMatchPassword.value = password.value === confirmPassword.value;
 });
 
+const isDialogOpen = ref(false);
+
+const closeDialog = () => {
+  isDialogOpen.value = false;
+};
+
+watch(
+  formValues,
+  () => {
+    changeFields.value = [];
+
+    Object.keys(formValues).forEach((field) => {
+      if ((formValues as any)[field] !== initialFormValues.value[field] && field !== 'confirmPassword') {
+        const japaneseFields = FIELDS[field as keyof typeof FIELDS];
+        changeFields.value.push(japaneseFields);
+      }
+    });
+  },
+  {
+    deep: true
+  }
+);
+
 const onSubmit = handleSubmit(
-  async (values) => {},
+  async (values) => {
+    if (!isMatchPassword.value) {
+      system.setNotify({
+        message: MESSAGES.ERR006,
+        type: TYPE_MESSAGE.error
+      });
+      return;
+    }
+
+    isDialogOpen.value = true;
+  },
   ({ errors }) => {
     const message = Object.values(errors)[0];
-    system.setError({
+    system.setNotify({
       message,
       type: TYPE_MESSAGE.error
     });
   }
 );
+
+const updateUserInformation = async () => {
+  const updatedFormValues = { ...formValues };
+  delete updatedFormValues.confirmPassword;
+  if (!updatedFormValues.password) delete updatedFormValues.password;
+
+  const body = {
+    ...updatedFormValues,
+    kaigoSoftware: Number(updatedFormValues.kaigoSoftware)
+  };
+
+  await companyStore.updateCompanyInformation(body as CompanyUpdateBody);
+
+  isDialogOpen.value = false;
+
+  permissionService.initPermissions();
+
+  system.setNotify({
+    message: '更新に成功しました',
+    type: TYPE_MESSAGE.success
+  });
+};
+
+const resetForm = () => {
+  initDataUser();
+};
 </script>
 
 <template>
@@ -166,6 +271,12 @@ const onSubmit = handleSubmit(
         >退会</Button
       >
     </div>
+    <MypageModalConfirmUpdateUser
+      :isOpen="isDialogOpen"
+      :fields="changeFields"
+      @close="closeDialog"
+      @update="updateUserInformation"
+    />
     <form
       class="register flex flex-col gap-[25px] pl-[64px] pt-[10px] pb-[15px]"
       @submit="onSubmit"
@@ -563,10 +674,8 @@ const onSubmit = handleSubmit(
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Input
-                      disabled
                       type="text"
                       v-bind="componentField"
-                      class="bg-[#ccc]"
                       :class="{
                         'border-red-500': errors.length
                       }"
@@ -583,14 +692,14 @@ const onSubmit = handleSubmit(
               name="password"
             >
               <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="パスワード"
-                  class="w-[145px]"
-                />
+                <div class="w-[145px]">
+                  <span>パスワード</span>
+                </div>
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <div class="relative">
                       <Input
+                        v-model="password"
                         :type="passwordVisible ? 'text' : 'password'"
                         v-bind="componentField"
                         placeholder="英小文字、数字を含む、半角英数字８文字以上"
@@ -629,7 +738,6 @@ const onSubmit = handleSubmit(
                     <span class="text-xs">パスワード</span>
                     <span>（確認用）</span>
                   </div>
-                  <span class="text-red-500">※</span>
                 </div>
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -792,30 +900,6 @@ const onSubmit = handleSubmit(
 
             <FormField
               v-slot="{ componentField, errors }"
-              name="registerReason"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="ご登録の切っ掛け"
-                  class="w-[145px]"
-                />
-                <div class="relative w-[82%] !m-[0px]">
-                  <FormControl>
-                    <Textarea
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length && !componentField.modelValue
-                      }"
-                      placeholder="1000文字以内"
-                      class="reason-register relative resize-none"
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
-
-            <FormField
-              v-slot="{ componentField, errors }"
               name="paymentMethod"
             >
               <FormItem class="flex gap-5">
@@ -837,60 +921,12 @@ const onSubmit = handleSubmit(
               </FormItem>
             </FormField>
           </div>
-
-          <div class="space"></div>
-
-          <div class="terms contact flex flex-col">
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="terms"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="利用規約"
-                  class="w-[145px]"
-                />
-                <div class="relative w-[82%] !m-[0px]">
-                  <FormControl>
-                    <Textarea
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length && !componentField.modelValue
-                      }"
-                      class="resize-none h-[100px]"
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
-            <FormField
-              v-slot="{ value, handleChange, errors }"
-              type="checkbox"
-              name="term"
-            >
-              <FormItem class="flex gap-5">
-                <div class="w-[145px]"></div>
-                <div class="relative w-[82%] !m-[0px]">
-                  <div class="flex gap-5 items-center !m-[0px] pt-[10px]">
-                    <span class="label">利用規約確認</span>
-                    <span class="text-red-500">※</span>
-                    <Checkbox
-                      :checked="value"
-                      @update:checked="handleChange"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
-                  </div>
-                </div>
-              </FormItem>
-            </FormField>
-          </div>
         </div>
       </div>
 
       <div class="flex gap-3 flex-col">
         <Button
+          :disabled="isDisableButton"
           type="submit"
           class="flex self-center"
         >
@@ -905,7 +941,7 @@ const onSubmit = handleSubmit(
           variant="cancel_btn"
           type="button"
           class="flex self-center min-w-[188px]"
-          @click="$router.push('/login')"
+          @click="resetForm"
         >
           キャンセル
         </Button>

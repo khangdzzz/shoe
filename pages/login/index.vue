@@ -15,7 +15,7 @@ const commonService = useCommon();
 const permissionService = usePermission();
 const router = useRouter();
 
-const { errors } = storeToRefs(system);
+const { notify } = storeToRefs(system);
 
 const passwordVisible = ref(false);
 const isLoading = ref(false);
@@ -41,7 +41,7 @@ const onSubmit = handleSubmit(async (values) => {
   isLoading.value = true;
   const res = await authStore.login(values);
 
-  if (errors.value?.message) return;
+  if (notify.value?.message) return;
 
   const accessToken = res?.data?.accessToken;
   const refreshToken = res?.data?.refreshToken;

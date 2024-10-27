@@ -1,4 +1,4 @@
-import type { RegisterNewUser } from '~/models/company';
+import type { CompanyUpdateBody, RegisterNewUser } from '~/models/company';
 
 export const useCompanyStore = defineStore('company', () => {
   const registerNewUser = async (body: RegisterNewUser) => {
@@ -9,8 +9,13 @@ export const useCompanyStore = defineStore('company', () => {
     return await apis.archaic?.get('company-user-status');
   };
 
+  const updateCompanyInformation = async (body: CompanyUpdateBody) => {
+    return await apis.archaic?.put('company/update', { ...body });
+  };
+
   return {
     registerNewUser,
-    getCompanyUseStatus
+    getCompanyUseStatus,
+    updateCompanyInformation
   };
 });

@@ -1,7 +1,7 @@
 import type { ResponseApi } from '~/models/common';
 import type { PostalCode } from '~/models/masterData';
 
-interface ValidationError {
+interface ValidationNotify {
   code?: string;
   field?: string;
   message?: string;
@@ -9,14 +9,14 @@ interface ValidationError {
 }
 
 export const useSystemStore = defineStore('system', () => {
-  const errors = ref<ValidationError>();
+  const notify = ref<ValidationNotify>();
   const searchPostalCode = async (postalCode: string): Promise<ResponseApi<PostalCode> | undefined> => {
     return await apis.archaic?.get(`zip-code/${postalCode}`);
   };
 
-  const setError = ({ code, field, message, type }: ValidationError) => {
+  const setNotify = ({ code, field, message, type }: ValidationNotify) => {
 
-    errors.value = {
+    notify.value = {
       code,
       field,
       type,
@@ -24,13 +24,13 @@ export const useSystemStore = defineStore('system', () => {
     };
 
     setTimeout(() => {
-      errors.value = {};
+      notify.value = {};
     }, 5000);
   };
 
   return {
-    errors,
-    setError,
+    notify,
+    setNotify,
     searchPostalCode
   };
 });

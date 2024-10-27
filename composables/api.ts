@@ -43,7 +43,7 @@ export const useApi = (baseUrl?: string) => {
         return;
       }
 
-      system.setError({
+      system.setNotify({
         code: messageCode || null,
         message: messageText || 'エラーが発生しました。',
         type: TYPE_MESSAGE.error
@@ -60,12 +60,12 @@ export const useApi = (baseUrl?: string) => {
     }
 
     try {
-      const res: ResponseApi<{ accessToken: string; refreshToken: string }> = await $fetch(`${BASE_URL}auth/refresh`, {
+      const res = await $fetch(`${BASE_URL}auth/refresh`, {
         method: 'POST',
         headers: {
           ...getHeaders()
         }
-      });
+      }) as ResponseApi<{ accessToken: string; refreshToken: string }>;
 
       const accessToken = res?.data?.accessToken;
       const refreshToken = res?.data?.refreshToken;
