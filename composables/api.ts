@@ -3,6 +3,8 @@ export const useApi = (baseUrl?: string) => {
   const commonService = useCommon();
   const system = useSystemStore();
   const permissionService = usePermission();
+  const route = useRoute();
+  const currentPath = computed(() => route.path);
 
   const BASE_URL = baseUrl || 'http://localhost:5000/';
 
@@ -36,7 +38,7 @@ export const useApi = (baseUrl?: string) => {
     } catch (error: any) {
       const { messageCode, messageText, status } = error.data;
 
-      if (status === 401) {
+      if (status === 401 && currentPath.value != '/login') {
         commonService.removeLocalStorage(LOCAL_STORAGE_KEYS.accessToken);
         await handleRefreshToken();
 
@@ -56,16 +58,17 @@ export const useApi = (baseUrl?: string) => {
     if (!refreshToken) {
       commonService.removeKeysWhenTokenExpired();
       location.href = '/login';
+
       return;
     }
 
     try {
-      const res = await $fetch(`${BASE_URL}auth/refresh`, {
+      const res = (await $fetch(`${BASE_URL}auth/refresh`, {
         method: 'POST',
         headers: {
           ...getHeaders()
         }
-      }) as ResponseApi<{ accessToken: string; refreshToken: string }>;
+      })) as ResponseApi<{ accessToken: string; refreshToken: string }>;
 
       const accessToken = res?.data?.accessToken;
       const refreshToken = res?.data?.refreshToken;
@@ -79,6 +82,8 @@ export const useApi = (baseUrl?: string) => {
     } catch (error) {
       commonService.removeKeysWhenTokenExpired();
       location.href = '/login';
+
+      return;
     }
   };
 

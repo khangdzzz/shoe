@@ -236,12 +236,15 @@ const onSubmit = handleSubmit(
 
 const updateUserInformation = async () => {
   const updatedFormValues = { ...formValues };
+  const newPassword = updatedFormValues.password;
+
   delete updatedFormValues.confirmPassword;
-  if (!updatedFormValues.password) delete updatedFormValues.password;
+  delete updatedFormValues.password;
 
   const body = {
     ...updatedFormValues,
-    kaigoSoftware: Number(updatedFormValues.kaigoSoftware)
+    kaigoSoftware: Number(updatedFormValues.kaigoSoftware),
+    ...(newPassword && { newPassword })
   };
 
   await companyStore.updateCompanyInformation(body as CompanyUpdateBody);

@@ -58,4 +58,5 @@ export interface CompanyUpdateBody extends Address, Person, FrontPerson, Kaipoke
   companyName: string;
   companyNameKana: string;
   paymentMethod: string;
+  newPassword?: string;
 }

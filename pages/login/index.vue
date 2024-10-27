@@ -41,7 +41,10 @@ const onSubmit = handleSubmit(async (values) => {
   isLoading.value = true;
   const res = await authStore.login(values);
 
-  if (notify.value?.message) return;
+  if (notify.value?.message) {
+    isLoading.value = false;
+    return;
+  }
 
   const accessToken = res?.data?.accessToken;
   const refreshToken = res?.data?.refreshToken;
