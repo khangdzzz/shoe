@@ -372,7 +372,7 @@ const resetForm = () => {
                       v-if="isLoadPostalCode"
                       class="w-4 h-4 mr-2 animate-spin"
                     />
-                    ログイン
+                    郵便番号から入力
                   </Button>
                 </div>
               </FormItem>
