@@ -12,7 +12,7 @@ definePageMeta({
       <h1 class="text-sm font-bold">新規会員登録完了</h1>
 
       <div class="flex flex-col gap-2">
-        <p class="text-xs">お問い合わせさい。</p>
+        <p class="text-xs">会員登録が完了しました。</p>
         <p class="text-xs">ログイン画面に戻り、設定したパスワードでログインしてください。</p>
       </div>
 
