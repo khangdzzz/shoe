@@ -61,7 +61,7 @@ const headers = [
 
 const data = shallowRef<CompanyInformation[]>([
   {
-    companyName: 'Blueoath',
+    companyName: 'Company A',
     companyAddress: 'Ha Noi City',
     phoneNumber: '098783947484',
     fullName: '平成 平成',
@@ -72,7 +72,7 @@ const data = shallowRef<CompanyInformation[]>([
     createdAt: '2022-01-01'
   },
   {
-    companyName: 'Blueoath',
+    companyName: 'Company B',
     companyAddress: 'Ha Noi City',
     phoneNumber: '098783947484',
     fullName: '平成 平成',
