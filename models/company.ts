@@ -60,3 +60,20 @@ export interface CompanyUpdateBody extends Address, Person, FrontPerson, Kaipoke
   paymentMethod: string;
   newPassword?: string;
 }
+
+export interface CompanyUserStatus {
+  companyUserId: number;
+  companyUserNameKana: string;
+  companyUserBirthday: string;
+  companyUserNameKanji: string;
+  createdAt: string;
+  deletedAt: string | null;
+  id: number;
+  officeId: number;
+  planDate: string | null;
+  planStatus: number | null;
+  reportDate: string | null;
+  reportStatus: number | null;
+  targetYearMonth: string | null;
+  updatedAt: string;
+}

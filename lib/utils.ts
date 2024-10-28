@@ -9,7 +9,6 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function valueUpdater<T extends Updater<any>>(updaterOrValue: T, ref: Ref) {
-  console.log('ref', ref)
   ref.value = typeof updaterOrValue === 'function'
     ? updaterOrValue(ref.value)
     : updaterOrValue

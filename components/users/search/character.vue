@@ -4,54 +4,22 @@ interface Character {
   selected: boolean;
   disabled?: boolean;
 }
-const characters = ref([
-  { label: 'あ', selected: false },
-  { label: 'い', selected: false },
-  { label: 'う', selected: false },
-  { label: 'え', selected: false },
-  { label: 'お', selected: false },
-  { label: 'か', selected: false },
-  { label: 'き', selected: false },
-  { label: 'く', selected: false },
-  { label: 'け', selected: false },
-  { label: 'こ', selected: false },
-  { label: 'さ', selected: false },
-  { label: 'し', selected: false },
-  { label: 'す', selected: false },
-  { label: 'せ', selected: false },
-  { label: 'そ', selected: false },
-  { label: 'た', selected: false },
-  { label: 'ち', selected: false },
-  { label: 'つ', selected: false },
-  { label: 'て', selected: false },
-  { label: 'と', selected: false },
-  { label: 'な', selected: false },
-  { label: 'に', selected: false },
-  { label: 'ぬ', selected: false },
-  { label: 'ね', selected: false },
-  { label: 'の', selected: false },
-  { label: 'は', selected: false },
-  { label: 'ひ', selected: false },
-  { label: 'ふ', selected: false },
-  { label: 'へ', selected: false },
-  { label: 'ほ', selected: false },
-  { label: 'ま', selected: false },
-  { label: 'み', selected: false },
-  { label: 'む', selected: false },
-  { label: 'め', selected: false },
-  { label: 'も', selected: false },
-  { label: 'や', selected: false },
-  { label: 'ゆ', selected: false },
-  { label: 'よ', selected: false },
-  { label: 'ら', selected: false },
-  { label: 'り', selected: false },
-  { label: 'る', selected: false },
-  { label: 'れ', selected: false },
-  { label: 'ろ', selected: false },
-  { label: 'わ', selected: false },
-  { label: 'を', selected: false },
-  { label: 'ん', selected: false }
-]);
+
+const companyStore = useCompanyStore();
+
+const characters = ref<Character[]>(CHARACTERS.map((char) => ({ ...char, selected: false })));
+
+watch(
+  () => companyStore.userNameKanjiCharacters,
+  () => {
+    characters.value = CHARACTERS.map((char) =>
+      companyStore.userNameKanjiCharacters.includes(char.label)
+        ? { ...char, selected: false }
+        : { ...char, disabled: true, selected: false }
+    );
+  },
+  { immediate: true }
+);
 
 const getClass = (char: Character) => {
   if (char.disabled) {
@@ -67,12 +35,16 @@ const handleClick = (char: Character) => {
   if (!char.disabled) {
     char.selected = !char.selected;
   }
+
+  companyStore.charactersSelected = characters.value.filter((char) => char.selected).map((char) => char.label);
 };
 
 const clearSelection = () => {
   characters.value.forEach((char) => {
     char.selected = false;
   });
+
+  companyStore.charactersSelected = [];
 };
 </script>
 

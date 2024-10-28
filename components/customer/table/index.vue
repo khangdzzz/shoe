@@ -102,7 +102,6 @@ const toggleSelectRow = (index: number) => {
   } else {
     selectedRows.value.add(index);
   }
-  console.log(selectedRows.value);
 };
 </script>
 
