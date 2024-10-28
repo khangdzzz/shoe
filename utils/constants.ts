@@ -18,13 +18,14 @@ export const LOCAL_STORAGE_KEYS = {
 }
 
 export const MESSAGES: { [key: string]: string } = {
+  EMPTY: 'データがありません',
   ERR001: '{項目名}を入力してください', // field required
   ERR002: '{項目名}を選択してください',
   ERR003: '利用規約をご確認の上、利用規約確認をチェックしてください。',
   ERR004: 'メールアドレス形式で入力してください', // email format
   ERR005: 'フリガナで入力してください	', // katakana
   ERR006: 'パスワードが一致していません', // password not match
-  ERR007: '半角英数記号を8文字以上入力してください', // password format
+  ERR007: '半角英数記号を8文字以上入力してください', // password format,
 };
 
 export const FIELDS = {
@@ -55,3 +56,53 @@ export const FIELDS = {
   terms: '利用規約',
   term: '利用規約確認'
 };
+
+
+export const CHARACTERS = [
+  { label: 'あ', selected: false, disabled: false },
+  { label: 'い', selected: false, disabled: false },
+  { label: 'う', selected: false, disabled: false },
+  { label: 'え', selected: false, disabled: false },
+  { label: 'お', selected: false, disabled: false },
+  { label: 'か', selected: false, disabled: false },
+  { label: 'き', selected: false, disabled: false },
+  { label: 'く', selected: false, disabled: false },
+  { label: 'け', selected: false, disabled: false },
+  { label: 'こ', selected: false, disabled: false },
+  { label: 'さ', selected: false, disabled: false },
+  { label: 'し', selected: false, disabled: false },
+  { label: 'す', selected: false, disabled: false },
+  { label: 'せ', selected: false, disabled: false },
+  { label: 'そ', selected: false, disabled: false },
+  { label: 'た', selected: false, disabled: false },
+  { label: 'ち', selected: false, disabled: false },
+  { label: 'つ', selected: false, disabled: false },
+  { label: 'て', selected: false, disabled: false },
+  { label: 'と', selected: false, disabled: false },
+  { label: 'な', selected: false, disabled: false },
+  { label: 'に', selected: false, disabled: false },
+  { label: 'ぬ', selected: false, disabled: false },
+  { label: 'ね', selected: false, disabled: false },
+  { label: 'の', selected: false, disabled: false },
+  { label: 'は', selected: false, disabled: false },
+  { label: 'ひ', selected: false, disabled: false },
+  { label: 'ふ', selected: false, disabled: false },
+  { label: 'へ', selected: false, disabled: false },
+  { label: 'ほ', selected: false, disabled: false },
+  { label: 'ま', selected: false, disabled: false },
+  { label: 'み', selected: false, disabled: false },
+  { label: 'む', selected: false, disabled: false },
+  { label: 'め', selected: false, disabled: false },
+  { label: 'も', selected: false, disabled: false },
+  { label: 'や', selected: false, disabled: false },
+  { label: 'ゆ', selected: false, disabled: false },
+  { label: 'よ', selected: false, disabled: false },
+  { label: 'ら', selected: false, disabled: false },
+  { label: 'り', selected: false, disabled: false },
+  { label: 'る', selected: false, disabled: false },
+  { label: 'れ', selected: false, disabled: false },
+  { label: 'ろ', selected: false, disabled: false },
+  { label: 'わ', selected: false, disabled: false },
+  { label: 'を', selected: false, disabled: false },
+  { label: 'ん', selected: false, disabled: false }
+];

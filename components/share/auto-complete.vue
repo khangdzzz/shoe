@@ -16,30 +16,45 @@ import {
 } from 'radix-vue';
 import { Icon } from '@iconify/vue';
 
-defineProps({
+const props = defineProps({
   width: {
     type: String,
     default: '100%'
+  },
+  options: {
+    type: Array as () => string[],
+    default: () => []
   }
 });
 
-const v = ref('');
-const options = ['Apple', 'Banana', 'Blueberry', 'Grapes', 'Pineapple'];
+const emit = defineEmits(['update:selectedValue']);
+
+const options = computed(() => props.options);
+
+const valueSelected = ref(options.value[1] || '');
+
+watch(options, (newOptions) => {
+  valueSelected.value = newOptions[1] || '';
+});
+
+watch(
+  () => valueSelected.value,
+  () => {
+    emit('update:selectedValue', valueSelected.value);
+  }
+);
 </script>
 
 <template>
   <ComboboxRoot
-    v-model="v"
+    v-model="valueSelected"
     class="relative"
   >
     <ComboboxAnchor
       :style="{ width: width }"
       class="min-w-[120px] w-full inline-flex items-center justify-between rounded px-[15px] leading-none h-[30px] gap-[5px] bg-white hover:bg-mauve3 focus:shadow-[0_0_0_2px] focus:shadow-black data-[placeholder]:text-grass9 outline-none border border-input"
     >
-      <ComboboxInput
-        class="!bg-transparent w-full outline-none h-full selection:bg-grass5 placeholder-mauve8"
-        placeholder="Placeholder..."
-      />
+      <ComboboxInput class="!bg-transparent w-full outline-none h-full selection:bg-grass5 placeholder-mauve8" />
       <ComboboxTrigger>
         <Icon
           icon="radix-icons:chevron-down"

@@ -1,19 +1,20 @@
 <script lang="ts" setup>
 import { Search } from 'lucide-vue-next';
-export interface Report {
-  userNameKanji: string;
-  birthday: string;
-  reportStatus: number;
-  reportDate: string;
-  planStatus: number;
-  planDate: string;
-}
+import type { CompanyUserStatus } from '~/models/company';
+
+const props = defineProps({
+  companyUsers: {
+    type: Array as () => CompanyUserStatus[],
+    default: () => []
+  }
+});
 
 const companyStore = useCompanyStore();
 
-onMounted(async () => {
-  await companyStore.getCompanyUseStatus();
-});
+const userNameKanjiSearch = ref('');
+const isCalenderJapanese = ref(false);
+const reportSwitchState = ref(false);
+const planSwitchState = ref(false);
 
 const headers = [
   {
@@ -65,7 +66,65 @@ const STATUS: { [key: number]: string } = {
   3: '実行エラー'
 };
 
-const getStatusColor = (amount: number) => {
+onMounted(async () => {
+  companyStore.isLoadCompanyUsers = true;
+});
+
+const isLoading = computed(() => {
+  return companyStore.isLoadCompanyUsers;
+});
+
+const characterSelected = computed(() => {
+  return companyStore.charactersSelected;
+});
+
+const companyUsers = computed(() => {
+  let filteredUsers = props.companyUsers;
+
+  if (characterSelected.value.length) {
+    filteredUsers = filteredUsers.filter((user) =>
+      characterSelected.value.some((char) => user.companyUserNameKanji.includes(char))
+    );
+  }
+
+  if (userNameKanjiSearch.value) {
+    filteredUsers = filteredUsers.filter((user) => user.companyUserNameKanji.includes(userNameKanjiSearch.value));
+  }
+
+  if (reportSwitchState.value) {
+    filteredUsers = filteredUsers.map((user) => {
+      return {
+        ...user,
+        reportStatus: 1
+      };
+    });
+  }
+
+  if (planSwitchState.value) {
+    filteredUsers = filteredUsers.map((user) => {
+      return {
+        ...user,
+        planStatus: 1
+      };
+    });
+  }
+
+  return filteredUsers;
+});
+
+const getStatus = (amount: number | null) => {
+  if (!amount) return STATUS[0];
+
+  if (amount === 1) return STATUS[1];
+  if (amount === 2) return STATUS[2];
+  if (amount === 3) return STATUS[3];
+
+  return STATUS[0];
+};
+
+const getStatusColor = (amount: number | null) => {
+  if (!amount) amount = 0;
+
   let classes = 'flex justify-center items-center py-2 ml-2 rounded-sm ';
   switch (amount) {
     case 0:
@@ -85,152 +144,26 @@ const getStatusColor = (amount: number) => {
   return classes;
 };
 
-const data = shallowRef<Report[]>([
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 3,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 2,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 1,
-    reportDate: '平成2年01月02日',
-    planStatus: 1,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 3,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 2,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 1,
-    reportDate: '平成2年01月02日',
-    planStatus: 1,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 3,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 2,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 1,
-    reportDate: '平成2年01月02日',
-    planStatus: 1,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 3,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 2,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 1,
-    reportDate: '平成2年01月02日',
-    planStatus: 1,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 3,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 2,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 1,
-    reportDate: '平成2年01月02日',
-    planStatus: 1,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 3,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 2,
-    reportDate: '平成2年01月02日',
-    planStatus: 0,
-    planDate: '平成2年01月02日'
-  },
-  {
-    userNameKanji: 'm5gr84i9',
-    birthday: '平成2年01月02日',
-    reportStatus: 1,
-    reportDate: '平成2年01月02日',
-    planStatus: 1,
-    planDate: '平成2年01月02日'
+const getButtonColor = (amount: number | null) => {
+  if (!amount) amount = 0;
+
+  let classes = 'flex justify-center items-center py-2 ml-2 rounded-sm ';
+
+  switch (amount) {
+    case 0:
+      classes += 'bg-[#ffffff] border border-[#ccc] hover:bg-[#ece6e6]';
+      break;
+    case 1:
+      classes += 'bg-[#afeeed] hover:bg-[#77f6f4]';
+      break;
+    case 2:
+    case 3:
+      classes += 'bg-[#acacac]';
+      break;
   }
-]);
+
+  return classes;
+};
 </script>
 
 <template>
@@ -243,13 +176,17 @@ const data = shallowRef<Report[]>([
             type="text"
             placeholder="Search"
             class="pl-10"
+            v-model="userNameKanjiSearch"
           />
           <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
             <Search class="w-4 h-4 text-muted-foreground" />
           </span>
         </div>
         <div class="flex items-center gap-2">
-          <Checkbox id="terms" />
+          <Checkbox
+            id="terms"
+            v-model:checked="isCalenderJapanese"
+          />
           <span
             for="terms"
             class="flex text-xs flex-shrink-0"
@@ -260,17 +197,20 @@ const data = shallowRef<Report[]>([
       </div>
       <div class="toggle flex gap-5">
         <div class="flex items-center space-x-2">
-          <Switch />
+          <Switch v-model:checked="reportSwitchState" />
           <span>一括</span>
         </div>
         <div class="flex items-center space-x-2">
-          <Switch />
+          <Switch v-model:checked="planSwitchState" />
           <span>一括</span>
         </div>
       </div>
     </div>
-    <div class="w-full flex flex-col">
-      <div class="table-container overflow-auto border-b">
+    <div class="w-full flex relative flex-col">
+      <div
+        class="table-container overflow-auto border-b"
+        :class="{ 'border-l': companyUsers.length }"
+      >
         <table class="w-full table-fixed">
           <thead class="bg-[#afeeee] sticky top-0 z-10">
             <tr>
@@ -290,48 +230,59 @@ const data = shallowRef<Report[]>([
               </th>
             </tr>
           </thead>
-          <tbody class="border-l">
+          <tbody>
+            <tr v-if="companyUsers.length === 0 && !isLoading">
+              <td
+                class="text-center py-3 text-[#5566da]"
+                :colspan="headers.length"
+              >
+                {{ MESSAGES.EMPTY }}
+              </td>
+            </tr>
             <tr
-              v-for="(row, index) in data"
+              v-else
+              v-for="(row, index) in companyUsers"
               class="bg-white dark:bg-gray-800 text-center h-10 hover:cursor-pointer hover:bg-[#afe7ee47]"
-              :class="[index < data.length - 1 ? 'border-b' : '']"
+              :class="[index < companyUsers.length - 1 ? 'border-b' : '']"
             >
               <td>
-                <span>{{ row.userNameKanji }}</span>
+                <span>{{ row.companyUserNameKanji }}</span>
               </td>
               <td>
-                <span>{{ row.birthday }}</span>
+                <span v-if="isCalenderJapanese">{{ formatToJapaneseEra(row.companyUserBirthday) }}</span>
+                <span v-else>{{ formatDate(row.companyUserBirthday, 'YYYY/MM/DD') }}</span>
               </td>
               <td>
                 <span
                   class="px-[18px] py-[8px] rounded-sm"
                   :class="getStatusColor(row.reportStatus)"
-                  >{{ STATUS[row.reportStatus] }}</span
+                  >{{ getStatus(row.reportStatus) }}</span
                 >
               </td>
               <td>
-                <span>{{ row.reportDate }}</span>
+                <span>{{ formatDate(row.reportDate, 'YYYY/MM/DD HH:mm') }}</span>
               </td>
               <td>
                 <span
                   class="px-[18px] py-[8px] rounded-sm"
                   :class="getStatusColor(row.planStatus)"
-                  >{{ STATUS[row.planStatus] }}</span
+                  >{{ getStatus(row.planStatus) }}</span
                 >
               </td>
               <td>
-                <span>{{ row.planDate }}</span>
+                <span>{{ formatDate(row.planDate, 'YYYY/MM/DD HH:mm') }}</span>
               </td>
               <td>
-                <span :class="getStatusColor(row.planStatus)">実行</span>
+                <span :class="getButtonColor(row.reportStatus)">実行</span>
               </td>
               <td>
-                <span :class="getStatusColor(row.planStatus)">実行</span>
+                <span :class="getButtonColor(row.planStatus)">実行</span>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+      <ShareLoading v-if="isLoading" />
 
       <div class="flex justify-end mr-[35px]">
         <Button class="flex justify-end mt-[30px]"> 実行開始 </Button>
@@ -342,6 +293,7 @@ const data = shallowRef<Report[]>([
 <style lang="scss" scoped>
 .table-container {
   max-height: calc(100vh - 330px);
+  min-height: calc(100vh - 330px);
   overflow-y: auto;
   overflow-x: auto;
 }
@@ -354,6 +306,6 @@ thead th {
 }
 
 .table-fixed {
-  min-width: 1180px;
+  min-width: 1160px;
 }
 </style>
