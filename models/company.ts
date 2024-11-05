@@ -62,18 +62,27 @@ export interface CompanyUpdateBody extends Address, Person, FrontPerson, Kaipoke
 }
 
 export interface CompanyUserStatus {
-  companyUserId: number;
-  companyUserNameKana: string;
-  companyUserBirthday: string;
-  companyUserNameKanji: string;
-  createdAt: string;
-  deletedAt: string | null;
+  birthday: string;
+  companyId: number;
   id: number;
+  kaipokeUserId: string;
+  nameKana: string;
+  nameKanji: string;
   officeId: number;
+  statusId: number | null;
   planDate: string | null;
-  planStatus: number | null;
+  planStatus: number;
   reportDate: string | null;
-  reportStatus: number | null;
+  reportStatus: number;
   targetYearMonth: string | null;
-  updatedAt: string;
+}
+
+export interface BulkExportReport {
+  officeId: number;
+  targetYearMonth: string;
+  users: {
+    id: number;
+    isExecuteReport: number;
+    isExecutePlan: number;
+  }[]
 }

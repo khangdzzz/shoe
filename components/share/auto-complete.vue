@@ -17,32 +17,29 @@ import {
 import { Icon } from '@iconify/vue';
 
 const props = defineProps({
-  width: {
-    type: String,
-    default: '100%'
-  },
-  options: {
-    type: Array as () => string[],
-    default: () => []
-  }
+  width: { type: String, default: '100%' },
+  options: { type: Array as () => string[], default: () => [] }
 });
 
 const emit = defineEmits(['update:selectedValue']);
 
-const options = computed(() => props.options);
-
-const valueSelected = ref(options.value[1] || '');
-
-watch(options, (newOptions) => {
-  valueSelected.value = newOptions[1] || '';
-});
+const valueSelected = ref('');
 
 watch(
-  () => valueSelected.value,
+  () => props.options,
   () => {
-    emit('update:selectedValue', valueSelected.value);
-  }
+    valueSelected.value = props.options[1] || '';
+  },
+  { immediate: true }
 );
+
+watch(valueSelected, (newValue) => {
+  emit('update:selectedValue', newValue);
+});
+
+onMounted(() => {
+  if (valueSelected.value) emit('update:selectedValue', valueSelected.value);
+});
 </script>
 
 <template>

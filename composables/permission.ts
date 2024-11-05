@@ -1,6 +1,7 @@
 export const usePermission = () => {
   const authStore = useAuthStore();
   const commonService = useCommon();
+  const companyStore = useCompanyStore();
 
   const initPermissions = async () => {
     if (commonService.hasLogged()) {
@@ -18,6 +19,7 @@ export const usePermission = () => {
       authStore.isAdmin = ROLES.admin === user.role;
 
       commonService.setLocalStorage(LOCAL_STORAGE_KEYS.role, user.role.toString());
+      await companyStore.getOffices();
     }
   };
 

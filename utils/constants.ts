@@ -9,12 +9,24 @@ export const ROLES = {
 }
 
 export const ROUTES_USER = ['/mypage', '/user-list']
+
 export const ROUTES_ADMIN = ['/customer']
 
 export const LOCAL_STORAGE_KEYS = {
   accessToken: 'accessToken',
   refreshToken: 'refreshToken',
   role: 'role',
+}
+
+export const ACTION_EXPORT = {
+  REPORT: 'report',
+  PLAN: 'plan',
+  PLAN_AND_REPORT: 'both'
+}
+
+export const SORT = {
+  ASC: 'asc',
+  DESC: 'desc'
 }
 
 export const MESSAGES: { [key: string]: string } = {

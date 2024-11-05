@@ -1,23 +1,20 @@
 <script lang="ts" setup>
+import { LoaderCircle } from 'lucide-vue-next';
+
 const companyStore = useCompanyStore();
 
-const offices = ref<string[]>([]);
 const officeSelected = ref('');
 const targetYearMonth = ref('');
+const isLoading = ref(false);
 
 const emit = defineEmits<{
   (e: 'update:officeId', officeId: number | undefined): void;
   (e: 'update:targetYearMonth', targetYearMonth: string): void;
 }>();
 
-watch(
-  () => companyStore.offices,
-  () => {
-    if (companyStore.offices) {
-      offices.value = companyStore.offices.map((office) => office.officeName);
-    }
-  }
-);
+const offices = computed(() => {
+  return companyStore.offices.map((office) => office.officeName);
+});
 
 const officeId = computed(() => {
   return companyStore.offices.find((office) => office.officeName === officeSelected.value)?.id;
@@ -31,15 +28,13 @@ watch(targetYearMonth, () => {
   emit('update:targetYearMonth', targetYearMonth.value);
 });
 
-const getOffices = async () => {
-  await companyStore.getOffices();
+const crawlCompanyUserStatus = async () => {
+  isLoading.value = true;
+
+  await companyStore.crawlCompanyUserStatus().finally(() => {
+    isLoading.value = false;
+  });
 };
-
-onMounted(async () => {
-  await getOffices();
-});
-
-const searchCompanyUserStatus = () => {};
 </script>
 
 <template>
@@ -62,7 +57,12 @@ const searchCompanyUserStatus = () => {};
       />
     </div>
 
-    <Button @click="searchCompanyUserStatus()"> 更新 </Button>
+    <Button @click="crawlCompanyUserStatus">
+      <LoaderCircle
+        v-if="isLoading"
+        class="w-4 h-4 mr-2 animate-spin"
+      />更新
+    </Button>
   </div>
 </template>
 

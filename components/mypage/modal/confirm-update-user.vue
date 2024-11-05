@@ -1,7 +1,14 @@
 <script setup lang="ts">
 const props = defineProps<{ isOpen: boolean; fields: string[] }>();
 
-const { isOpen } = toRefs(props);
+const isOpenDialog = ref(props.isOpen);
+
+watch(
+  () => props.isOpen,
+  (newVal) => {
+    isOpenDialog.value = newVal;
+  }
+);
 
 const emit = defineEmits<{ (e: 'close'): void; (e: 'update'): void }>();
 
@@ -15,7 +22,7 @@ const updateUserInformation = () => {
 </script>
 
 <template>
-  <AlertDialog v-model:open="isOpen">
+  <AlertDialog v-model:open="isOpenDialog">
     <AlertDialogContent>
       <AlertDialogHeader class="flex flex-col gap-4 items-center">
         <AlertDialogTitle class="text-sm">変更の確認</AlertDialogTitle>

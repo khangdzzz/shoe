@@ -10,10 +10,10 @@ const companyStore = useCompanyStore();
 const characters = ref<Character[]>(CHARACTERS.map((char) => ({ ...char, selected: false })));
 
 watch(
-  () => companyStore.userNameKanjiCharacters,
+  () => companyStore.userNameKana,
   () => {
     characters.value = CHARACTERS.map((char) =>
-      companyStore.userNameKanjiCharacters.includes(char.label)
+      companyStore.userNameKana.includes(char.label)
         ? { ...char, selected: false }
         : { ...char, disabled: true, selected: false }
     );
