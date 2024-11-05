@@ -1,6 +1,7 @@
 export const formatToJapaneseEra = (dateStr: string | null): string => {
-    if (!dateStr) return '';
-  const [year, month, day] = dateStr.split('-').map(Number);
+  if (!dateStr) return '';
+  const date = formatDate(dateStr, 'YYYY-MM-DD');
+  const [year, month, day] = date.split('-').map(Number);
 
   if (year >= 1989 && year <= 2019) {
     const heiseiYear = year - 1988;
@@ -28,8 +29,7 @@ export const formatToJapaneseEra = (dateStr: string | null): string => {
   }
 
   return dateStr;
-}
-
+};
 
 export const formatDate = (dateStr: string | null, regex: string): string => {
   if (!dateStr) return '';
@@ -54,4 +54,4 @@ export const formatDate = (dateStr: string | null, regex: string): string => {
     default:
       return `${year}-${month}-${day} ${hours}:${minutes}`;
   }
-}
+};

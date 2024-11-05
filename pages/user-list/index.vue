@@ -2,12 +2,12 @@
 definePageMeta({
   middleware: ['auth', 'auth-redirect']
 });
+
 const companyStore = useCompanyStore();
 
 const officeId = ref<number | undefined>(undefined);
 const targetYearMonth = ref<string>('');
 
-// Methods to handle emitted values from UsersSearch component
 const handleOfficeId = (id: number | undefined) => {
   officeId.value = id;
   fetchCompanyUseStatus();
@@ -33,10 +33,6 @@ const fetchCompanyUseStatus = () => {
   }
 };
 
-const companyUsers = computed(() => {
-  return companyStore.companyUsers;
-});
-
 onMounted(() => {
   fetchCompanyUseStatus();
 });
@@ -55,7 +51,8 @@ onMounted(() => {
       <UsersSearchCharacter class="px-5 py-10 min-w-[230px]" />
       <UsersTable
         class="w-full"
-        :companyUsers="companyUsers"
+        :office-id="officeId"
+        :target-year-month="formatTargetYearMonth(targetYearMonth)"
       />
     </div>
   </div>
