@@ -26,6 +26,20 @@ const { handleSubmit } = useForm({
 
 const onSubmit = handleSubmit(async (values) => {
   isLoading.value = true;
+
+  const emailRegex = /^[a-z0-9.]+@[a-z0-9.]+\.[a-z]{2,}$/i;
+
+  if (!emailRegex.test(values.email)) {
+    system.setNotify({
+      type: TYPE_MESSAGE.error,
+      message: MESSAGES.ERR004
+    });
+
+    isLoading.value = false;
+
+    return;
+  }
+
   await authStore.verifyEmail(values.email);
 
   if (!notify.value?.message) {

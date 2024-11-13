@@ -48,52 +48,50 @@ const notify = computed(() => {
   return system.notify;
 });
 
+const errorMessage = (field: string) => formatMessage(MESSAGES.ERR001, field);
+
 const formSchema = toTypedSchema(
   z.object({
-    companyName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.companyName)).min(1),
+    companyName: z.string(errorMessage(FIELDS.companyName)).min(1, errorMessage(FIELDS.companyName)),
     companyNameKana: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.companyNameKana))
-      .min(1, formatMessage(MESSAGES.ERR001, FIELDS.companyNameKana))
+      .string(errorMessage(FIELDS.companyNameKana))
+      .min(1, errorMessage(FIELDS.companyNameKana))
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    companyPostCode: z.string(formatMessage(MESSAGES.ERR001, FIELDS.companyPostCode)).min(1),
-    companyAddress: z.string(formatMessage(MESSAGES.ERR001, FIELDS.companyAddress)).min(1),
-    frontPicPosition: z.string(formatMessage(MESSAGES.ERR001, FIELDS.email)).min(1),
-    frontPicFamilyName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicFamilyName)).min(1),
-    frontPicGivenName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicGivenName)).min(1),
+    companyPostCode: z.string(errorMessage(FIELDS.companyPostCode)).min(1, FIELDS.companyPostCode),
+    companyAddress: z.string(errorMessage(FIELDS.companyAddress)).min(1, FIELDS.companyAddress),
+    frontPicPosition: z.string(errorMessage(FIELDS.frontPicPosition)).min(1, FIELDS.frontPicPosition),
+    frontPicFamilyName: z.string(errorMessage(FIELDS.frontPicFamilyName)).min(1, FIELDS.frontPicFamilyName),
+    frontPicGivenName: z.string(errorMessage(FIELDS.frontPicGivenName)).min(1, FIELDS.frontPicGivenName),
     frontPicFamilyNameKana: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicFamilyNameKana))
-      .min(1)
+      .string(errorMessage(FIELDS.frontPicFamilyNameKana))
+      .min(1, FIELDS.frontPicFamilyNameKana)
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
     frontPicGivenNameKana: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicGivenNameKana))
-      .min(1)
+      .string(errorMessage(FIELDS.frontPicGivenNameKana))
+      .min(1, FIELDS.frontPicGivenNameKana)
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    picPosition: z.string(formatMessage(MESSAGES.ERR001, FIELDS.picPosition)).min(1),
-    picFamilyName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.picFamilyName)).min(1),
-    picGivenName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.picGivenName)).min(1),
+    picPosition: z.string(errorMessage(FIELDS.picPosition)).min(1, FIELDS.picPosition),
+    picFamilyName: z.string(errorMessage(FIELDS.picFamilyName)).min(1, FIELDS.picFamilyName),
+    picGivenName: z.string(errorMessage(FIELDS.picGivenName)).min(1, FIELDS.picGivenName),
     picFamilyNameKana: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.picFamilyNameKana))
-      .min(1)
+      .string(errorMessage(FIELDS.picFamilyNameKana))
+      .min(1, FIELDS.picFamilyNameKana)
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
     picGivenNameKana: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.picGivenNameKana))
-      .min(1)
+      .string(errorMessage(FIELDS.picGivenNameKana))
+      .min(1, FIELDS.picGivenNameKana)
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    phoneNumber: z.string(formatMessage(MESSAGES.ERR001, FIELDS.phoneNumber)).min(1),
-    email: z.string(formatMessage(MESSAGES.ERR001, FIELDS.email)).min(1),
-    password: z.string(formatMessage(MESSAGES.ERR001, FIELDS.password)).min(8, { message: MESSAGES.ERR007 }),
-    confirmPassword: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.confirmPassword))
-      .min(8, { message: MESSAGES.ERR007 }),
-    kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1),
-    kaipokeCompanyId: z.string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeCompanyId)).min(1),
-    kaipokeUserId: z.string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserId)).min(1),
-    kaipokeUserPassword: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserPassword))
-      .min(8, { message: MESSAGES.ERR007 }),
-    registerReason: z.string(formatMessage(MESSAGES.ERR001, FIELDS.registerReason)).min(1).max(1000),
-    paymentMethod: z.string(formatMessage(MESSAGES.ERR001, FIELDS.paymentMethod)).min(1),
-    terms: z.string(formatMessage(MESSAGES.ERR001, FIELDS.terms)).min(1),
+    phoneNumber: z.string(errorMessage(FIELDS.phoneNumber)).min(1, FIELDS.phoneNumber),
+    email: z.string(errorMessage(FIELDS.email)).min(1, FIELDS.email),
+    password: z.string(errorMessage(FIELDS.password)).min(8, { message: MESSAGES.ERR007 }),
+    confirmPassword: z.string(errorMessage(FIELDS.confirmPassword)).min(8, { message: MESSAGES.ERR007 }),
+    kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1, FIELDS.kaigoSoftware),
+    kaipokeCompanyId: z.string(errorMessage(FIELDS.kaipokeCompanyId)).min(1, FIELDS.kaipokeCompanyId),
+    kaipokeUserId: z.string(errorMessage(FIELDS.kaipokeUserId)).min(1, FIELDS.kaipokeUserId),
+    kaipokeUserPassword: z.string(errorMessage(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 }),
+    registerReason: z.string(errorMessage(FIELDS.registerReason)).min(1, FIELDS.registerReason).max(1000),
+    paymentMethod: z.string(errorMessage(FIELDS.paymentMethod)).min(1, FIELDS.paymentMethod),
+    terms: z.string(errorMessage(FIELDS.terms)).min(1, FIELDS.terms),
     term: z.boolean({ message: MESSAGES.ERR003 }).refine((value) => value, {
       message: MESSAGES.ERR003
     })
