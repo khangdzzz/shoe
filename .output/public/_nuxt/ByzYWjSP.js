@@ -1,1 +1,0 @@
-import{ak as R,p as g,L as m,K as S,al as f,am as L,an as h}from"./CvDAI1G2.js";const O=R(async n=>{const o=g(),t=S(),s=n.fullPath,e=t.getLocalStorage(m.role),c=t.hasLogged(),i=()=>{s!=="/login"&&o.push("/login")},r=u=>{const a=u===f.admin.toString(),l=a?L:h,d=a?"/customer":"/user-list";l.includes(s)||o.push(d)};if(!e||!c){i();return}r(e)});export{O as default};
