@@ -1,23 +1,21 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: false
-});
-
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import * as z from 'zod';
 import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
+import type { CompanyUpdateBody } from '~/models/company';
 
-const router = useRouter();
-const route = useRoute();
+interface InitialFormValues {
+  [key: string]: any;
+}
+
 const dataInit = useFetchDataInit();
 const system = useSystemStore();
-const company = useCompanyStore();
-
-const email = route.query.email;
-const token = route.query.token;
+const authStore = useAuthStore();
+const companyStore = useCompanyStore();
+const permissionService = usePermission();
 
 const postalCode = ref<PostalCode>();
 
@@ -27,6 +25,8 @@ const isLoadingRegister = ref(false);
 const password = ref('');
 const isMatchPassword = ref(true);
 const confirmPassword = ref('');
+const initialFormValues = ref<InitialFormValues>({});
+const changeFields = ref<string[]>([]);
 
 const kaipokeUserPasswordVisible = ref(false);
 const passwordConfirmVisible = ref(false);
@@ -34,10 +34,8 @@ const passwordVisible = ref(false);
 
 const katakanaRegex = /^[\u30A0-\u30FF]+$/;
 
-onMounted(() => {
-  if (!email || !token) {
-    router.push('/login');
-  }
+const isDisableButton = computed(() => {
+  return changeFields.value.length == 0;
 });
 
 const kaigoSoftware = computed(() => {
@@ -50,49 +48,46 @@ const notify = computed(() => {
 
 const formSchema = toTypedSchema(
   z.object({
-    companyName: z.string(messageRequired(FIELDS.companyName)).min(1, messageRequired(FIELDS.companyName)),
+    companyName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.companyName)).min(1),
     companyNameKana: z
-      .string(messageRequired(FIELDS.companyNameKana))
-      .min(1, messageRequired(FIELDS.companyNameKana))
+      .string(formatMessage(MESSAGES.ERR001, FIELDS.companyNameKana))
+      .min(1, formatMessage(MESSAGES.ERR001, FIELDS.companyNameKana))
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    companyPostCode: z.string(messageRequired(FIELDS.companyPostCode)).min(1, FIELDS.companyPostCode),
-    companyAddress: z.string(messageRequired(FIELDS.companyAddress)).min(1, FIELDS.companyAddress),
-    frontPicPosition: z.string(messageRequired(FIELDS.frontPicPosition)).min(1, FIELDS.frontPicPosition),
-    frontPicFamilyName: z.string(messageRequired(FIELDS.frontPicFamilyName)).min(1, FIELDS.frontPicFamilyName),
-    frontPicGivenName: z.string(messageRequired(FIELDS.frontPicGivenName)).min(1, FIELDS.frontPicGivenName),
+    companyPostCode: z.string(formatMessage(MESSAGES.ERR001, FIELDS.companyPostCode)).min(1),
+    companyAddress: z.string(formatMessage(MESSAGES.ERR001, FIELDS.companyAddress)).min(1),
+    frontPicPosition: z.string(formatMessage(MESSAGES.ERR001, FIELDS.email)).min(1),
+    frontPicFamilyName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicFamilyName)).min(1),
+    frontPicGivenName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicGivenName)).min(1),
     frontPicFamilyNameKana: z
-      .string(messageRequired(FIELDS.frontPicFamilyNameKana))
-      .min(1, FIELDS.frontPicFamilyNameKana)
+      .string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicFamilyNameKana))
+      .min(1)
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
     frontPicGivenNameKana: z
-      .string(messageRequired(FIELDS.frontPicGivenNameKana))
-      .min(1, FIELDS.frontPicGivenNameKana)
+      .string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicGivenNameKana))
+      .min(1)
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    picPosition: z.string(messageRequired(FIELDS.picPosition)).min(1, FIELDS.picPosition),
-    picFamilyName: z.string(messageRequired(FIELDS.picFamilyName)).min(1, FIELDS.picFamilyName),
-    picGivenName: z.string(messageRequired(FIELDS.picGivenName)).min(1, FIELDS.picGivenName),
+    picPosition: z.string(formatMessage(MESSAGES.ERR001, FIELDS.picPosition)).min(1),
+    picFamilyName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.picFamilyName)).min(1),
+    picGivenName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.picGivenName)).min(1),
     picFamilyNameKana: z
-      .string(messageRequired(FIELDS.picFamilyNameKana))
-      .min(1, FIELDS.picFamilyNameKana)
+      .string(formatMessage(MESSAGES.ERR001, FIELDS.picFamilyNameKana))
+      .min(1)
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
     picGivenNameKana: z
-      .string(messageRequired(FIELDS.picGivenNameKana))
-      .min(1, FIELDS.picGivenNameKana)
+      .string(formatMessage(MESSAGES.ERR001, FIELDS.picGivenNameKana))
+      .min(1)
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    phoneNumber: z.string(messageRequired(FIELDS.phoneNumber)).min(1, FIELDS.phoneNumber),
-    email: z.string(messageRequired(FIELDS.email)).min(1, FIELDS.email),
-    password: z.string(messageRequired(FIELDS.password)).min(8, { message: MESSAGES.ERR007 }),
-    confirmPassword: z.string(messageRequired(FIELDS.confirmPassword)).min(8, { message: MESSAGES.ERR007 }),
-    kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1, FIELDS.kaigoSoftware),
-    kaipokeCompanyId: z.string(messageRequired(FIELDS.kaipokeCompanyId)).min(1, FIELDS.kaipokeCompanyId),
-    kaipokeUserId: z.string(messageRequired(FIELDS.kaipokeUserId)).min(1, FIELDS.kaipokeUserId),
-    kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 }),
-    registerReason: z.string(messageRequired(FIELDS.registerReason)).min(1, FIELDS.registerReason).max(1000),
-    paymentMethod: z.string(messageRequired(FIELDS.paymentMethod)).min(1, FIELDS.paymentMethod),
-    terms: z.string(messageRequired(FIELDS.terms)).min(1, FIELDS.terms),
-    term: z.boolean({ message: MESSAGES.ERR003 }).refine((value) => value, {
-      message: MESSAGES.ERR003
-    })
+    phoneNumber: z.string(formatMessage(MESSAGES.ERR001, FIELDS.phoneNumber)).min(1),
+    email: z.string(formatMessage(MESSAGES.ERR001, FIELDS.email)).min(1),
+    password: z.string().min(8, { message: MESSAGES.ERR007 }).optional(),
+    confirmPassword: z.string().min(8, { message: MESSAGES.ERR007 }).optional(),
+    kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1),
+    kaipokeCompanyId: z.string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeCompanyId)).min(1),
+    kaipokeUserId: z.string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserId)).min(1),
+    kaipokeUserPassword: z
+      .string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserPassword))
+      .min(8, { message: MESSAGES.ERR007 }),
+    paymentMethod: z.string(formatMessage(MESSAGES.ERR001, FIELDS.paymentMethod)).min(1)
   })
 );
 
@@ -101,10 +96,48 @@ const {
   values: formValues,
   setFieldValue
 } = useForm({
-  validationSchema: formSchema,
-  initialValues: {
-    email: email?.toString() ?? ''
+  validationSchema: formSchema
+});
+
+const currentUser = computed(() => {
+  return authStore.currentUser;
+});
+
+const initDataUser = () => {
+  if (currentUser.value) {
+    const { email, company } = currentUser.value;
+    setFieldValue('companyName', company.companyName);
+    setFieldValue('companyNameKana', company.companyNameKana);
+    setFieldValue('companyPostCode', company.companyPostCode);
+    setFieldValue('companyAddress', company.companyAddress);
+    setFieldValue('phoneNumber', company.phoneNumber);
+    setFieldValue('picFamilyName', company.picFamilyName);
+    setFieldValue('picFamilyNameKana', company.picFamilyNameKana);
+    setFieldValue('picGivenName', company.picGivenName);
+    setFieldValue('picGivenNameKana', company.picGivenNameKana);
+    setFieldValue('picPosition', company.picPosition);
+    setFieldValue('frontPicFamilyName', company.frontPicFamilyName);
+    setFieldValue('frontPicFamilyNameKana', company.frontPicFamilyNameKana);
+    setFieldValue('frontPicGivenName', company.frontPicGivenName);
+    setFieldValue('frontPicGivenNameKana', company.frontPicGivenNameKana);
+    setFieldValue('frontPicPosition', company.frontPicPosition);
+    setFieldValue('kaipokeUserId', company.kaipokeUserId);
+    setFieldValue('kaipokeUserPassword', company.kaipokeUserPassword);
+    setFieldValue('kaipokeCompanyId', company.kaipokeCompanyId);
+    setFieldValue('kaigoSoftware', company.kaigoSoftware.toString());
+    setFieldValue('paymentMethod', company.paymentMethod);
+    setFieldValue('email', email);
+
+    initialFormValues.value = { ...formValues };
   }
+};
+
+onMounted(() => {
+  initDataUser();
+});
+
+watch(currentUser, () => {
+  initDataUser();
 });
 
 const togglePasswordVisibility = () => {
@@ -157,6 +190,29 @@ watch([confirmPassword, password], () => {
   isMatchPassword.value = password.value === confirmPassword.value;
 });
 
+const isDialogOpen = ref(false);
+
+const closeDialog = () => {
+  isDialogOpen.value = false;
+};
+
+watch(
+  formValues,
+  () => {
+    changeFields.value = [];
+
+    Object.keys(formValues).forEach((field) => {
+      if ((formValues as any)[field] !== initialFormValues.value[field] && field !== 'confirmPassword') {
+        const japaneseFields = FIELDS[field as keyof typeof FIELDS];
+        changeFields.value.push(japaneseFields);
+      }
+    });
+  },
+  {
+    deep: true
+  }
+);
+
 const onSubmit = handleSubmit(
   async (values) => {
     if (!isMatchPassword.value) {
@@ -167,23 +223,7 @@ const onSubmit = handleSubmit(
       return;
     }
 
-    isLoadingRegister.value = true;
-
-    const { term, ...rest } = values;
-
-    const body = {
-      ...rest,
-      kaigoSoftware: parseInt(values.kaigoSoftware),
-      verifyToken: token?.toString() ?? ''
-    };
-
-    await company.registerNewUser(body);
-
-    if (!notify.value?.message) {
-      router.push('/register/success');
-    }
-
-    isLoadingRegister.value = false;
+    isDialogOpen.value = true;
   },
   ({ errors }) => {
     const message = Object.values(errors)[0];
@@ -193,23 +233,58 @@ const onSubmit = handleSubmit(
     });
   }
 );
+
+const updateUserInformation = async () => {
+  const updatedFormValues = { ...formValues };
+  const newPassword = updatedFormValues.password;
+
+  delete updatedFormValues.confirmPassword;
+  delete updatedFormValues.password;
+
+  const body = {
+    ...updatedFormValues,
+    kaigoSoftware: Number(updatedFormValues.kaigoSoftware),
+    ...(newPassword && { newPassword })
+  };
+
+  await companyStore.updateCompanyInformation(body as CompanyUpdateBody);
+
+  isDialogOpen.value = false;
+
+  permissionService.initPermissions();
+
+  system.setNotify({
+    message: '更新に成功しました',
+    type: TYPE_MESSAGE.success
+  });
+};
+
+const resetForm = () => {
+  initDataUser();
+};
 </script>
 
 <template>
-  <div class="login-page flex flex-col items-center justify-center !h-[100vh] overflow-hidden">
-    <div class="logo">LOGO</div>
-    <div class="form flex flex-col gap-[5px] w-[770px] bg-white px-12 pt-4 pb-8 h-[90%]">
-      <ShareErrorMessage />
-      <h1 class="text-sm font-bold mb-[20px]">会員登録</h1>
-
-      <form
-        class="register flex flex-col gap-[25px]"
-        @submit="onSubmit"
-      >
-        <div class="form flex flex-col gap-[25px] pb-[20px] overflow-y-auto scroll">
+  <div class="login-page flex flex-col !h-[100vh] overflow-hidden">
+    <div class="flex justify-between mt-[15px]">
+      <ShareErrorMessage class="pl-[64px]" />
+    </div>
+    <MypageModalConfirmUpdateUser
+      :isOpen="isDialogOpen"
+      :fields="changeFields"
+      @close="closeDialog"
+      @update="updateUserInformation"
+    />
+    <form
+      class="register flex flex-col gap-[25px] pl-[64px] pt-[10px] pb-[15px]"
+      @submit="onSubmit"
+    >
+      <div class="form overflow-y-auto scroll">
+        <div class="flex flex-col w-[900px] gap-[25px] pb-[20px]">
           <ShareRequireLabel
             label="必須項目です"
             position="left"
+            class="mb-[10px]"
           />
           <div class="company flex flex-col gap-5">
             <FormField
@@ -221,7 +296,7 @@ const onSubmit = handleSubmit(
                   label="法人名"
                   class="w-[145px]"
                 />
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
+                <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Input
                       type="text"
@@ -244,7 +319,7 @@ const onSubmit = handleSubmit(
                   label="フリガナ"
                   class="w-[145px]"
                 />
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
+                <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Input
                       type="text"
@@ -307,7 +382,7 @@ const onSubmit = handleSubmit(
                   label="会社所在地"
                   class="w-[145px]"
                 />
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
+                <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Input
                       type="text"
@@ -330,7 +405,7 @@ const onSubmit = handleSubmit(
                   label="代表者"
                   class="w-[145px] flex pt-[14px] items-baseline"
                 />
-                <div class="flex flex-col gap-[15px] w-[71%]">
+                <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
                     <div class="pic-position flex gap-5 items-center w-[90%]">
                       <span class="label w-[35px]">役職</span>
@@ -448,7 +523,7 @@ const onSubmit = handleSubmit(
                   label="ご担当者"
                   class="w-[145px] flex pt-[14px] items-baseline"
                 />
-                <div class="flex flex-col gap-[15px] w-[71%]">
+                <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
                     <div class="pic-position flex gap-5 items-center w-[90%]">
                       <span class="label w-[35px]">役職</span>
@@ -571,7 +646,7 @@ const onSubmit = handleSubmit(
                   label="電話番号"
                   class="w-[145px]"
                 />
-                <div class="relative w-[40%] !m-[0px] !mr-[25px]">
+                <div class="relative w-[40%] !m-[0px]">
                   <FormControl>
                     <Input
                       type="text"
@@ -594,13 +669,11 @@ const onSubmit = handleSubmit(
                   label="メールアドレス"
                   class="w-[145px]"
                 />
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
+                <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Input
-                      disabled
                       type="text"
                       v-bind="componentField"
-                      class="bg-[#ccc]"
                       :class="{
                         'border-red-500': errors.length
                       }"
@@ -617,14 +690,14 @@ const onSubmit = handleSubmit(
               name="password"
             >
               <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="パスワード"
-                  class="w-[145px]"
-                />
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
+                <div class="w-[145px]">
+                  <span>パスワード</span>
+                </div>
+                <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <div class="relative">
                       <Input
+                        v-model="password"
                         :type="passwordVisible ? 'text' : 'password'"
                         v-bind="componentField"
                         placeholder="英小文字、数字を含む、半角英数字８文字以上"
@@ -632,7 +705,6 @@ const onSubmit = handleSubmit(
                           'border-red-500': errors.length
                         }"
                         class="placeholder:text-[10px]"
-                        v-model="password"
                       />
                       <button
                         type="button"
@@ -664,9 +736,8 @@ const onSubmit = handleSubmit(
                     <span class="text-xs">パスワード</span>
                     <span>（確認用）</span>
                   </div>
-                  <span class="text-red-500">※</span>
                 </div>
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
+                <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <div class="relative">
                       <Input
@@ -713,7 +784,7 @@ const onSubmit = handleSubmit(
                   label="介護ソフト選択"
                   class="w-[145px]"
                 />
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
+                <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Select v-bind="componentField">
                       <SelectTrigger
@@ -721,7 +792,7 @@ const onSubmit = handleSubmit(
                           'border-red-500': errors.length && !componentField.modelValue
                         }"
                       >
-                        <SelectValue placeholder="" />
+                        <SelectValue placeholder="Select an option" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem
@@ -747,7 +818,7 @@ const onSubmit = handleSubmit(
                   label="カイポケ法人ID"
                   class="w-[145px]"
                 />
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
+                <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Input
                       type="text"
@@ -770,7 +841,7 @@ const onSubmit = handleSubmit(
                   label="カイポケユーザーID"
                   class="w-[145px]"
                 />
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
+                <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Input
                       type="text"
@@ -793,7 +864,7 @@ const onSubmit = handleSubmit(
                   label="カイポケパスワード"
                   class="w-[145px]"
                 />
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
+                <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <div class="relative">
                       <Input
@@ -827,30 +898,6 @@ const onSubmit = handleSubmit(
 
             <FormField
               v-slot="{ componentField, errors }"
-              name="registerReason"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="ご登録の切っ掛け"
-                  class="w-[145px]"
-                />
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
-                  <FormControl>
-                    <Textarea
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length && !componentField.modelValue
-                      }"
-                      placeholder="1000文字以内"
-                      class="reason-register relative resize-none"
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
-
-            <FormField
-              v-slot="{ componentField, errors }"
               name="paymentMethod"
             >
               <FormItem class="flex gap-5">
@@ -858,7 +905,7 @@ const onSubmit = handleSubmit(
                   label="決済方法"
                   class="w-[145px]"
                 />
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
+                <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Input
                       type="text"
@@ -872,86 +919,38 @@ const onSubmit = handleSubmit(
               </FormItem>
             </FormField>
           </div>
-
-          <div class="space"></div>
-
-          <div class="terms contact flex flex-col">
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="terms"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="利用規約"
-                  class="w-[145px]"
-                />
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
-                  <FormControl>
-                    <Textarea
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length && !componentField.modelValue
-                      }"
-                      class="resize-none h-[100px]"
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
-            <FormField
-              v-slot="{ value, handleChange, errors }"
-              type="checkbox"
-              name="term"
-            >
-              <FormItem class="flex gap-5">
-                <div class="w-[145px]"></div>
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
-                  <div class="flex gap-5 items-center !m-[0px] pt-[10px]">
-                    <span class="label">利用規約確認</span>
-                    <span class="text-red-500">※</span>
-                    <Checkbox
-                      :checked="value"
-                      @update:checked="handleChange"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
-                  </div>
-                </div>
-              </FormItem>
-            </FormField>
-          </div>
         </div>
+      </div>
 
-        <div class="flex gap-3 flex-col">
-          <Button
-            type="submit"
-            class="flex self-center"
-          >
-            <LoaderCircle
-              v-if="isLoadingRegister"
-              class="w-4 h-4 mr-2 animate-spin"
-            />
-            アカウントを登録する
-          </Button>
+      <div class="flex gap-3 flex-col">
+        <Button
+          :disabled="isDisableButton"
+          type="submit"
+          class="flex self-center"
+        >
+          <LoaderCircle
+            v-if="isLoadingRegister"
+            class="w-4 h-4 mr-2 animate-spin"
+          />
+          アカウントを登録する
+        </Button>
 
-          <Button
-            variant="cancel_btn"
-            type="button"
-            class="flex self-center min-w-[188px]"
-            @click="$router.push('/login')"
-          >
-            キャンセル
-          </Button>
-        </div>
-      </form>
-    </div>
+        <Button
+          variant="cancel_btn"
+          type="button"
+          class="flex self-center min-w-[188px]"
+          @click="resetForm"
+        >
+          キャンセル
+        </Button>
+      </div>
+    </form>
   </div>
 </template>
 <style lang="scss" scoped>
 .register {
-  min-height: calc(100vh - 330px);
-  > .form > .space {
+  max-height: calc(100vh - 130px);
+  > .form > div > .space {
     border: 0.5px solid #c7c7c7;
   }
 

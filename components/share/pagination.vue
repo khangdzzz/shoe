@@ -6,26 +6,18 @@ const props = defineProps({
   length: {
     type: Number,
     default: 100
-  },
-  pageSize: {
-    type: Number,
-    default: 30
-  },
-  pageIndex: {
-    type: Number,
-    default: 1
   }
 });
 
-const { length, pageSize, pageIndex } = toRefs(props);
+const { length } = toRefs(props);
 
-const pageSizeValue = ref(pageSize.value.toString());
-const currentPageIndex = ref(pageIndex.value);
+const pageSizeValue = ref('30');
+const currentPageIndex = ref(1);
 const paginationSizes = [30, 100, 200];
 const isDropdownOpen = ref(false);
 const dropdownRef = ref<HTMLDivElement | null>(null);
 
-const emit = defineEmits(['update']);
+const emit = defineEmits(['update:pagination']);
 
 const totalPages = computed(() => Math.ceil(length.value / parseInt(pageSizeValue.value)));
 
@@ -44,20 +36,20 @@ const selectPageSize = (size: number) => {
   pageSizeValue.value = size.toString();
   currentPageIndex.value = 1;
   isDropdownOpen.value = false;
-  emit('update', { pageIndex: currentPageIndex.value, pageSize: size });
+  emit('update:pagination', { pageIndex: currentPageIndex.value, pageSize: size });
 };
 
 const goToPreviousPage = () => {
   if (currentPageIndex.value > 1) {
     currentPageIndex.value--;
-    emit('update', { pageIndex: currentPageIndex.value, pageSize: parseInt(pageSizeValue.value) });
+    emit('update:pagination', { pageIndex: currentPageIndex.value, pageSize: parseInt(pageSizeValue.value) });
   }
 };
 
 const goToNextPage = () => {
   if (currentPageIndex.value < totalPages.value) {
     currentPageIndex.value++;
-    emit('update', { pageIndex: currentPageIndex.value, pageSize: parseInt(pageSizeValue.value) });
+    emit('update:pagination', { pageIndex: currentPageIndex.value, pageSize: parseInt(pageSizeValue.value) });
   }
 };
 

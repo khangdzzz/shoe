@@ -1,9 +1,27 @@
 <script lang="ts" setup>
 import { Search } from 'lucide-vue-next';
+
+const emit = defineEmits(['update:changeDate', 'update:changeStatus', 'searchCompanyName']);
+
+const targetYearMonth = ref('');
+const status = ref<number[]>([]);
+const companyName = ref('');
+
+const onChangeTargetYearMonth = (date: string) => {
+  targetYearMonth.value = date;
+  emit('update:changeDate', targetYearMonth.value);
+};
+
+const handleCheckboxChange = (value: number, checked: boolean) => {
+  if (checked) status.value.push(value);
+  else status.value = status.value.filter((item) => item !== value);
+
+  emit('update:changeStatus', status.value);
+};
 </script>
 
 <template>
-  <div class="search flex flex-col gap-8 min-h-[100px] !px-[25px] max-lg:!px-[10px]">
+  <div class="search flex flex-col gap-8 min-h-[100px]">
     <div class="company flex max-sm:flex-col gap-5">
       <div class="relative items-center font-medium lg:w-[450px]">
         <Input
@@ -11,6 +29,8 @@ import { Search } from 'lucide-vue-next';
           type="text"
           placeholder="Search..."
           class="pl-10 w-[70%]"
+          v-model="companyName"
+          @keydown.enter="emit('searchCompanyName', companyName)"
         />
         <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
           <Search class="w-4 h-4" />
@@ -19,11 +39,12 @@ import { Search } from 'lucide-vue-next';
       <div class="active flex gap-5">
         <div class="flex items-center gap-2">
           <Checkbox
-            id="terms"
+            id="normal"
             class="bg-white"
+            @update:checked="handleCheckboxChange(1, $event)"
           />
           <span
-            for="terms"
+            for="suspension"
             class="flex text-xs flex-shrink-0"
           >
             利用中
@@ -33,24 +54,26 @@ import { Search } from 'lucide-vue-next';
           <Checkbox
             id="terms"
             class="bg-white"
+            @update:checked="handleCheckboxChange(2, $event)"
           />
           <span
             for="terms"
             class="flex text-xs flex-shrink-0"
           >
-            退会済
+            停止中
           </span>
         </div>
         <div class="flex items-center gap-2">
           <Checkbox
-            id="terms"
+            id="temporary"
             class="bg-white"
+            @update:checked="handleCheckboxChange(3, $event)"
           />
           <span
             for="terms"
             class="flex text-xs flex-shrink-0"
           >
-            和暦表示
+            退会済み
           </span>
         </div>
       </div>
@@ -72,7 +95,7 @@ import { Search } from 'lucide-vue-next';
         </Button>
       </div>
       <div class="flex gap-5">
-        <CustomerSearchDate />
+        <CustomerSearchDate @update:selectedDate="onChangeTargetYearMonth" />
         <Button
           variant="export"
           left-icon="search"
@@ -86,6 +109,6 @@ import { Search } from 'lucide-vue-next';
 
 <style lang="scss" scoped>
 .search {
-  padding: 10px 30px;
+  padding: 10px 0px;
 }
 </style>

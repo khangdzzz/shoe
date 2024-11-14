@@ -105,8 +105,11 @@ export const useApi = (baseUrl?: string) => {
     });
   };
 
-  const del = async (endpoint: string) => {
-    return await fetchData(endpoint, { method: 'DELETE' });
+  const del = async (endpoint: string, payload: any) => {
+    return await fetchData(endpoint, {
+      method: 'DELETE',
+      body: JSON.stringify(payload)
+    });
   };
 
   return { get, post, put, del };

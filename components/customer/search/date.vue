@@ -8,6 +8,8 @@ interface DatePicker {
   month: number;
 }
 
+const emit = defineEmits(['update:selectedDate']);
+
 const getCurrentMonthAndYear = (): DatePicker => {
   const date = new Date();
   const year = date.getFullYear();
@@ -22,6 +24,8 @@ const targetYearMonth = ref('');
 const updateDateLabel = () => {
   const { year, month } = currentDate.value;
   targetYearMonth.value = `${year}/${month.toString().padStart(2, '0')}`;
+
+  emit('update:selectedDate', targetYearMonth.value);
 };
 
 const adjustMonth = (delta: number) => {
