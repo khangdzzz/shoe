@@ -52,6 +52,7 @@ export interface Company extends Address, Person, FrontPerson, KaipokeDetails, R
   createdAt: string;
   updatedAt: string;
   status: number;
+  email?: string;
 }
 
 export interface CompanyUpdateBody extends Address, Person, FrontPerson, KaipokeDetails, Credentials {
@@ -84,5 +85,6 @@ export interface BulkExportReport {
     id: number;
     isExecuteReport: number;
     isExecutePlan: number;
-  }[]
+  }[];
 }
+

@@ -11,7 +11,8 @@ interface Breadcrumbs {
 enum BreadcrumbKey {
   USER_LIST = 'user-list',
   MY_PAGE = 'mypage',
-  CUSTOMER = 'customer'
+  CUSTOMER = 'customer',
+  REGISTER_MEMBER = 'register-member'
 }
 
 export const BREADCRUMBS: Breadcrumbs = {
@@ -47,6 +48,18 @@ export const BREADCRUMBS: Breadcrumbs = {
     },
     {
       label: 'プロフィール設定',
+      href: '',
+      isLast: true
+    }
+  ],
+  [BreadcrumbKey.REGISTER_MEMBER]: [
+    {
+      label: '顧客管理',
+      href: '',
+      isLast: false
+    },
+    {
+      label: '顧客詳細',
       href: '',
       isLast: true
     }

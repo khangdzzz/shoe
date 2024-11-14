@@ -11,3 +11,5 @@ export const formatMessage = (message: string, filedName: string) => {
     message
   };
 };
+
+export const messageRequired = (field: string) => formatMessage(MESSAGES.ERR001, field);

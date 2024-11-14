@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { Search, ArrowDownUp, ArrowUpDown } from 'lucide-vue-next';
 import { useToast } from '~/components/ui/toast/use-toast';
+import type { Header } from '~/models/common';
 import type { CompanyUserStatus } from '~/models/company';
 
 const props = defineProps({
@@ -15,13 +16,6 @@ const props = defineProps({
 const VALUE_STATUS_BULK_EXPORT = 99;
 
 const { officeId, targetYearMonth } = toRefs(props);
-
-interface Header {
-  label: string;
-  width: string;
-  isSort: boolean;
-  key: string;
-}
 
 const companyStore = useCompanyStore();
 const system = useSystemStore();
