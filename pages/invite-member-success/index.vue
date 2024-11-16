@@ -12,8 +12,8 @@ definePageMeta({
       <h1 class="text-sm font-bold">新規会員登録メール送信完了</h1>
 
       <div class="flex flex-col gap-2">
-        <p class="text-xs">メール内のURLから会員登録を完了してください。 メールが届かない</p>
-        <p class="text-xs">場合は、メールアドレスが正しいかご確認ください。</p>
+        <p class="text-xs">メール内のURLから会員登録を完了してください。</p>
+        <p class="text-xs">メールが届かない場合は、メールアドレスが正しいかご確認ください。</p>
       </div>
 
       <Button

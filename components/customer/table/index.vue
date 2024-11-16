@@ -5,7 +5,7 @@ import { useToast } from '~/components/ui/toast/use-toast';
 
 const companyAdminStore = useCompanyAdminStore();
 const system = useSystemStore();
-const router = useRouter();
+const { redirectPage } = useRedirectPage();
 const { toast } = useToast();
 
 const emit = defineEmits(['update:pagination', 'update:sort', 'getCompanies']);
@@ -123,7 +123,7 @@ const updateSort = (header: Header) => {
 };
 
 const registerMember = () => {
-  router.push('/customer/register-member');
+  redirectPage('/customer/register-member');
 };
 
 const onDelete = async () => {
