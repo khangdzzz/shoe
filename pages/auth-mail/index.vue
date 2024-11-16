@@ -9,7 +9,7 @@ import * as z from 'zod';
 
 const authStore = useAuthStore();
 const system = useSystemStore();
-const router = useRouter();
+const { redirectPage } = useRedirectPage();
 
 const { notify } = storeToRefs(system);
 const isLoading = ref(false);
@@ -43,7 +43,7 @@ const onSubmit = handleSubmit(async (values) => {
   await authStore.verifyEmail(values.email);
 
   if (!notify.value?.message) {
-    router.push('/invite-member-success');
+    redirectPage('/invite-member-success');
   }
 
   isLoading.value = false;
@@ -96,7 +96,7 @@ const onSubmit = handleSubmit(async (values) => {
         <Button
           class="w-[132px]"
           variant="cancel_btn"
-          @click="$router.push('/login')"
+          @click="redirectPage('/login')"
         >
           キャンセル
         </Button>

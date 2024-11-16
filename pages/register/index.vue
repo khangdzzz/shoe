@@ -10,11 +10,11 @@ import * as z from 'zod';
 import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
 
-const router = useRouter();
 const route = useRoute();
 const dataInit = useFetchDataInit();
 const system = useSystemStore();
 const company = useCompanyStore();
+const { redirectPage } = useRedirectPage();
 
 const email = route.query.email;
 const token = route.query.token;
@@ -36,7 +36,7 @@ const katakanaRegex = /^[\u30A0-\u30FF]+$/;
 
 onMounted(() => {
   if (!email || !token) {
-    router.push('/login');
+    redirectPage('/login');
   }
 });
 
@@ -180,7 +180,7 @@ const onSubmit = handleSubmit(
     await company.registerNewUser(body);
 
     if (!notify.value?.message) {
-      router.push('/register/success');
+      redirectPage('/register/success');
     }
 
     isLoadingRegister.value = false;
@@ -939,7 +939,7 @@ const onSubmit = handleSubmit(
             variant="cancel_btn"
             type="button"
             class="flex self-center min-w-[188px]"
-            @click="$router.push('/login')"
+            @click="redirectPage('/login')"
           >
             キャンセル
           </Button>

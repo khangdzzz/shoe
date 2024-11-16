@@ -8,9 +8,9 @@ import * as z from 'zod';
 import { Eye, EyeOff, LoaderCircle } from 'lucide-vue-next';
 
 const route = useRoute();
-const router = useRouter();
 const authStore = useAuthStore();
 const system = useSystemStore();
+const { redirectPage } = useRedirectPage();
 
 const token = route.query.token;
 const isLoading = ref(false);
@@ -21,7 +21,7 @@ const notify = computed(() => {
 
 onMounted(() => {
   if (!token) {
-    router.push('/login');
+    redirectPage('/login');
   }
 });
 
@@ -61,7 +61,7 @@ const onSubmit = handleSubmit(async (values) => {
   await authStore.resetPassword(password, token as string);
 
   if (!notify.value?.message) {
-    router.push('/confirm-email-change-password');
+    redirectPage('/confirm-email-change-password');
   }
 
   isLoading.value = false;
@@ -74,7 +74,7 @@ const onSubmit = handleSubmit(async (values) => {
 
     <div class="flex flex-col min-w-[500px] bg-white px-12 py-8">
       <ShareErrorMessage />
-      <h1 class="text-sm font-bold mb-[30px]">メール送信完了</h1>
+      <h1 class="text-sm font-bold mb-[30px]">パスワード設定</h1>
       <div class="flex flex-col gap-2 mb-[30px]">
         <p class="text-xs">パスワードは英小文字、数字を含む、半角英数字８文字以上を設定してください。</p>
       </div>
@@ -159,7 +159,7 @@ const onSubmit = handleSubmit(async (values) => {
         <Button
           class="w-[132px]"
           variant="cancel_btn"
-          @click="$router.push('/login')"
+          @click="redirectPage('/login')"
         >
           キャンセル
         </Button>

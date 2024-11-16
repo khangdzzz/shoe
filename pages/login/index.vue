@@ -13,7 +13,7 @@ const authStore = useAuthStore();
 const system = useSystemStore();
 const commonService = useCommon();
 const permissionService = usePermission();
-const router = useRouter();
+const { redirectPage } = useRedirectPage();
 
 const { notify } = storeToRefs(system);
 
@@ -60,9 +60,9 @@ const onSubmit = handleSubmit(async (values) => {
 
   if (authStore.currentUser) {
     if (authStore.isAdmin) {
-      router.push('/customer');
+      redirectPage('/customer');
     } else {
-      router.push('/user-list');
+      redirectPage('/user-list');
     }
   }
 });
