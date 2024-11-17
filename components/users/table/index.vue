@@ -28,9 +28,8 @@ const isDialogOpen = ref(false);
 const planSwitchState = ref(false);
 const reportSwitchState = ref(false);
 const isCalenderJapanese = ref(false);
+const isDisableExport = ref(true);
 
-const excludeReportStatus = ref<number[]>([]);
-const excludePlanStatus = ref<number[]>([]);
 const usersNeedCreateReport = ref<CompanyUserStatus[]>([]);
 
 const headers: Header[] = [
@@ -69,12 +68,20 @@ watch(users, () => {
   companyUsers.value = handleDataCompanyUserStatus();
 });
 
-watch([sort, characterSelected, userNameKanjiSearch, reportSwitchState, planSwitchState], () => {
+watch([sort, characterSelected, userNameKanjiSearch], () => {
   companyUsers.value = handleDataCompanyUserStatus();
 });
 
-const handleDataCompanyUserStatus = () => {
-  let filteredUsers = [...users.value];
+watch(companyUsers, (newUsers) => {
+  const isBulkExport = newUsers.some(
+    (user) => user.reportStatus === VALUE_STATUS_BULK_EXPORT || user.planStatus === VALUE_STATUS_BULK_EXPORT
+  );
+
+  isDisableExport.value = !isBulkExport;
+});
+
+const handleDataCompanyUserStatus = (companyUsers?: CompanyUserStatus[]) => {
+  let filteredUsers = companyUsers ?? [...users.value];
 
   if (sort.value) filteredUsers = handleSortUsers(filteredUsers);
 
@@ -82,17 +89,31 @@ const handleDataCompanyUserStatus = () => {
 
   if (userNameKanjiSearch.value) filteredUsers = filterByKanji(filteredUsers);
 
-  filteredUsers = reportSwitchState.value
-    ? updateUsersReportStatus(filteredUsers)
-    : resetExcludeStatus(filteredUsers, excludeReportStatus);
-
-  filteredUsers = planSwitchState.value
-    ? updateUsersPlanStatus(filteredUsers)
-    : resetExcludeStatus(filteredUsers, excludePlanStatus);
-
-  console.log(excludePlanStatus.value, excludeReportStatus.value);
-
   return filteredUsers;
+};
+
+const onChangeReportSwitch = () => {
+  const reportStatus = !reportSwitchState.value;
+
+  if (!reportStatus) {
+    companyUsers.value = companyUsers.value.map((user) => ({
+      ...user,
+      reportStatus: users.value.find((u) => u.id === user.id)?.reportStatus ?? 0
+    }));
+    companyUsers.value = handleDataCompanyUserStatus(companyUsers.value);
+  } else companyUsers.value = updateUsersReportStatus(companyUsers.value);
+};
+
+const onChangePlanSwitch = () => {
+  const planStatus = !planSwitchState.value;
+
+  if (!planStatus) {
+    companyUsers.value = companyUsers.value.map((user) => ({
+      ...user,
+      planStatus: users.value.find((u) => u.id === user.id)?.planStatus ?? 0
+    }));
+    companyUsers.value = handleDataCompanyUserStatus(companyUsers.value);
+  } else companyUsers.value = updateUsersPlanStatus(companyUsers.value);
 };
 
 const filterByCharacter = (users: CompanyUserStatus[]) =>
@@ -102,24 +123,15 @@ const filterByKanji = (users: CompanyUserStatus[]) =>
   users.filter((user) => user.nameKanji.includes(userNameKanjiSearch.value));
 
 const updateUsersReportStatus = (users: CompanyUserStatus[]) => {
-  return users.map((user) =>
-    excludeReportStatus.value.includes(user.id)
-      ? user
-      : { ...user, reportStatus: user.reportStatus === 0 ? VALUE_STATUS_BULK_EXPORT : user.reportStatus }
-  );
+  return users.map((user) => {
+    return { ...user, reportStatus: user.reportStatus === 0 ? VALUE_STATUS_BULK_EXPORT : user.reportStatus };
+  });
 };
 
 const updateUsersPlanStatus = (users: CompanyUserStatus[]) => {
-  return users.map((user) =>
-    excludePlanStatus.value.includes(user.id)
-      ? user
-      : { ...user, planStatus: user.planStatus === 0 ? VALUE_STATUS_BULK_EXPORT : user.planStatus }
-  );
-};
-
-const resetExcludeStatus = (users: CompanyUserStatus[], excludeStatusList: Ref<number[]>) => {
-  excludeStatusList.value = [];
-  return users;
+  return users.map((user) => {
+    return { ...user, planStatus: user.planStatus === 0 ? VALUE_STATUS_BULK_EXPORT : user.planStatus };
+  });
 };
 
 const getStatus = (amount: number | null) => {
@@ -211,33 +223,23 @@ const handleSortUsers = (users: any[]) => {
 };
 
 const updateReportStatus = (user: CompanyUserStatus) => {
-  if (user.reportStatus === VALUE_STATUS_BULK_EXPORT) {
-    companyUsers.value = companyUsers.value.map(updateUserReportStatus(user.id, 0));
-    excludeReportStatus.value.push(user.id);
-    return;
-  } else if (user.reportStatus === 0 && reportSwitchState.value) {
-    companyUsers.value = companyUsers.value.map(updateUserReportStatus(user.id, VALUE_STATUS_BULK_EXPORT));
-    excludeReportStatus.value = excludeReportStatus.value.filter((id) => id !== user.id);
-    return;
-  } else if (user.reportStatus !== 0) return;
+  const reportStatus = user.reportStatus;
 
-  const userExport = { ...user, reportStatus: 0 };
-  openDialogForExport(userExport, ACTION_EXPORT.REPORT);
+  if (reportStatus != 0 && reportStatus !== 99) return;
+
+  const newStatus = reportStatus === VALUE_STATUS_BULK_EXPORT ? 0 : VALUE_STATUS_BULK_EXPORT;
+
+  companyUsers.value = companyUsers.value.map(updateUserReportStatus(user.id, newStatus));
 };
 
 const updatePlanStatus = (user: CompanyUserStatus) => {
-  if (user.planStatus === VALUE_STATUS_BULK_EXPORT) {
-    companyUsers.value = companyUsers.value.map(updateUserPlanStatus(user.id, 0));
-    excludePlanStatus.value.push(user.id);
-    return;
-  } else if (user.planStatus === 0 && planSwitchState.value) {
-    companyUsers.value = companyUsers.value.map(updateUserPlanStatus(user.id, VALUE_STATUS_BULK_EXPORT));
-    excludePlanStatus.value = excludePlanStatus.value.filter((id) => id !== user.id);
-    return;
-  } else if (user.planStatus !== 0) return;
+  const planStatus = user.planStatus;
 
-  const userExport = { ...user, planStatus: 0 };
-  openDialogForExport(userExport, ACTION_EXPORT.PLAN);
+  if (planStatus != 0 && planStatus !== 99) return;
+
+  const newStatus = planStatus === VALUE_STATUS_BULK_EXPORT ? 0 : VALUE_STATUS_BULK_EXPORT;
+
+  companyUsers.value = companyUsers.value.map(updateUserPlanStatus(user.id, newStatus));
 };
 
 const updateUserReportStatus = (id: number, status: number) => (user: CompanyUserStatus) =>
@@ -249,15 +251,6 @@ const updateUserPlanStatus = (id: number, status: number) => (user: CompanyUserS
 const openDialogCreateReport = () => {
   usersNeedCreateReport.value = companyUsers.value.filter((user) => user.reportStatus === 99 || user.planStatus === 99);
 
-  if (reportSwitchState.value && planSwitchState.value) actionExport.value = ACTION_EXPORT.PLAN_AND_REPORT;
-  else if (reportSwitchState.value) actionExport.value = ACTION_EXPORT.REPORT;
-  else if (planSwitchState.value) actionExport.value = ACTION_EXPORT.PLAN;
-
-  isDialogOpen.value = true;
-};
-const openDialogForExport = (user: CompanyUserStatus, action: string) => {
-  usersNeedCreateReport.value = [user];
-  actionExport.value = action;
   isDialogOpen.value = true;
 };
 
@@ -266,16 +259,8 @@ const handleExportCompanyUser = async () => {
 
   const users = usersNeedCreateReport.value.map((user) => {
     const { id } = user;
-    const isExecuteReport =
-      actionExport.value === ACTION_EXPORT.REPORT ||
-      (actionExport.value === ACTION_EXPORT.PLAN_AND_REPORT && user.reportStatus === 99)
-        ? 1
-        : 0;
-    const isExecutePlan =
-      actionExport.value === ACTION_EXPORT.PLAN ||
-      (actionExport.value === ACTION_EXPORT.PLAN_AND_REPORT && user.planStatus === 99)
-        ? 1
-        : 0;
+    const isExecuteReport = user.reportStatus === 99 ? 1 : 0;
+    const isExecutePlan = user.planStatus === 99 ? 1 : 0;
 
     return { id, isExecuteReport, isExecutePlan };
   });
@@ -347,11 +332,17 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
       </div>
       <div class="toggle flex gap-5">
         <div class="flex items-center space-x-2">
-          <Switch v-model:checked="reportSwitchState" />
+          <Switch
+            v-model:checked="reportSwitchState"
+            @click="onChangeReportSwitch"
+          />
           <span>一括</span>
         </div>
         <div class="flex items-center space-x-2">
-          <Switch v-model:checked="planSwitchState" />
+          <Switch
+            v-model:checked="planSwitchState"
+            @click="onChangePlanSwitch"
+          />
           <span>一括</span>
         </div>
       </div>
@@ -468,7 +459,7 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
 
       <div class="flex justify-end mr-[35px]">
         <Button
-          :disabled="!planSwitchState && !reportSwitchState"
+          :disabled="isDisableExport"
           class="flex justify-end mt-[30px]"
           @click="openDialogCreateReport"
         >
@@ -477,7 +468,6 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
       </div>
     </div>
     <UsersModalConfirmCreateReport
-      :action="actionExport"
       :isOpen="isDialogOpen"
       :users="usersNeedCreateReport"
       @close="() => (isDialogOpen = false)"
