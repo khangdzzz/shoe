@@ -5,6 +5,7 @@ const isOpen = ref(true);
 
 const authStore = useAuthStore();
 const route = useRoute();
+const { redirectPage } = useRedirectPage();
 
 const currentRoute = computed(() => route.path);
 const isAdmin = computed(() => authStore.isAdmin);
@@ -17,6 +18,11 @@ const checkWindowWidth = () => {
   isOpen.value = window.innerWidth > 768;
 };
 
+const logout = () => {
+  localStorage.clear();
+  redirectPage('/login');
+};
+
 onMounted(() => {
   checkWindowWidth();
   window.addEventListener('resize', checkWindowWidth);
@@ -26,75 +32,88 @@ onMounted(() => {
 <template>
   <div class="flex h-screen bg-white">
     <aside
-      class="transition-all duration-300 overflow-hidden"
+      class="transition-all duration-300 overflow-hidden flex flex-col justify-between"
       :class="isOpen ? 'sidebar-open' : 'sidebar-closed'"
     >
-      <div
-        class="logo gap-4 flex items-center py-[10px]"
-        :class="isOpen ? 'justify-between px-2' : 'justify-center'"
-      >
-        <a
-          href="/"
-          class="logo"
-          v-if="isOpen"
-        >
-          <img
-            src="~/assets/images/logo.jpg"
-            class="h-[46px] w-auto"
-          />
-        </a>
+      <div>
         <div
-          @click="toggleSidebar"
-          class="cursor-pointer"
+          class="logo gap-4 flex items-center py-[10px]"
+          :class="isOpen ? 'justify-between px-2' : 'justify-center'"
         >
-          <ArrowLeftToLine v-if="isOpen" />
-          <Menu v-else />
+          <a
+            href="/"
+            class="logo"
+            v-if="isOpen"
+          >
+            <img
+              src="~/assets/images/logo.jpg"
+              class="h-[46px] w-auto"
+            />
+          </a>
+          <div
+            @click="toggleSidebar"
+            class="cursor-pointer"
+          >
+            <ArrowLeftToLine v-if="isOpen" />
+            <Menu v-else />
+          </div>
+        </div>
+
+        <div class="menu flex flex-col cursor-pointer">
+          <nav>
+            <div
+              v-show="isOpen && !isAdmin"
+              class="w-full flex items-center h-[46px] px-2 hover:bg-gray-100 text-base font-bold"
+            >
+              <NuxtLink
+                to="/user-list"
+                class="w-full h-full flex items-center"
+                >利用者選択</NuxtLink
+              >
+            </div>
+          </nav>
+          <span
+            class="space"
+            v-show="isOpen && !isAdmin"
+          ></span>
+
+          <nav>
+            <div
+              v-show="isOpen && !isAdmin"
+              class="w-full flex items-center h-[46px] px-2 hover:bg-gray-100 text-base font-bold"
+            >
+              <NuxtLink
+                to="/mypage"
+                class="w-full h-full flex items-center"
+                >マイページ</NuxtLink
+              >
+            </div>
+          </nav>
+
+          <nav>
+            <div
+              v-show="isOpen && isAdmin"
+              class="w-full flex items-center h-[46px] px-2 hover:bg-gray-100 text-base font-bold"
+            >
+              <NuxtLink
+                to="/customer"
+                class="w-full h-full flex items-center"
+                >顧客管理</NuxtLink
+              >
+            </div>
+          </nav>
         </div>
       </div>
 
-      <div class="menu flex flex-col cursor-pointer">
-        <nav>
-          <div
-            v-show="isOpen && !isAdmin"
-            class="w-full flex items-center h-[46px] px-2 hover:bg-gray-100 text-base font-bold"
-          >
-            <NuxtLink
-              to="/user-list"
-              class="w-full h-full flex items-center"
-              >利用者選択</NuxtLink
-            >
-          </div>
-        </nav>
-        <span
-          class="space"
-          v-show="isOpen && !isAdmin"
-        ></span>
-
-        <nav>
-          <div
-            v-show="isOpen && !isAdmin"
-            class="w-full flex items-center h-[46px] px-2 hover:bg-gray-100 text-base font-bold"
-          >
-            <NuxtLink
-              to="/mypage"
-              class="w-full h-full flex items-center"
-              >マイページ</NuxtLink
-            >
-          </div>
-        </nav>
-
-        <nav>
-          <div
-            v-show="isOpen && isAdmin"
-            class="w-full flex items-center h-[46px] px-2 hover:bg-gray-100 text-base font-bold"
-          >
-            <NuxtLink
-              to="/customer"
-              class="w-full h-full flex items-center"
-              >顧客管理</NuxtLink
-            >
-          </div>
-        </nav>
+      <div
+        class="logout flex items-center justify-center px-2 py-10 cursor-pointer"
+        v-show="isOpen"
+      >
+        <Button
+          variant="cancel_btn"
+          @click="logout"
+          >ログアウト</Button
+        >
       </div>
     </aside>
 
