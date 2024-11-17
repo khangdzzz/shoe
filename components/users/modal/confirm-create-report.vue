@@ -10,10 +10,6 @@ const props = defineProps({
   isOpen: {
     type: Boolean,
     default: false
-  },
-  action: {
-    type: String,
-    default: ''
   }
 });
 
@@ -79,23 +75,10 @@ const exportReport = () => {
               <td>
                 <span class="pl-5">{{ row.nameKanji }}</span>
               </td>
-              <td
-                :class="
-                  action === ACTION_EXPORT.REPORT ||
-                  (action === ACTION_EXPORT.PLAN_AND_REPORT && row.reportStatus === 99)
-                    ? 'visible'
-                    : 'invisible'
-                "
-              >
+              <td :class="row.reportStatus === 99 ? 'visible' : 'invisible'">
                 <span class="text-center flex justify-center bg-[#ccc] py-[8px] mx-[5px] rounded">実行</span>
               </td>
-              <td
-                :class="
-                  action === ACTION_EXPORT.PLAN || (action === ACTION_EXPORT.PLAN_AND_REPORT && row.planStatus === 99)
-                    ? 'visible'
-                    : 'invisible'
-                "
-              >
+              <td :class="row.planStatus === 99 ? 'visible' : 'invisible'">
                 <span class="text-center flex justify-center bg-[#ccc] py-[8px] mx-[5px] rounded">実行</span>
               </td>
             </tr>
