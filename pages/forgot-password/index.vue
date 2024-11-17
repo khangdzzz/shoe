@@ -86,6 +86,7 @@ const onSubmit = handleSubmit(async (values) => {
         <Button
           class="w-[132px]"
           variant="cancel_btn"
+          type="button"
           @click="redirectPage('/login')"
         >
           キャンセル

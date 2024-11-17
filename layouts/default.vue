@@ -111,6 +111,7 @@ onMounted(() => {
       >
         <Button
           variant="cancel_btn"
+          type="button"
           @click="logout"
           >ログアウト</Button
         >
