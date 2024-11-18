@@ -1,33 +1,33 @@
 export const TYPE_MESSAGE = {
   error: 1,
   success: 2
-}
+};
 
 export const ROLES = {
   admin: 1,
   user: 0
-}
+};
 
-export const ROUTES_USER = ['/mypage', '/user-list']
+export const ROUTES_USER = ['/mypage', '/user-list'];
 
-export const ROUTES_ADMIN = ['/customer']
+export const ROUTES_ADMIN = ['/customer', '/customer/detail'];
 
 export const LOCAL_STORAGE_KEYS = {
   accessToken: 'accessToken',
   refreshToken: 'refreshToken',
-  role: 'role',
-}
+  role: 'role'
+};
 
 export const ACTION_EXPORT = {
   REPORT: 'report',
   PLAN: 'plan',
   PLAN_AND_REPORT: 'both'
-}
+};
 
 export const SORT = {
   ASC: 'asc',
   DESC: 'desc'
-}
+};
 
 export const MESSAGES: { [key: string]: string } = {
   EMPTY: 'データがありません',
@@ -37,7 +37,7 @@ export const MESSAGES: { [key: string]: string } = {
   ERR004: 'メールアドレス形式で入力してください', // email format
   ERR005: 'フリガナで入力してください	', // katakana
   ERR006: 'パスワードが一致していません', // password not match
-  ERR007: '半角英数記号を8文字以上入力してください', // password format,
+  ERR007: '半角英数記号を8文字以上入力してください' // password format,
 };
 
 export const FIELDS = {
@@ -68,7 +68,6 @@ export const FIELDS = {
   terms: '利用規約',
   term: '利用規約確認'
 };
-
 
 export const CHARACTERS = [
   { label: 'あ', selected: false, disabled: false },

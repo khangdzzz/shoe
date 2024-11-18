@@ -2,12 +2,16 @@
 import { useRoute } from 'vue-router';
 import { computed } from 'vue';
 import { ChevronRight } from 'lucide-vue-next';
+
 const route = useRoute();
+const { redirectPage } = useRedirectPage();
 
 const breadcrumbItems = computed(() => {
   const pathSegments = route.path.split('/').filter(Boolean);
 
-  const lastPage = pathSegments[pathSegments.length - 1];
+  let lastPage = pathSegments[pathSegments.length - 1];
+
+  if (!isNaN(Number(lastPage))) lastPage = pathSegments[pathSegments.length - 2];
 
   return BREADCRUMBS[lastPage] || [];
 });
@@ -23,7 +27,8 @@ const breadcrumbItems = computed(() => {
       >
         <BreadcrumbLink
           v-if="!item.isLast"
-          :href="item.href"
+          @click="redirectPage(item.href)"
+          class="cursor-pointer"
         >
           {{ item.label }}
         </BreadcrumbLink>

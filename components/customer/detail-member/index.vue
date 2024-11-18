@@ -5,7 +5,7 @@ import { Eye, EyeOff } from 'lucide-vue-next';
 import * as z from 'zod';
 import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
-import type { CompanyUpdateBody } from '~/models/company';
+import type { Company } from '~/models/company';
 
 interface InitialFormValues {
   [key: string]: any;
@@ -14,80 +14,122 @@ interface InitialFormValues {
 const dataInit = useFetchDataInit();
 const system = useSystemStore();
 const authStore = useAuthStore();
-const companyStore = useCompanyStore();
+const route = useRoute();
+const companyAdminStore = useCompanyAdminStore();
 const permissionService = usePermission();
+const { redirectPage } = useRedirectPage();
 
 const postalCode = ref<PostalCode>();
 
-const isLoadPostalCode = ref(false);
-const isLoadingRegister = ref(false);
+const idCompany = ref('');
 
-const password = ref('');
-const isMatchPassword = ref(true);
-const confirmPassword = ref('');
+const isLoadPostalCode = ref(false);
+const isLoadingInit = ref(false);
+
+const activeStatus = ref<number>(0);
+
+const isOpenDialogDelete = ref(false);
+const isOpenDialogConfirmUpdate = ref(false);
+const isOpenDialogExecutionUpdate = ref(false);
+
 const initialFormValues = ref<InitialFormValues>({});
 const changeFields = ref<string[]>([]);
 
 const kaipokeUserPasswordVisible = ref(false);
-const passwordConfirmVisible = ref(false);
 const passwordVisible = ref(false);
 
 const katakanaRegex = /^[\u30A0-\u30FF]+$/;
 
-const isDisableButton = computed(() => {
-  return changeFields.value.length == 0;
+const kaigoSoftware = computed(() => dataInit.masterData?.kaigoSoftwares);
+
+const currentUser = computed(() => companyAdminStore.companyUser);
+
+const isDisableButton = computed(() => changeFields.value.length == 0);
+
+onMounted(async () => {
+  isLoadingInit.value = true;
+
+  idCompany.value = route.params.id as string;
+
+  if (!idCompany) return redirectPage('/customer');
+
+  await companyAdminStore.getCompanyById(Number(idCompany.value));
+
+  if (currentUser.value) {
+    initDataUser();
+    activeStatus.value = currentUser.value.status;
+  }
+
+  isLoadingInit.value = false;
 });
 
-const kaigoSoftware = computed(() => {
-  return dataInit.masterData?.kaigoSoftwares;
-});
+const initDataUser = () => {
+  if (currentUser.value) {
+    setFieldValue('companyName', currentUser.value.companyName);
+    setFieldValue('companyNameKana', currentUser.value.companyNameKana);
+    setFieldValue('companyPostCode', currentUser.value.companyPostCode);
+    setFieldValue('companyAddress', currentUser.value.companyAddress);
+    setFieldValue('phoneNumber', currentUser.value.phoneNumber);
+    setFieldValue('picFamilyName', currentUser.value.picFamilyName);
+    setFieldValue('picFamilyNameKana', currentUser.value.picFamilyNameKana);
+    setFieldValue('picGivenName', currentUser.value.picGivenName);
+    setFieldValue('picGivenNameKana', currentUser.value.picGivenNameKana);
+    setFieldValue('picPosition', currentUser.value.picPosition);
+    setFieldValue('frontPicFamilyName', currentUser.value.frontPicFamilyName);
+    setFieldValue('frontPicFamilyNameKana', currentUser.value.frontPicFamilyNameKana);
+    setFieldValue('frontPicGivenName', currentUser.value.frontPicGivenName);
+    setFieldValue('frontPicGivenNameKana', currentUser.value.frontPicGivenNameKana);
+    setFieldValue('frontPicPosition', currentUser.value.frontPicPosition);
+    setFieldValue('kaipokeUserId', currentUser.value.kaipokeUserId);
+    setFieldValue('kaipokeUserPassword', currentUser.value.kaipokeUserPassword);
+    setFieldValue('kaipokeCompanyId', currentUser.value.kaipokeCompanyId);
+    setFieldValue('kaigoSoftware', currentUser.value.kaigoSoftware.toString());
+    setFieldValue('paymentMethod', currentUser.value.paymentMethod);
+    setFieldValue('email', currentUser.value.email);
 
-const notify = computed(() => {
-  return system.notify;
-});
+    initialFormValues.value = { ...formValues };
+  }
+};
 
 const formSchema = toTypedSchema(
   z.object({
-    companyName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.companyName)).min(1),
+    companyName: z.string(messageRequired(FIELDS.companyName)).min(1, messageRequired(FIELDS.companyName)),
     companyNameKana: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.companyNameKana))
-      .min(1, formatMessage(MESSAGES.ERR001, FIELDS.companyNameKana))
+      .string(messageRequired(FIELDS.companyNameKana))
+      .min(1, messageRequired(FIELDS.companyNameKana))
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    companyPostCode: z.string(formatMessage(MESSAGES.ERR001, FIELDS.companyPostCode)).min(1),
-    companyAddress: z.string(formatMessage(MESSAGES.ERR001, FIELDS.companyAddress)).min(1),
-    frontPicPosition: z.string(formatMessage(MESSAGES.ERR001, FIELDS.email)).min(1),
-    frontPicFamilyName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicFamilyName)).min(1),
-    frontPicGivenName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicGivenName)).min(1),
+    companyPostCode: z.string(messageRequired(FIELDS.companyPostCode)).min(1, FIELDS.companyPostCode),
+    companyAddress: z.string(messageRequired(FIELDS.companyAddress)).min(1, FIELDS.companyAddress),
+    frontPicPosition: z.string(messageRequired(FIELDS.frontPicPosition)).min(1, FIELDS.frontPicPosition),
+    frontPicFamilyName: z.string(messageRequired(FIELDS.frontPicFamilyName)).min(1, FIELDS.frontPicFamilyName),
+    frontPicGivenName: z.string(messageRequired(FIELDS.frontPicGivenName)).min(1, FIELDS.frontPicGivenName),
     frontPicFamilyNameKana: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicFamilyNameKana))
-      .min(1)
+      .string(messageRequired(FIELDS.frontPicFamilyNameKana))
+      .min(1, messageRequired(FIELDS.frontPicFamilyNameKana))
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
     frontPicGivenNameKana: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicGivenNameKana))
-      .min(1)
+      .string(messageRequired(FIELDS.frontPicGivenNameKana))
+      .min(1, messageRequired(FIELDS.frontPicGivenNameKana))
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    picPosition: z.string(formatMessage(MESSAGES.ERR001, FIELDS.picPosition)).min(1),
-    picFamilyName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.picFamilyName)).min(1),
-    picGivenName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.picGivenName)).min(1),
+    picPosition: z.string(messageRequired(FIELDS.picPosition)).min(1, FIELDS.picPosition),
+    picFamilyName: z.string(messageRequired(FIELDS.picFamilyName)).min(1, FIELDS.picFamilyName),
+    picGivenName: z.string(messageRequired(FIELDS.picGivenName)).min(1, FIELDS.picGivenName),
     picFamilyNameKana: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.picFamilyNameKana))
-      .min(1)
+      .string(messageRequired(FIELDS.picFamilyNameKana))
+      .min(1, messageRequired(FIELDS.picFamilyNameKana))
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
     picGivenNameKana: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.picGivenNameKana))
-      .min(1)
+      .string(messageRequired(FIELDS.picGivenNameKana))
+      .min(1, messageRequired(FIELDS.picGivenNameKana))
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    phoneNumber: z.string(formatMessage(MESSAGES.ERR001, FIELDS.phoneNumber)).min(1),
-    email: z.string(formatMessage(MESSAGES.ERR001, FIELDS.email)).min(1),
+    phoneNumber: z.string(messageRequired(FIELDS.phoneNumber)).min(1, FIELDS.phoneNumber),
+    email: z.string(messageRequired(FIELDS.email)).min(1, FIELDS.email),
     password: z.string().min(8, { message: MESSAGES.ERR007 }).optional(),
-    confirmPassword: z.string().min(8, { message: MESSAGES.ERR007 }).optional(),
-    kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1),
-    kaipokeCompanyId: z.string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeCompanyId)).min(1),
-    kaipokeUserId: z.string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserId)).min(1),
-    kaipokeUserPassword: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserPassword))
-      .min(8, { message: MESSAGES.ERR007 }),
-    paymentMethod: z.string(formatMessage(MESSAGES.ERR001, FIELDS.paymentMethod)).min(1)
+    kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1, FIELDS.kaigoSoftware),
+    kaipokeCompanyId: z.string(messageRequired(FIELDS.kaipokeCompanyId)).min(1, FIELDS.kaipokeCompanyId),
+    kaipokeUserId: z.string(messageRequired(FIELDS.kaipokeUserId)).min(1, FIELDS.kaipokeUserId),
+    kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 }),
+    paymentMethod: z.string(messageRequired(FIELDS.paymentMethod)).min(1, FIELDS.paymentMethod)
   })
 );
 
@@ -99,53 +141,8 @@ const {
   validationSchema: formSchema
 });
 
-const currentUser = computed(() => {
-  return authStore.currentUser;
-});
-
-const initDataUser = () => {
-  if (currentUser.value) {
-    const { email, company } = currentUser.value;
-    setFieldValue('companyName', company.companyName);
-    setFieldValue('companyNameKana', company.companyNameKana);
-    setFieldValue('companyPostCode', company.companyPostCode);
-    setFieldValue('companyAddress', company.companyAddress);
-    setFieldValue('phoneNumber', company.phoneNumber);
-    setFieldValue('picFamilyName', company.picFamilyName);
-    setFieldValue('picFamilyNameKana', company.picFamilyNameKana);
-    setFieldValue('picGivenName', company.picGivenName);
-    setFieldValue('picGivenNameKana', company.picGivenNameKana);
-    setFieldValue('picPosition', company.picPosition);
-    setFieldValue('frontPicFamilyName', company.frontPicFamilyName);
-    setFieldValue('frontPicFamilyNameKana', company.frontPicFamilyNameKana);
-    setFieldValue('frontPicGivenName', company.frontPicGivenName);
-    setFieldValue('frontPicGivenNameKana', company.frontPicGivenNameKana);
-    setFieldValue('frontPicPosition', company.frontPicPosition);
-    setFieldValue('kaipokeUserId', company.kaipokeUserId);
-    setFieldValue('kaipokeUserPassword', company.kaipokeUserPassword);
-    setFieldValue('kaipokeCompanyId', company.kaipokeCompanyId);
-    setFieldValue('kaigoSoftware', company.kaigoSoftware.toString());
-    setFieldValue('paymentMethod', company.paymentMethod);
-    setFieldValue('email', email);
-
-    initialFormValues.value = { ...formValues };
-  }
-};
-
-onMounted(() => {
-  initDataUser();
-});
-
-watch(currentUser, () => {
-  initDataUser();
-});
-
 const togglePasswordVisibility = () => {
   passwordVisible.value = !passwordVisible.value;
-};
-
-const togglePasswordConfirmVisibility = () => {
-  passwordConfirmVisible.value = !passwordConfirmVisible.value;
 };
 
 const toggleKaipokeUserPasswordVisibility = () => {
@@ -182,20 +179,6 @@ const searchPostalCode = async () => {
   isLoadPostalCode.value = false;
 };
 
-watch([confirmPassword, password], () => {
-  if (!password.value || !confirmPassword.value) {
-    isMatchPassword.value = true;
-    return;
-  }
-  isMatchPassword.value = password.value === confirmPassword.value;
-});
-
-const isDialogOpen = ref(false);
-
-const closeDialog = () => {
-  isDialogOpen.value = false;
-};
-
 watch(
   formValues,
   () => {
@@ -215,15 +198,7 @@ watch(
 
 const onSubmit = handleSubmit(
   async (values) => {
-    if (!isMatchPassword.value) {
-      system.setNotify({
-        message: MESSAGES.ERR006,
-        type: TYPE_MESSAGE.error
-      });
-      return;
-    }
-
-    isDialogOpen.value = true;
+    isOpenDialogConfirmUpdate.value = true;
   },
   ({ errors }) => {
     const message = Object.values(errors)[0];
@@ -234,47 +209,91 @@ const onSubmit = handleSubmit(
   }
 );
 
-const updateUserInformation = async () => {
+const updateCompanyCustomer = async (status?: number) => {
+  isLoadingInit.value = true;
   const updatedFormValues = { ...formValues };
   const newPassword = updatedFormValues.password;
 
-  delete updatedFormValues.confirmPassword;
   delete updatedFormValues.password;
 
   const body = {
     ...updatedFormValues,
     kaigoSoftware: Number(updatedFormValues.kaigoSoftware),
-    ...(newPassword && { newPassword })
+    ...(newPassword && { newPassword }),
+    ...(status && { status })
   };
 
-  await companyStore.updateCompanyInformation(body as CompanyUpdateBody);
+  await companyAdminStore.updateCompanyById(Number(idCompany.value), body);
 
-  isDialogOpen.value = false;
+  if (!system.notify?.message) {
+    redirectPageAfterAction('会社情報を更新しました。');
+  }
 
-  permissionService.initPermissions();
-
-  system.setNotify({
-    message: '更新に成功しました',
-    type: TYPE_MESSAGE.success
-  });
+  isLoadingInit.value = false;
 };
 
-const resetForm = () => {
-  initDataUser();
+const onHandleDelete = async () => {
+  isLoadingInit.value = true;
+  isOpenDialogDelete.value = false;
+
+  const ids = [Number(idCompany.value)];
+
+  if (!ids.length) {
+    system.setNotify({
+      message: '会社を削除できません。',
+      type: TYPE_MESSAGE.error
+    });
+    isLoadingInit.value = false;
+    return;
+  }
+
+  await companyAdminStore.bulkDelete(ids);
+
+  isLoadingInit.value = false;
+
+  if (!system.notify?.message) {
+    redirectPageAfterAction('会社を削除しました。');
+  }
+};
+
+const onHandleExecutionUpdate = async () => {
+  isLoadingInit.value = true;
+  isOpenDialogExecutionUpdate.value = false;
+  const status = activeStatus.value === 1 ? 2 : 1;
+
+  await companyAdminStore.updateStatusCompanyUser(Number(idCompany.value), { status });
+
+  if (!system.notify?.message) {
+    redirectPageAfterAction('会社情報を更新しました。');
+  }
+
+  isLoadingInit.value = false;
+};
+
+const redirectPageAfterAction = (message: string) => {
+  system.setNotify({
+    message: message,
+    type: TYPE_MESSAGE.success
+  });
+
+  setTimeout(() => {
+    redirectPage('/customer');
+  }, 500);
 };
 </script>
 
 <template>
-  <div class="login-page flex flex-col !h-[100vh] overflow-hidden">
+  <div class="login-page flex flex-col !h-[100vh] overflow-hidden relative">
     <div class="flex justify-between mt-[15px]">
       <ShareErrorMessage class="pl-[64px]" />
     </div>
-    <MypageModalConfirmUpdateUser
-      :isOpen="isDialogOpen"
+    <CustomerModalConfirmUpdateCustomer
+      :isOpen="isOpenDialogConfirmUpdate"
       :fields="changeFields"
-      @close="closeDialog"
-      @update="updateUserInformation"
+      @close="isOpenDialogConfirmUpdate = false"
+      @update="updateCompanyCustomer"
     />
+
     <form
       class="register flex flex-col gap-[25px] pl-[64px] pt-[10px] pb-[15px]"
       @submit="onSubmit"
@@ -697,7 +716,6 @@ const resetForm = () => {
                   <FormControl>
                     <div class="relative">
                       <Input
-                        v-model="password"
                         :type="passwordVisible ? 'text' : 'password'"
                         v-bind="componentField"
                         placeholder="英小文字、数字を含む、半角英数字８文字以上"
@@ -721,55 +739,6 @@ const resetForm = () => {
                       </button>
                     </div>
                   </FormControl>
-                  <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
-                </div>
-              </FormItem>
-            </FormField>
-
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="confirmPassword"
-            >
-              <FormItem class="flex gap-5">
-                <div class="label w-[145px] flex gap-5 items-center">
-                  <div class="flex flex-col">
-                    <span class="text-xs">パスワード</span>
-                    <span>（確認用）</span>
-                  </div>
-                </div>
-                <div class="relative w-[82%] !m-[0px]">
-                  <FormControl>
-                    <div class="relative">
-                      <Input
-                        :type="passwordConfirmVisible ? 'text' : 'password'"
-                        v-bind="componentField"
-                        placeholder="英小文字、数字を含む、半角英数字８文字以上"
-                        :class="{
-                          'border-red-500': errors.length || !isMatchPassword
-                        }"
-                        class="placeholder:text-[10px]"
-                        v-model="confirmPassword"
-                      />
-                      <button
-                        type="button"
-                        class="absolute right-[15px] top-1/2 transform -translate-y-1/2"
-                        @click="togglePasswordConfirmVisibility"
-                        aria-label="Toggle password visibility"
-                      >
-                        <template v-if="!passwordConfirmVisible">
-                          <EyeOff class="h-5 w-3.5 text-black" />
-                        </template>
-                        <template v-else>
-                          <Eye class="h-5 w-3.5 text-black" />
-                        </template>
-                      </button>
-                    </div>
-                  </FormControl>
-                  <span
-                    v-if="!isMatchPassword && !errors.length"
-                    class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal"
-                    >{{ MESSAGES.ERR006 }}</span
-                  >
                   <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                 </div>
               </FormItem>
@@ -922,29 +891,56 @@ const resetForm = () => {
         </div>
       </div>
 
-      <div class="flex gap-3 flex-col">
-        <Button
-          :disabled="isDisableButton"
-          type="submit"
-          class="flex self-center"
-        >
-          <LoaderCircle
-            v-if="isLoadingRegister"
-            class="w-4 h-4 mr-2 animate-spin"
-          />
-          アカウントを登録する
-        </Button>
+      <div class="flex max-w-[900px] justify-between py-[20px]">
+        <div class="flex gap-5">
+          <Button
+            type="button"
+            variant="cancel_btn"
+            class="flex self-center"
+            @click="redirectPage('/customer')"
+          >
+            キャンセル
+          </Button>
 
-        <Button
-          variant="cancel_btn"
-          type="button"
-          class="flex self-center min-w-[188px]"
-          @click="resetForm"
-        >
-          キャンセル
-        </Button>
+          <div
+            class="delete flex self-center underline cursor-pointer"
+            @click="() => (isOpenDialogDelete = true)"
+          >
+            削除
+          </div>
+        </div>
+        <div class="flex gap-5">
+          <Button
+            type="submit"
+            class="flex self-center"
+            :disabled="isDisableButton"
+          >
+            変更
+          </Button>
+
+          <Button
+            type="button"
+            variant="export"
+            class="delete flex self-center"
+            @click="() => (isOpenDialogExecutionUpdate = true)"
+          >
+            停止・開始
+          </Button>
+        </div>
       </div>
     </form>
+    <CustomerModalDelete
+      :is-open="isOpenDialogDelete"
+      @close="isOpenDialogDelete = false"
+      @update="onHandleDelete"
+    />
+    <CustomerModalExecutionConfirm
+      :is-open="isOpenDialogExecutionUpdate"
+      :active-status="activeStatus"
+      @close="isOpenDialogExecutionUpdate = false"
+      @update="onHandleExecutionUpdate"
+    />
+    <ShareLoading v-if="isLoadingInit" />
   </div>
 </template>
 <style lang="scss" scoped>

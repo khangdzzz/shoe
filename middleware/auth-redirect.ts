@@ -19,7 +19,7 @@ export default defineNuxtPlugin(async (to) => {
 
     const fallbackRoute = isAdmin ? '/customer' : '/user-list';
 
-    const isValidRoute = validRoutes.includes(currentPath);
+    const isValidRoute = validRoutes.some((item) => currentPath.includes(item));
     if (!isValidRoute) {
       router.push(fallbackRoute);
     }

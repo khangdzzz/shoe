@@ -8,7 +8,7 @@ definePageMeta({
     <div class="header flex items-center h-[40px] border-b border-b-[#e2e2e2]">
       <span class="text-base font-bold">顧客詳細</span>
     </div>
-    <CustomerRegisterMember />
+    <CustomerDetailMember />
   </div>
 </template>
 <style lang="scss" scoped></style>

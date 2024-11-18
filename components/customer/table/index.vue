@@ -74,8 +74,7 @@ const headers = [
 ];
 
 const sort = ref('');
-
-const companyUsers = computed(() => companyAdminStore.companyUsers?.results ?? []);
+const isOpenDialogDelete = ref(false);
 const totalRecord = computed(() => companyAdminStore.companyUsers?.totalRecord ?? 0);
 const isLoading = computed(() => companyAdminStore.isLoadCompanyCustomers);
 const notify = computed(() => system.notify);
@@ -85,6 +84,11 @@ const selectedRows = ref<Set<number>>(new Set());
 const isSelectedAll = computed(
   () => companyUsers.value.length > 0 && selectedRows.value.size === companyUsers.value.length
 );
+
+const companyUsers = computed(() => {
+  selectedRows.value = new Set();
+  return companyAdminStore.companyUsers?.results ?? [];
+});
 
 const toggleSelectAll = () => {
   if (isSelectedAll.value) {
@@ -122,20 +126,22 @@ const updateSort = (header: Header) => {
   emit('update:sort', sort.value);
 };
 
-const registerMember = () => {
-  redirectPage('/customer/register-member');
-};
-
-const onDelete = async () => {
-  const ids = Array.from(selectedRows.value);
-
-  if (!ids.length) {
+const openDialogDelete = () => {
+  if (selectedRows.value.size == 0) {
     const message = '削除する会社を選択してください';
     triggerToast('destructive', message);
     return;
   }
 
+  isOpenDialogDelete.value = true;
+};
+
+const onHandleDelete = async () => {
   companyAdminStore.isLoadCompanyCustomers = true;
+
+  isOpenDialogDelete.value = false;
+
+  const ids = Array.from(selectedRows.value);
 
   await companyAdminStore.bulkDelete(ids);
 
@@ -146,15 +152,33 @@ const onDelete = async () => {
   }
 
   const message = '会社を削除しました';
+
   triggerToast('default', message);
 
   emit('getCompanies');
 };
 
+const editCustomer = () => {
+  if (selectedRows.value.size == 0) {
+    const message = '編集する会社を選択してください';
+    triggerToast('destructive', message);
+    return;
+  }
+
+  if (selectedRows.value.size > 1) {
+    const message = '編集する会社を1つだけ選択してください';
+    triggerToast('destructive', message);
+    return;
+  }
+
+  redirectPage(`/customer/detail/${selectedRows.value.values().next().value}`);
+};
+
 const triggerToast = (variant: 'default' | 'destructive' | null | undefined, message: string) => {
   toast({
     description: message,
-    variant: variant
+    variant: variant,
+    duration: 1000
   });
 };
 </script>
@@ -165,12 +189,12 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
       <div class="flex">
         <span
           class="px-5 py-1 border-l-2 border-[#e2e2e2] cursor-pointer"
-          @click="registerMember"
+          @click="editCustomer"
           >編集</span
         >
         <span
           class="px-5 py-1 border-l-2 border-[#e2e2e2] cursor-pointer"
-          @click="onDelete"
+          @click="openDialogDelete"
           >削除</span
         >
       </div>
@@ -274,6 +298,11 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
       <ShareLoading v-if="isLoading" />
     </div>
     <Toaster class="top-[5px]" />
+    <CustomerModalDelete
+      :is-open="isOpenDialogDelete"
+      @close="isOpenDialogDelete = false"
+      @update="onHandleDelete"
+    />
   </div>
 </template>
 
