@@ -937,7 +937,7 @@ const resetForm = () => {
             v-if="isLoadingRegister"
             class="w-4 h-4 mr-2 animate-spin"
           />
-          アカウントを登録する
+          変更
         </Button>
 
         <Button
