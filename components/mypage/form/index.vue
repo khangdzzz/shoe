@@ -16,6 +16,7 @@ const system = useSystemStore();
 const authStore = useAuthStore();
 const companyStore = useCompanyStore();
 const permissionService = usePermission();
+const { redirectPage } = useRedirectPage();
 
 const postalCode = ref<PostalCode>();
 
@@ -257,10 +258,16 @@ const updateUserInformation = async () => {
     message: '更新に成功しました',
     type: TYPE_MESSAGE.success
   });
+
+  setTimeout(() => {
+    console.log('redirectPage');
+    redirectPage('/user-list');
+  }, 500);
 };
 
 const resetForm = () => {
   initDataUser();
+  redirectPage('/user-list');
 };
 </script>
 
@@ -931,7 +938,7 @@ const resetForm = () => {
         <Button
           :disabled="isDisableButton"
           type="submit"
-          class="flex self-center"
+          class="flex self-center min-w-[120px]"
         >
           <LoaderCircle
             v-if="isLoadingRegister"
@@ -943,7 +950,7 @@ const resetForm = () => {
         <Button
           variant="cancel_btn"
           type="button"
-          class="flex self-center min-w-[188px]"
+          class="flex self-center"
           @click="resetForm"
         >
           キャンセル
