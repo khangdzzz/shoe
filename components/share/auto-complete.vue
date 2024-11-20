@@ -28,7 +28,7 @@ const valueSelected = ref('');
 watch(
   () => props.options,
   () => {
-    valueSelected.value = props.options[1] || '';
+    valueSelected.value = props.options[0] || '';
   },
   { immediate: true }
 );

@@ -1,4 +1,4 @@
-import type { Company } from '~/models/company';
+import type { AdminCreateCustomer, Company } from '~/models/company';
 
 export interface CompanyUserResponse {
   results: Company[];
@@ -38,6 +38,10 @@ export const useCompanyAdminStore = defineStore('companyAdmin', () => {
     await apis.archaic?.put(`company/${id}/status`, body);
   };
 
+  const createNewCompany = async (body: AdminCreateCustomer) => {
+    return await apis.archaic?.post('company', body);
+  };
+
   return {
     companyUser,
     companyUsers,
@@ -45,6 +49,7 @@ export const useCompanyAdminStore = defineStore('companyAdmin', () => {
     bulkDelete,
     searchCompanies,
     getCompanyById,
+    createNewCompany,
     updateCompanyById,
     updateStatusCompanyUser
   };

@@ -10,7 +10,7 @@ export const ROLES = {
 
 export const ROUTES_USER = ['/mypage', '/user-list'];
 
-export const ROUTES_ADMIN = ['/customer', '/customer/detail'];
+export const ROUTES_ADMIN = ['/customer', '/customer/detail', '/customer/create-new-customer'];
 
 export const LOCAL_STORAGE_KEYS = {
   accessToken: 'accessToken',
