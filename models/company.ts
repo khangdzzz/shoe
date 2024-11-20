@@ -88,3 +88,26 @@ export interface BulkExportReport {
   }[];
 }
 
+export interface AdminCreateCustomer {
+  companyAddress: string;
+  companyName: string;
+  companyNameKana: string;
+  companyPostCode: string;
+  email: string;
+  frontPicFamilyName: string;
+  frontPicFamilyNameKana: string;
+  frontPicGivenName: string;
+  frontPicGivenNameKana: string;
+  frontPicPosition: string;
+  kaigoSoftware: string;
+  kaipokeCompanyId: string;
+  kaipokeUserId: string;
+  kaipokeUserPassword: string;
+  paymentMethod: string;
+  phoneNumber: string;
+  picFamilyName: string;
+  picFamilyNameKana: string;
+  picGivenName: string;
+  picGivenNameKana: string;
+  picPosition: string;
+}

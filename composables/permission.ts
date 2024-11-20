@@ -19,7 +19,7 @@ export const usePermission = () => {
       authStore.isAdmin = ROLES.admin === user.role;
 
       commonService.setLocalStorage(LOCAL_STORAGE_KEYS.role, user.role.toString());
-      await companyStore.getOffices();
+      companyStore.getOffices();
     }
   };
 

@@ -12,7 +12,8 @@ enum BreadcrumbKey {
   USER_LIST = 'user-list',
   MY_PAGE = 'mypage',
   CUSTOMER = 'customer',
-  DETAIL_MEMBER = 'detail'
+  DETAIL_MEMBER = 'detail',
+  CREATE_CUSTOMER = 'create-new-customer'
 }
 
 export const BREADCRUMBS: Breadcrumbs = {
@@ -53,6 +54,18 @@ export const BREADCRUMBS: Breadcrumbs = {
     }
   ],
   [BreadcrumbKey.DETAIL_MEMBER]: [
+    {
+      label: '顧客管理',
+      href: '/customer',
+      isLast: false
+    },
+    {
+      label: '顧客詳細',
+      href: '',
+      isLast: true
+    }
+  ],
+  [BreadcrumbKey.CREATE_CUSTOMER]: [
     {
       label: '顧客管理',
       href: '/customer',

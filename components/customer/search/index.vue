@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { Search } from 'lucide-vue-next';
 
+const { redirectPage } = useRedirectPage();
+
 const emit = defineEmits(['update:changeDate', 'update:changeStatus', 'searchCompanyName']);
 
 const targetYearMonth = ref('');
@@ -17,6 +19,10 @@ const handleCheckboxChange = (value: number, checked: boolean) => {
   else status.value = status.value.filter((item) => item !== value);
 
   emit('update:changeStatus', status.value);
+};
+
+const createNewCustomer = () => {
+  redirectPage('/customer/create-new-customer');
 };
 </script>
 
@@ -84,6 +90,8 @@ const handleCheckboxChange = (value: number, checked: boolean) => {
         <Button
           variant="export"
           left-icon="search"
+          class="cursor-pointer"
+          @click="createNewCustomer"
         >
           新規顧客追加
         </Button>
