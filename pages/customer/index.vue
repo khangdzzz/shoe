@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { useToast } from '~/components/ui/toast/use-toast';
+
 definePageMeta({
   middleware: ['auth', 'auth-redirect']
 });
@@ -9,11 +11,16 @@ const sort = ref<string>('');
 const targetYearMonth = ref<string>('');
 const status = ref<number[]>([]);
 const companyName = ref<string>('');
+const exceptionListId = ref<number[]>([]);
+const checkedListId = ref<number[]>([]);
+const isSelectedAll = ref<boolean>(false);
 
 const companyAdminStore = useCompanyAdminStore();
+const system = useSystemStore();
+const { toast } = useToast();
 
 const getCompanies = async () => {
-  let condition = `page=${page.value}&pageSize=${pageSizes.value}&createdAt=${targetYearMonth.value}`;
+  let condition = `page=${page.value}&pageSize=${pageSizes.value}`;
   if (sort.value) condition += `&sort=${sort.value}`;
   if (status.value.length) {
     status.value.forEach((value) => {
@@ -54,6 +61,59 @@ const onSearchCompanyName = async (value: string) => {
   companyName.value = value;
   await getCompanies();
 };
+
+const onSelectRows = ({
+  exceptionIds,
+  checkedIds,
+  selectedAll
+}: {
+  exceptionIds: number[];
+  checkedIds: number[];
+  selectedAll: boolean;
+}) => {
+  exceptionListId.value = exceptionIds;
+  checkedListId.value = checkedIds;
+  isSelectedAll.value = selectedAll;
+};
+
+const exportCustomer = async () => {
+  exportData(0);
+};
+
+const exportStatusCompany = async () => {
+  exportData(1);
+};
+
+const exportData = async (exportType: number) => {
+  if (!isSelectedAll.value && checkedListId.value.length === 0) {
+    triggerToast('顧客を選択してください', 'destructive');
+    return;
+  }
+
+  const body = {
+    exportType: exportType,
+    checkedListId: checkedListId.value,
+    exceptionListId: exceptionListId.value,
+    isSelectedAll: isSelectedAll.value,
+    targetYearMonth: targetYearMonth.value,
+    status: status.value,
+    companyName: companyName.value
+  };
+
+  await companyAdminStore.exportCompanyCustomer(body);
+
+  if (!system.notify?.message) {
+    triggerToast('顧客情報をエクスポートしました', 'default');
+  }
+};
+
+const triggerToast = (message: string, variant: 'default' | 'destructive' | null | undefined) => {
+  toast({
+    description: message,
+    variant: variant,
+    duration: 1000
+  });
+};
 </script>
 
 <template>
@@ -65,6 +125,8 @@ const onSearchCompanyName = async (value: string) => {
       @update:change-date="onChangeDate"
       @update:change-status="onChangeStatus"
       @search-company-name="onSearchCompanyName"
+      @export-customer="exportCustomer"
+      @export-status-company="exportStatusCompany"
     />
     <div class="body-content flex py-4 w-full gap-2">
       <CustomerTable
@@ -72,6 +134,7 @@ const onSearchCompanyName = async (value: string) => {
         @update:pagination="onChangePagination"
         @update:sort="onSort"
         @get-companies="getCompanies"
+        @select-row="onSelectRows"
       />
     </div>
   </div>

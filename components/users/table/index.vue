@@ -137,8 +137,8 @@ const updateUsersPlanStatus = (users: CompanyUserStatus[]) => {
 const getStatus = (amount: number | null) => {
   if (!amount) return STATUS[0];
 
-  if (amount === 1) return STATUS[1];
-  if (amount === 2 || amount === VALUE_STATUS_BULK_EXPORT) return STATUS[2];
+  if (amount === 1 || amount === VALUE_STATUS_BULK_EXPORT) return STATUS[1];
+  if (amount === 2) return STATUS[2];
   if (amount === 3) return STATUS[3];
 
   return STATUS[0];

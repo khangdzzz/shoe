@@ -106,7 +106,7 @@ const currentUser = computed(() => {
 
 const initDataUser = () => {
   if (currentUser.value) {
-    const { email, company } = currentUser.value;
+    const { company } = currentUser.value;
     setFieldValue('companyName', company.companyName);
     setFieldValue('companyNameKana', company.companyNameKana);
     setFieldValue('companyPostCode', company.companyPostCode);
@@ -127,7 +127,7 @@ const initDataUser = () => {
     setFieldValue('kaipokeCompanyId', company.kaipokeCompanyId);
     setFieldValue('kaigoSoftware', company.kaigoSoftware.toString());
     setFieldValue('paymentMethod', company.paymentMethod);
-    setFieldValue('email', email);
+    setFieldValue('email', company.email);
 
     initialFormValues.value = { ...formValues };
   }

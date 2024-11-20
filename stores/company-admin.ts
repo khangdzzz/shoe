@@ -1,4 +1,4 @@
-import type { AdminCreateCustomer, Company } from '~/models/company';
+import type { AdminCreateCustomer, Company, ExportCompanyCustomer } from '~/models/company';
 
 export interface CompanyUserResponse {
   results: Company[];
@@ -11,6 +11,8 @@ export const useCompanyAdminStore = defineStore('companyAdmin', () => {
   const companyUser = ref<Company>();
 
   const isLoadCompanyCustomers = ref(false);
+  const isLoadingExportCompany = ref(false);
+  const isLoadingExportStatusCompany = ref(false);
   const searchCompanies = async (condition: string) => {
     isLoadCompanyCustomers.value = true;
     const res = await apis.archaic?.get(`company?${condition}`);
@@ -42,15 +44,28 @@ export const useCompanyAdminStore = defineStore('companyAdmin', () => {
     return await apis.archaic?.post('company', body);
   };
 
+  const exportCompanyCustomer = async (body: ExportCompanyCustomer) => {
+    if (body.exportType === 1) isLoadingExportStatusCompany.value = true;
+    else isLoadingExportCompany.value = true;
+
+    await apis.archaic?.post('company/bulk-export', body);
+
+    isLoadingExportCompany.value = false;
+    isLoadingExportStatusCompany.value = false;
+  };
+
   return {
     companyUser,
     companyUsers,
     isLoadCompanyCustomers,
+    isLoadingExportCompany,
+    isLoadingExportStatusCompany,
     bulkDelete,
     searchCompanies,
     getCompanyById,
     createNewCompany,
     updateCompanyById,
+    exportCompanyCustomer,
     updateStatusCompanyUser
   };
 });
