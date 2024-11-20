@@ -1,14 +1,24 @@
 <script lang="ts" setup>
 import { Search } from 'lucide-vue-next';
+import { LoaderCircle } from 'lucide-vue-next';
 
 const { redirectPage } = useRedirectPage();
+const companyAdminStore = useCompanyAdminStore();
 
-const emit = defineEmits(['update:changeDate', 'update:changeStatus', 'searchCompanyName']);
+const emit = defineEmits([
+  'update:changeDate',
+  'update:changeStatus',
+  'searchCompanyName',
+  'exportCustomer',
+  'exportStatusCompany'
+]);
 
 const targetYearMonth = ref('');
 const status = ref<number[]>([]);
 const companyName = ref('');
 
+const isLoadingExportCompany = computed(() => companyAdminStore.isLoadingExportCompany);
+const isLoadingExportStatusCompany = computed(() => companyAdminStore.isLoadingExportStatusCompany);
 const onChangeTargetYearMonth = (date: string) => {
   targetYearMonth.value = date;
   emit('update:changeDate', targetYearMonth.value);
@@ -24,6 +34,14 @@ const handleCheckboxChange = (value: number, checked: boolean) => {
 const createNewCustomer = () => {
   redirectPage('/customer/create-new-customer');
 };
+
+const handleExportCustomer = () => {
+  emit('exportCustomer');
+};
+
+const handleExportStatusCompany = () => {
+  emit('exportStatusCompany');
+};
 </script>
 
 <template>
@@ -36,6 +54,7 @@ const createNewCustomer = () => {
           placeholder="Search..."
           class="pl-10 w-[70%]"
           v-model="companyName"
+          @blur="emit('searchCompanyName', companyName)"
           @keydown.enter="emit('searchCompanyName', companyName)"
         />
         <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
@@ -79,7 +98,7 @@ const createNewCustomer = () => {
             for="terms"
             class="flex text-xs flex-shrink-0"
           >
-            退会済み
+            退会済
           </span>
         </div>
       </div>
@@ -98,7 +117,12 @@ const createNewCustomer = () => {
         <Button
           variant="export"
           left-icon="search"
+          @click="handleExportCustomer"
         >
+          <LoaderCircle
+            v-if="isLoadingExportCompany"
+            class="w-4 h-4 mr-2 animate-spin"
+          />
           顧客情報出力
         </Button>
       </div>
@@ -107,7 +131,12 @@ const createNewCustomer = () => {
         <Button
           variant="export"
           left-icon="search"
+          @click="handleExportStatusCompany"
         >
+          <LoaderCircle
+            v-if="isLoadingExportStatusCompany"
+            class="w-4 h-4 mr-2 animate-spin"
+          />
           利用状況出力
         </Button>
       </div>

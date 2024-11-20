@@ -111,3 +111,13 @@ export interface AdminCreateCustomer {
   picGivenNameKana: string;
   picPosition: string;
 }
+
+export interface ExportCompanyCustomer {
+  exportType: number;
+  status?: number[];
+  keyword?: string;
+  targetYearMonth: string;
+  exceptionListId: number[];
+  checkedListId: number[];
+  isSelectedAll: boolean;
+}

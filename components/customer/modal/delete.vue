@@ -28,7 +28,7 @@ const emit = defineEmits<{ (e: 'close'): void; (e: 'update'): void }>();
         <AlertDialogAction
           class="flex self-center min-w-[120px]"
           @click="emit('update')"
-          >変更</AlertDialogAction
+          >削除</AlertDialogAction
         >
         <AlertDialogCancel
           class="flex self-center border border-gray-300 min-w-[120px]"

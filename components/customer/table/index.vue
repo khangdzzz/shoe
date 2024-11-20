@@ -3,12 +3,18 @@ import { ArrowDownUp, ArrowUpDown } from 'lucide-vue-next';
 import type { Header } from '~/models/common';
 import { useToast } from '~/components/ui/toast/use-toast';
 
+enum CheckType {
+  All,
+  None,
+  Ticked
+}
+
 const companyAdminStore = useCompanyAdminStore();
 const system = useSystemStore();
 const { redirectPage } = useRedirectPage();
 const { toast } = useToast();
 
-const emit = defineEmits(['update:pagination', 'update:sort', 'getCompanies']);
+const emit = defineEmits(['update:pagination', 'update:sort', 'getCompanies', 'selectRow']);
 
 const STATUS = {
   1: '利用中',
@@ -73,6 +79,7 @@ const headers = [
   }
 ];
 
+const isSelectedAll = ref(CheckType.None);
 const sort = ref('');
 const isOpenDialogDelete = ref(false);
 const totalRecord = computed(() => companyAdminStore.companyUsers?.totalRecord ?? 0);
@@ -81,20 +88,18 @@ const notify = computed(() => system.notify);
 
 const selectedRows = ref<Set<number>>(new Set());
 
-const isSelectedAll = computed(
-  () => companyUsers.value.length > 0 && selectedRows.value.size === companyUsers.value.length
-);
-
 const companyUsers = computed(() => {
   selectedRows.value = new Set();
   return companyAdminStore.companyUsers?.results ?? [];
 });
 
-const toggleSelectAll = () => {
-  if (isSelectedAll.value) {
-    selectedRows.value.clear();
-  } else {
+const toggleSelectAll = (value: boolean) => {
+  if (value) {
+    isSelectedAll.value = CheckType.All;
     selectedRows.value = new Set(companyUsers.value.map((user) => user.id));
+  } else {
+    isSelectedAll.value = CheckType.None;
+    selectedRows.value.clear();
   }
 };
 
@@ -104,11 +109,56 @@ const toggleSelectRow = (id: number) => {
   } else {
     selectedRows.value.add(id);
   }
+
+  const totalUsers = companyUsers.value.length;
+  const selectedCount = selectedRows.value.size;
+
+  if (selectedCount === 0) {
+    isSelectedAll.value = CheckType.None;
+  } else if (selectedCount === totalUsers) {
+    isSelectedAll.value = CheckType.All;
+  } else if (isSelectedAll.value === CheckType.All && selectedCount < totalUsers) {
+    isSelectedAll.value = CheckType.Ticked;
+  }
 };
+
+const ticked = () => {
+  toggleSelectAll(false);
+};
+
+watch(
+  selectedRows,
+  () => {
+    const exceptionIds: number[] = [];
+    const checkedIds: number[] = [];
+    const selectedAll = getStatusSelected();
+
+    if (selectedAll) {
+      companyUsers.value.forEach((user) => {
+        if (!selectedRows.value.has(user.id)) {
+          exceptionIds.push(user.id);
+        }
+      });
+    } else {
+      checkedIds.push(...selectedRows.value);
+    }
+
+    emit('selectRow', {
+      exceptionIds,
+      checkedIds,
+      selectedAll
+    });
+  },
+  { deep: true }
+);
 
 const getStatus = (status: number) => {
   if (!status) return (status = 0);
   return STATUS[status as keyof typeof STATUS];
+};
+
+const getStatusSelected = () => {
+  return isSelectedAll.value === CheckType.All || isSelectedAll.value === CheckType.Ticked ? true : false;
 };
 
 const changePagination = ({ pageIndex, pageSize }: { pageIndex: number; pageSize: number }) => {
@@ -181,6 +231,13 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
     duration: 1000
   });
 };
+
+const getBackgroundColor = (status: number) => {
+  let className = 'bg-white dark:bg-gray-800 h-10 hover:cursor-pointer ';
+  if (!status || status == 1) return (className += 'hover:bg-[#afe7ee47]');
+  if (status == 2) return (className += '!bg-[#feffce]');
+  if (status == 3) return (className += '!bg-[#515151] text-white');
+};
 </script>
 
 <template>
@@ -215,8 +272,13 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
                   <Checkbox
                     id="select-all"
                     class="bg-white flex items-center justify-center mx-4 text-black border border-gray-300"
-                    :checked="isSelectedAll"
+                    :checked="isSelectedAll === 0"
+                    v-if="isSelectedAll === 0 || isSelectedAll === 1"
                     @update:checked="toggleSelectAll"
+                  />
+                  <ShareIconSelectAll
+                    v-if="isSelectedAll === 2"
+                    @click="ticked"
                   />
                 </span>
               </th>
@@ -253,8 +315,8 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
             <tr
               v-for="(row, index) in companyUsers"
               :key="index"
-              class="bg-white dark:bg-gray-800 h-10 hover:cursor-pointer hover:bg-[#afe7ee47]"
-              :class="[index < companyUsers.length - 1 ? 'border-b' : '']"
+              :class="[index < companyUsers.length - 1 ? 'border-b' : '', getBackgroundColor(row.status)]"
+              v-if="companyUsers.length > 0"
             >
               <td class="border-r border-[#52525200]">
                 <Checkbox
@@ -290,6 +352,14 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
               </td>
               <td class="px-[5px] text-center">
                 <span>{{ formatDate(row.createdAt, 'YYYY-MM-DD') }} </span>
+              </td>
+            </tr>
+            <tr v-if="companyUsers.length == 0 && isLoading == false">
+              <td
+                colspan="9"
+                class="text-center py-4 text-[#5566da]"
+              >
+                {{ MESSAGES.EMPTY }}
               </td>
             </tr>
           </tbody>
