@@ -19,7 +19,7 @@ const emit = defineEmits(['update:pagination', 'update:sort', 'getCompanies', 's
 const STATUS = {
   1: '利用中',
   2: '停止中',
-  3: '退会済み'
+  3: '退会済'
 };
 
 const headers = [

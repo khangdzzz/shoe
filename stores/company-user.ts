@@ -6,7 +6,6 @@ export const useCompanyStore = defineStore('company', () => {
   const companyUsers = ref<CompanyUserStatus[]>([]);
   const isLoadCompanyUsers = ref(false);
   const isHaveDataCompanyUsers = ref(true);
-  const userNameKanjiCharacters = ref('');
   const userNameKana = ref('');
   const charactersSelected = ref<string[]>([]);
   const isOpenNotifyCrawler = ref(false);
@@ -18,13 +17,15 @@ export const useCompanyStore = defineStore('company', () => {
   const getCompanyUseStatus = async ({ officeId, targetYearMonth }: { officeId: number; targetYearMonth: string }) => {
     isLoadCompanyUsers.value = true;
     charactersSelected.value = [];
+
     const res = await apis.archaic?.get(`company-user-status?officeId=${officeId}&targetYearMonth=${targetYearMonth}`);
 
     companyUsers.value = res?.data ?? [];
 
+    userNameKana.value = '';
+
     if (companyUsers.value.length) {
       isHaveDataCompanyUsers.value = true;
-      userNameKanjiCharacters.value = companyUsers.value.map((user) => user.nameKanji).join('');
       userNameKana.value = companyUsers.value.map((user) => user.nameKana).join('');
     } else {
       isHaveDataCompanyUsers.value = false;
@@ -63,7 +64,6 @@ export const useCompanyStore = defineStore('company', () => {
     charactersSelected,
     isOpenNotifyCrawler,
     isHaveDataCompanyUsers,
-    userNameKanjiCharacters,
     getOffices,
     registerNewUser,
     bulkExportReport,

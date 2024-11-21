@@ -116,8 +116,15 @@ const onChangePlanSwitch = () => {
   } else companyUsers.value = updateUsersPlanStatus(companyUsers.value);
 };
 
-const filterByCharacter = (users: CompanyUserStatus[]) =>
-  users.filter((user) => characterSelected.value.some((char) => user.nameKana.includes(char)));
+const filterByCharacter = (users: CompanyUserStatus[]) => {
+  return users.filter((user) =>
+    characterSelected.value.some((char) => {
+      const [char1, char2] = char.split(',');
+
+      return user.nameKana.includes(char1.trim()) || user.nameKana.includes(char2.trim());
+    })
+  );
+};
 
 const filterByKanji = (users: CompanyUserStatus[]) =>
   users.filter((user) => user.nameKanji.includes(userNameKanjiSearch.value));
@@ -178,6 +185,8 @@ const getButtonColor = (amount: number | null) => {
       break;
     case 1:
     case 2:
+      classes += 'bg-[#afeeed]';
+      break;
     case 3:
       classes += 'bg-[#acacac]';
       break;

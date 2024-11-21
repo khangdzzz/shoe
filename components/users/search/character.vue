@@ -1,6 +1,7 @@
 <script setup lang="ts">
 interface Character {
   label: string;
+  label2: string;
   selected: boolean;
   disabled?: boolean;
 }
@@ -9,17 +10,15 @@ const companyStore = useCompanyStore();
 
 const characters = ref<Character[]>(CHARACTERS.map((char) => ({ ...char, selected: false })));
 
-watch(
-  () => companyStore.userNameKana,
-  () => {
-    characters.value = CHARACTERS.map((char) =>
-      companyStore.userNameKana.includes(char.label)
-        ? { ...char, selected: false }
-        : { ...char, disabled: true, selected: false }
-    );
-  },
-  { immediate: true }
-);
+const userNameKana = computed(() => companyStore.userNameKana);
+
+watch(userNameKana, () => {
+  characters.value = CHARACTERS.map((char) =>
+    userNameKana.value.includes(char.label) || userNameKana.value.includes(char.label2)
+      ? { ...char, disabled: false, selected: false }
+      : { ...char, disabled: true, selected: false }
+  );
+});
 
 const getClass = (char: Character) => {
   if (char.disabled) {
@@ -36,7 +35,9 @@ const handleClick = (char: Character) => {
     char.selected = !char.selected;
   }
 
-  companyStore.charactersSelected = characters.value.filter((char) => char.selected).map((char) => char.label);
+  companyStore.charactersSelected = characters.value
+    .filter((char) => char.selected)
+    .map((char) => `${char.label}, ${char.label2}`);
 };
 
 const clearSelection = () => {
