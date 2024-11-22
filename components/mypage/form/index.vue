@@ -252,6 +252,10 @@ const updateUserInformation = async () => {
 
   isDialogOpen.value = false;
 
+  if (system.notify?.message) {
+    return;
+  }
+
   permissionService.initPermissions();
 
   system.setNotify({
