@@ -318,7 +318,7 @@ const getBackgroundColor = (status: number) => {
               :class="[index < companyUsers.length - 1 ? 'border-b' : '', getBackgroundColor(row.status)]"
               v-if="companyUsers.length > 0"
             >
-              <td class="border-r border-[#52525200]">
+              <td class="pr-[1px]">
                 <Checkbox
                   :id="'select-row-' + row.id"
                   class="m-auto bg-white flex items-center justify-center text-black border border-gray-300"

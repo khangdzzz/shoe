@@ -28,7 +28,7 @@ const getCompanies = async () => {
     });
   }
 
-  if (companyName.value) condition += `&keyword=${companyName.value}`;
+  if (companyName.value) condition += `&companyName=${companyName.value}`;
 
   companyAdminStore.searchCompanies(condition);
 };
@@ -48,8 +48,6 @@ const onChangeDate = async (date: string) => {
   const [year, month] = date.split('/');
 
   targetYearMonth.value = `${year}-${month}-01`;
-
-  await getCompanies();
 };
 
 const onChangeStatus = async (value: number[]) => {
@@ -114,6 +112,10 @@ const triggerToast = (message: string, variant: 'default' | 'destructive' | null
     duration: 1000
   });
 };
+
+onMounted(async () => {
+  await getCompanies();
+});
 </script>
 
 <template>
