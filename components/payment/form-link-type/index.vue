@@ -1,0 +1,249 @@
+<template>
+  <form
+    v-if="!currentUser?.isHasPaymentMethod"
+    class="payment-form"
+    :action="formEndpoint"
+    method="POST"
+    @submit.prevent="handleSubmit"
+  >
+    <input
+      type="hidden"
+      name="pay_method"
+      value="credit"
+    />
+    <input
+      type="hidden"
+      name="merchant_id"
+      :value="merchantId"
+    />
+    <input
+      type="hidden"
+      name="service_id"
+      :value="serviceId"
+    />
+    <input
+      type="hidden"
+      name="cust_code"
+      :value="custCode"
+    />
+    <input
+      type="hidden"
+      name="sps_cust_no"
+      value=""
+    />
+    <input
+      type="hidden"
+      name="sps_payment_no"
+      value=""
+    />
+    <input
+      type="hidden"
+      name="terminal_type"
+      value="0"
+    />
+
+    <input
+      type="hidden"
+      name="success_url"
+      :value="successUrl"
+    />
+    <input
+      type="hidden"
+      name="cancel_url"
+      :value="cancelUrl"
+    />
+    <input
+      type="hidden"
+      name="error_url"
+      :value="errorUrl"
+    />
+    <input
+      type="hidden"
+      name="pagecon_url"
+      :value="pageconUrl"
+    />
+    <input
+      type="hidden"
+      name="free1"
+      value=""
+    />
+    <input
+      type="hidden"
+      name="free2"
+      value=""
+    />
+    <input
+      type="hidden"
+      name="free3"
+      value=""
+    />
+    <input
+      type="hidden"
+      name="free_csv"
+      value=""
+    />
+    <input
+      type="hidden"
+      name="request_date"
+      :value="requestDate"
+    />
+
+    <input
+      type="hidden"
+      name="limit_second"
+      value="60"
+    />
+    <input
+      type="hidden"
+      name="sps_hashcode"
+      :value="spsHashcode"
+    />
+
+    <Button
+      type="submit"
+      class="flex self-center min-w-[120px] mt-4 ml-16"
+      :disabled="isSubmitting || isLoading"
+    >
+      {{ buttonText }}
+    </Button>
+
+    <div
+      v-if="hasError"
+      class="ml-4"
+    >
+      {{ errorMessage }}
+    </div>
+  </form>
+  <Button
+    v-if="currentUser?.isHasPaymentMethod"
+    type="button"
+    @click="onCancelPaymentMethod"
+    variant="destructive"
+    class="flex self-center min-w-[120px] mt-4 ml-16"
+  >
+    支払い方法を変更する
+  </Button>
+</template>
+
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import Button from '~/components/ui/button/Button.vue';
+
+const router = useRouter();
+const authStore = useAuthStore();
+const system = useSystemStore();
+const currentUser = computed(() => {
+  return authStore.currentUser;
+});
+
+// Form data
+const isSubmitting = ref(false);
+const isLoading = ref(false);
+const hasError = ref(false);
+const errorMessage = ref('');
+
+const successUrl = ref('');
+const cancelUrl = ref('');
+const errorUrl = ref('');
+const pageconUrl = ref('');
+
+// Payment parameters
+const merchantId = ref('');
+const serviceId = ref('');
+const custCode = ref('');
+const requestDate = ref('');
+const spsHashcode = ref('');
+const formEndpoint = ref('');
+
+const companyPaymentStore = useCompanyPaymentStore();
+
+const buttonText = computed(() => {
+  if (currentUser.value?.isHasPaymentMethod) return '支払い方法を変更する';
+  if (isLoading.value) return 'パラメータを読み込み中...';
+  if (isSubmitting.value) return '処理中...';
+  return '支払い方法を登録する';
+});
+
+// Fetch payment parameters from API
+const fetchPaymentParams = async () => {
+  try {
+    isLoading.value = true;
+    hasError.value = false;
+    errorMessage.value = '';
+
+    const response = await companyPaymentStore.generatePaymentLinkTypeParams();
+
+    // Update values from API response
+    merchantId.value = response.merchantId;
+    serviceId.value = response.serviceId;
+    custCode.value = response.custCode;
+    spsHashcode.value = response.hashCode;
+    formEndpoint.value = response.endPoint + '/f04/FepPayInfoReceive.do';
+    requestDate.value = response.requestDate;
+    successUrl.value = response.isSuccessUrl;
+    cancelUrl.value = response.isCancelUrl;
+    errorUrl.value = response.isFailureUrl;
+    pageconUrl.value = response.notificationUrl;
+
+    return true;
+  } catch (error) {
+    hasError.value = true;
+    system.setNotify({
+      type: TYPE_MESSAGE.error,
+      message: 'パラメータの取得に失敗しました。もう一度お試しください。'
+    });
+    return false;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Handle form submission
+const handleSubmit = async (event: Event) => {
+  try {
+    isSubmitting.value = true;
+
+    // Fetch parameters first
+    const success = await fetchPaymentParams();
+    if (!success) {
+      return;
+    }
+
+    // Validate parameters
+    if (!merchantId.value || !serviceId.value || !custCode.value) {
+      throw new Error('必要な支払いパラメータが不足しています');
+    }
+
+    // Submit the form programmatically
+    const form = event.target as HTMLFormElement;
+    form.submit();
+  } catch (error) {
+    hasError.value = true;
+    system.setNotify({
+      type: TYPE_MESSAGE.error,
+      message: '支払い処理に失敗しました。もう一度お試しください。'
+    });
+    console.error('Error during submission:', error);
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+const onCancelPaymentMethod = async () => {
+  const res = await companyPaymentStore.cancelCurrentPaymentMethod();
+  if (!res) {
+    system.setNotify({
+      type: TYPE_MESSAGE.error,
+      message: '支払い方法の変更に失敗しました。もう一度お試しください。'
+    });
+  } else {
+    system.setNotify({
+      type: TYPE_MESSAGE.success,
+      message: '支払い方法を変更しました。'
+    });
+    setTimeout(() => {
+      router.replace('/mypage');
+    }, 1000);
+  }
+};
+</script>

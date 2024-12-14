@@ -28,4 +28,5 @@ export interface AuthUser {
   createdAt: string;
   updatedAt: string;
   company: Company;
+  isHasPaymentMethod: boolean;
 }
