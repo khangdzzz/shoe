@@ -264,7 +264,6 @@ const updateUserInformation = async () => {
   });
 
   setTimeout(() => {
-    console.log('redirectPage');
     redirectPage('/user-list');
   }, 500);
 };

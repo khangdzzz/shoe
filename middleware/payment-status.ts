@@ -16,7 +16,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const isCancel = to.query.is_cancel === 'true';
 
   if (isSuccess || isCancel) {
-    const message = isSuccess ? 'お支払い方法の登録が完了しました' : 'お支払い方法の登録がキャンセルされました';
+    const message = isSuccess ? MESSAGES.INFO002 : MESSAGES.INFO001;
 
     useState(
       'paymentMessage',
@@ -28,7 +28,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     );
   }
   if (!isSuccess && !isCancel) {
-    const message = '支払い登録に失敗しました。もう一度お試しください。';
+    const message = MESSAGES.ERR010;
     useState(
       'paymentMessage',
       () =>

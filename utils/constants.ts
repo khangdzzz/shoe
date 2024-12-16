@@ -37,7 +37,12 @@ export const MESSAGES: { [key: string]: string } = {
   ERR004: 'メールアドレス形式で入力してください', // email format
   ERR005: 'フリガナで入力してください	', // katakana
   ERR006: 'パスワードが一致していません', // password not match
-  ERR007: '半角英数記号を8文字以上入力してください' // password format,
+  ERR007: '半角英数記号を8文字以上入力してください', // password format,
+  ERR008: '支払い処理に失敗しました。もう一度お試しください。', // payment -> failure to get sb param
+  ERR009: 'お支払い方法のキャンセルに失敗しました。もう一度お試しください。', // payment -> failure to cancel
+  ERR010: '支払い登録に失敗しました。もう一度お試しください。', // payment -> failure to register
+  INFO001: 'お支払い方法のキャンセルが完了しました。', // payment -> cancel success
+  INFO002: 'お支払い方法の登録が完了しました' // payment -> success
 };
 
 export const FIELDS = {

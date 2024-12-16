@@ -190,7 +190,7 @@ const fetchPaymentParams = async () => {
     hasError.value = true;
     system.setNotify({
       type: TYPE_MESSAGE.error,
-      message: 'パラメータの取得に失敗しました。もう一度お試しください。'
+      message: MESSAGES.ERR008
     });
     return false;
   } finally {
@@ -211,7 +211,7 @@ const handleSubmit = async (event: Event) => {
 
     // Validate parameters
     if (!merchantId.value || !serviceId.value || !custCode.value) {
-      throw new Error('必要な支払いパラメータが不足しています');
+      throw new Error(MESSAGES.ERR008);
     }
 
     // Submit the form programmatically
@@ -221,9 +221,8 @@ const handleSubmit = async (event: Event) => {
     hasError.value = true;
     system.setNotify({
       type: TYPE_MESSAGE.error,
-      message: '支払い処理に失敗しました。もう一度お試しください。'
+      message: MESSAGES.ERR008
     });
-    console.error('Error during submission:', error);
   } finally {
     isSubmitting.value = false;
   }
@@ -234,12 +233,12 @@ const onCancelPaymentMethod = async () => {
   if (!res) {
     system.setNotify({
       type: TYPE_MESSAGE.error,
-      message: '支払い方法の変更に失敗しました。もう一度お試しください。'
+      message: MESSAGES.ERR009
     });
   } else {
     system.setNotify({
       type: TYPE_MESSAGE.success,
-      message: '支払い方法を変更しました。'
+      message: MESSAGES.INFO001
     });
     setTimeout(() => {
       router.replace('/mypage');

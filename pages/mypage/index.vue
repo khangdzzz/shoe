@@ -7,7 +7,6 @@ definePageMeta({
 const paymentMessage = useState<PaymentMessageType>('paymentMessage');
 
 onMounted(() => {
-  console.log('mounted', paymentMessage.value);
   if (paymentMessage.value?.text) {
     setTimeout(() => {
       paymentMessage.value = {
