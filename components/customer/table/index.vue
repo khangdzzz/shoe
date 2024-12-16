@@ -224,6 +224,10 @@ const editCustomer = () => {
   redirectPage(`/customer/detail/${selectedRows.value.values().next().value}`);
 };
 
+const doubleClickEditCustomer = (id: number) => {
+  redirectPage(`/customer/detail/${id}`);
+};
+
 const triggerToast = (variant: 'default' | 'destructive' | null | undefined, message: string) => {
   toast({
     description: message,
@@ -317,6 +321,7 @@ const getBackgroundColor = (status: number) => {
               :key="index"
               :class="[index < companyUsers.length - 1 ? 'border-b' : '', getBackgroundColor(row.status)]"
               v-if="companyUsers.length > 0"
+              @dblclick="doubleClickEditCustomer(row.id)"
             >
               <td class="pr-[1px]">
                 <Checkbox
