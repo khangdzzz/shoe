@@ -27,7 +27,7 @@ onUnmounted(() => {
       <span class="text-base font-bold">プロフィール設定</span>
     </div>
     <div
-      v-if="paymentMessage.text"
+      v-if="paymentMessage?.text"
       :class="[
         'mb-4 p-4 rounded-md mt-4',
         paymentMessage.type === 'success'
