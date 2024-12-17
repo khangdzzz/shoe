@@ -23,7 +23,12 @@ export const usePermission = () => {
     }
   };
 
+  const refreshUserInfo = async () => {
+    await loadPermissions();
+  };
+
   return {
-    initPermissions
+    initPermissions,
+    refreshUserInfo
   };
 };
