@@ -38,6 +38,8 @@ const changeFields = ref<string[]>([]);
 const kaipokeUserPasswordVisible = ref(false);
 const passwordVisible = ref(false);
 
+const isRemainOldPlan = ref(false);
+
 const katakanaRegex = /^[\u30A0-\u30FF]+$/;
 
 const kaigoSoftware = computed(() => dataInit.masterData?.kaigoSoftwares);
@@ -65,27 +67,30 @@ onMounted(async () => {
 
 const initDataUser = () => {
   if (currentUser.value) {
-    setFieldValue('companyName', currentUser.value.companyName);
-    setFieldValue('companyNameKana', currentUser.value.companyNameKana);
-    setFieldValue('companyPostCode', currentUser.value.companyPostCode);
-    setFieldValue('companyAddress', currentUser.value.companyAddress);
-    setFieldValue('phoneNumber', currentUser.value.phoneNumber);
-    setFieldValue('picFamilyName', currentUser.value.picFamilyName);
-    setFieldValue('picFamilyNameKana', currentUser.value.picFamilyNameKana);
-    setFieldValue('picGivenName', currentUser.value.picGivenName);
-    setFieldValue('picGivenNameKana', currentUser.value.picGivenNameKana);
-    setFieldValue('picPosition', currentUser.value.picPosition);
-    setFieldValue('frontPicFamilyName', currentUser.value.frontPicFamilyName);
-    setFieldValue('frontPicFamilyNameKana', currentUser.value.frontPicFamilyNameKana);
-    setFieldValue('frontPicGivenName', currentUser.value.frontPicGivenName);
-    setFieldValue('frontPicGivenNameKana', currentUser.value.frontPicGivenNameKana);
-    setFieldValue('frontPicPosition', currentUser.value.frontPicPosition);
-    setFieldValue('kaipokeUserId', currentUser.value.kaipokeUserId);
-    setFieldValue('kaipokeUserPassword', currentUser.value.kaipokeUserPassword);
-    setFieldValue('kaipokeCompanyId', currentUser.value.kaipokeCompanyId);
-    setFieldValue('kaigoSoftware', currentUser.value.kaigoSoftware.toString());
-    setFieldValue('paymentMethod', currentUser.value.paymentMethod);
-    setFieldValue('email', currentUser.value.email);
+    const user = currentUser.value;
+    setFieldValue('companyName', user.companyName);
+    setFieldValue('companyNameKana', user.companyNameKana);
+    setFieldValue('companyPostCode', user.companyPostCode);
+    setFieldValue('companyAddress', user.companyAddress);
+    setFieldValue('phoneNumber', user.phoneNumber);
+    setFieldValue('picFamilyName', user.picFamilyName);
+    setFieldValue('picFamilyNameKana', user.picFamilyNameKana);
+    setFieldValue('picGivenName', user.picGivenName);
+    setFieldValue('picGivenNameKana', user.picGivenNameKana);
+    setFieldValue('picPosition', user.picPosition);
+    setFieldValue('frontPicFamilyName', user.frontPicFamilyName);
+    setFieldValue('frontPicFamilyNameKana', user.frontPicFamilyNameKana);
+    setFieldValue('frontPicGivenName', user.frontPicGivenName);
+    setFieldValue('frontPicGivenNameKana', user.frontPicGivenNameKana);
+    setFieldValue('frontPicPosition', user.frontPicPosition);
+    setFieldValue('kaipokeUserId', user.kaipokeUserId);
+    setFieldValue('kaipokeUserPassword', user.kaipokeUserPassword);
+    setFieldValue('kaipokeCompanyId', user.kaipokeCompanyId);
+    setFieldValue('kaigoSoftware', user.kaigoSoftware.toString());
+    setFieldValue('paymentMethod', user.paymentMethod);
+    setFieldValue('email', user.email);
+
+    isRemainOldPlan.value = user.keepLastPlanContentFlg == 1 ? true : false;
 
     initialFormValues.value = { ...formValues };
   }
@@ -180,7 +185,7 @@ const searchPostalCode = async () => {
 };
 
 watch(
-  formValues,
+  [formValues, isRemainOldPlan],
   () => {
     changeFields.value = [];
 
@@ -190,6 +195,11 @@ watch(
         changeFields.value.push(japaneseFields);
       }
     });
+
+    const keepLastPlanContentFlg = isRemainOldPlan.value ? 1 : 0;
+
+    if (currentUser.value?.keepLastPlanContentFlg !== keepLastPlanContentFlg)
+      changeFields.value.push(FIELDS.keepLastPlanContentFlg);
   },
   {
     deep: true
@@ -218,6 +228,7 @@ const updateCompanyCustomer = async (status?: number) => {
 
   const body = {
     ...updatedFormValues,
+    keepLastPlanContentFlg: isRemainOldPlan.value ? 1 : 0,
     kaigoSoftware: Number(updatedFormValues.kaigoSoftware),
     ...(newPassword && { newPassword }),
     ...(status && { status })
@@ -313,7 +324,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="法人名"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -336,7 +347,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="フリガナ"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -364,7 +375,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="郵便番号"
-                  class="w-[145px] flex"
+                  class="w-[160px] flex"
                 />
                 <div class="relative flex !m-[0px] gap-[20px]">
                   <FormControl>
@@ -399,7 +410,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="会社所在地"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -422,7 +433,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="代表者"
-                  class="w-[145px] flex pt-[14px] items-baseline"
+                  class="w-[160px] flex pt-[14px] items-baseline"
                 />
                 <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
@@ -540,7 +551,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="ご担当者"
-                  class="w-[145px] flex pt-[14px] items-baseline"
+                  class="w-[160px] flex pt-[14px] items-baseline"
                 />
                 <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
@@ -663,7 +674,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="電話番号"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[40%] !m-[0px]">
                   <FormControl>
@@ -686,7 +697,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="メールアドレス"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -709,7 +720,7 @@ const redirectPageAfterAction = (message: string) => {
               name="password"
             >
               <FormItem class="flex gap-5">
-                <div class="w-[145px]">
+                <div class="w-[160px]">
                   <span>パスワード</span>
                 </div>
                 <div class="relative w-[82%] !m-[0px]">
@@ -751,7 +762,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="relative flex gap-5">
                 <ShareRequireLabel
                   label="介護ソフト選択"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -785,7 +796,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="カイポケ法人ID"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -808,7 +819,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="カイポケユーザーID"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -831,7 +842,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="カイポケパスワード"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -872,7 +883,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="決済方法"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -884,6 +895,20 @@ const redirectPageAfterAction = (message: string) => {
                       }"
                     />
                   </FormControl>
+                </div>
+              </FormItem>
+            </FormField>
+
+            <FormField
+              v-slot="{ componentField, errors }"
+              name="remainOldPlan"
+            >
+              <FormItem class="flex gap-5">
+                <span class="w-[160px] flex items-center">前回の計画書内容を保持する</span>
+                <div class="relative w-[82%] !m-[0px] flex gap-2 items-center">
+                  <span>OFF</span>
+                  <Switch v-model:checked="isRemainOldPlan" />
+                  <span>ON</span>
                 </div>
               </FormItem>
             </FormField>

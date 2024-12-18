@@ -71,7 +71,8 @@ export const FIELDS = {
   registerReason: 'ご登録の切っ掛け',
   paymentMethod: '決済方法',
   terms: '利用規約',
-  term: '利用規約確認'
+  term: '利用規約確認',
+  keepLastPlanContentFlg: '前回の計画書内容を保持する'
 };
 
 export const CHARACTERS = [
