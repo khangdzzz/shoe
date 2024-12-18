@@ -29,6 +29,8 @@ const kaigoSoftware = computed(() => dataInit.masterData?.kaigoSoftwares);
 const isLoading = ref(false);
 const isLoadPostalCode = ref(false);
 
+const isRemainOldPlan = ref(false);
+
 const formSchema = toTypedSchema(
   z.object({
     companyName: z.string(messageRequired(FIELDS.companyName)).min(1, messageRequired(FIELDS.companyName)),
@@ -118,7 +120,12 @@ const onSubmit = handleSubmit(
     isLoading.value = true;
     const { password, ...rest } = values;
 
-    await companyAdminStore.createNewCompany(rest);
+    const body = {
+      ...rest,
+      keepLastPlanContentFlg: isRemainOldPlan.value ? 1 : 0
+    };
+
+    await companyAdminStore.createNewCompany(body);
 
     isLoading.value = false;
 
@@ -171,7 +178,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="法人名"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -194,7 +201,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="フリガナ"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -222,7 +229,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="郵便番号"
-                  class="w-[145px] flex"
+                  class="w-[160px] flex"
                 />
                 <div class="relative flex !m-[0px] gap-[20px]">
                   <FormControl>
@@ -257,7 +264,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="会社所在地"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -280,7 +287,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="代表者"
-                  class="w-[145px] flex pt-[14px] items-baseline"
+                  class="w-[160px] flex pt-[14px] items-baseline"
                 />
                 <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
@@ -398,7 +405,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="ご担当者"
-                  class="w-[145px] flex pt-[14px] items-baseline"
+                  class="w-[160px] flex pt-[14px] items-baseline"
                 />
                 <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
@@ -521,7 +528,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="電話番号"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[40%] !m-[0px]">
                   <FormControl>
@@ -544,7 +551,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="メールアドレス"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -567,7 +574,7 @@ const redirectPageAfterAction = (message: string) => {
               name="password"
             >
               <FormItem class="flex gap-5">
-                <div class="w-[145px]">
+                <div class="w-[160px]">
                   <span>パスワード</span>
                 </div>
                 <div class="relative w-[82%] !m-[0px]">
@@ -586,7 +593,6 @@ const redirectPageAfterAction = (message: string) => {
                       <button
                         type="button"
                         class="absolute right-[15px] top-1/2 transform -translate-y-1/2"
-                        @click="togglePasswordVisibility"
                         aria-label="Toggle password visibility"
                       >
                         <template v-if="!passwordVisible">
@@ -610,7 +616,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="relative flex gap-5">
                 <ShareRequireLabel
                   label="介護ソフト選択"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -644,7 +650,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="カイポケ法人ID"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -667,7 +673,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="カイポケユーザーID"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -690,7 +696,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="カイポケパスワード"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -731,7 +737,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="決済方法"
-                  class="w-[145px]"
+                  class="w-[160px]"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
@@ -743,6 +749,20 @@ const redirectPageAfterAction = (message: string) => {
                       }"
                     />
                   </FormControl>
+                </div>
+              </FormItem>
+            </FormField>
+
+            <FormField
+              v-slot="{ componentField, errors }"
+              name="remainOldPlan"
+            >
+              <FormItem class="flex gap-5">
+                <span class="w-[160px] flex items-center">前回の計画書内容を保持する</span>
+                <div class="relative w-[82%] !m-[0px] flex gap-2 items-center">
+                  <span>OFF</span>
+                  <Switch v-model:checked="isRemainOldPlan" />
+                  <span>ON</span>
                 </div>
               </FormItem>
             </FormField>

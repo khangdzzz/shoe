@@ -49,6 +49,7 @@ export interface Company extends Address, Person, FrontPerson, KaipokeDetails, R
   id: number;
   companyName: string;
   companyNameKana: string;
+  keepLastPlanContentFlg: number;
   createdAt: string;
   updatedAt: string;
   status: number;
@@ -110,6 +111,7 @@ export interface AdminCreateCustomer {
   picGivenName: string;
   picGivenNameKana: string;
   picPosition: string;
+  keepLastPlanContentFlg: number;
 }
 
 export interface ExportCompanyCustomer {
