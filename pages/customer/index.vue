@@ -101,7 +101,10 @@ const exportData = async (exportType: number) => {
   await companyAdminStore.exportCompanyCustomer(body);
 
   if (!system.notify?.message) {
-    triggerToast('顧客情報をエクスポートしました', 'default');
+    triggerToast(
+     `メッセージが「エクスポートしました」だと、わかりにくいですね。\n「ダウンロード用のリンクをメールで送信しました。」`,
+      'default'
+    );
   }
 };
 
@@ -109,7 +112,7 @@ const triggerToast = (message: string, variant: 'default' | 'destructive' | null
   toast({
     description: message,
     variant: variant,
-    duration: 1000
+    duration: 1000,
   });
 };
 
@@ -123,21 +126,12 @@ onMounted(async () => {
     <div class="header flex items-center h-[40px] border-b border-b-[#e2e2e2]">
       <span class="text-base font-bold">顧客管理</span>
     </div>
-    <CustomerSearch
-      @update:change-date="onChangeDate"
-      @update:change-status="onChangeStatus"
-      @search-company-name="onSearchCompanyName"
-      @export-customer="exportCustomer"
-      @export-status-company="exportStatusCompany"
-    />
+    <CustomerSearch @update:change-date="onChangeDate" @update:change-status="onChangeStatus"
+      @search-company-name="onSearchCompanyName" @export-customer="exportCustomer"
+      @export-status-company="exportStatusCompany" />
     <div class="body-content flex py-4 w-full gap-2">
-      <CustomerTable
-        class="w-full"
-        @update:pagination="onChangePagination"
-        @update:sort="onSort"
-        @get-companies="getCompanies"
-        @select-row="onSelectRows"
-      />
+      <CustomerTable class="w-full" @update:pagination="onChangePagination" @update:sort="onSort"
+        @get-companies="getCompanies" @select-row="onSelectRows" />
     </div>
   </div>
 </template>
