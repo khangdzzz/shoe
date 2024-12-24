@@ -8,14 +8,15 @@ const companyAdminStore = useCompanyAdminStore();
 const emit = defineEmits([
   'update:changeDate',
   'update:changeStatus',
-  'searchCompanyName',
+  'searchCompany',
   'exportCustomer',
   'exportStatusCompany'
 ]);
 
 const targetYearMonth = ref('');
 const status = ref<number[]>([]);
-const companyName = ref('');
+const keyword = ref('');
+const isEnterPressed = ref(false);
 
 const isLoadingExportCompany = computed(() => companyAdminStore.isLoadingExportCompany);
 const isLoadingExportStatusCompany = computed(() => companyAdminStore.isLoadingExportStatusCompany);
@@ -42,6 +43,20 @@ const handleExportCustomer = () => {
 const handleExportStatusCompany = () => {
   emit('exportStatusCompany');
 };
+
+const onBlur = () => {
+  if (isEnterPressed.value) {
+    isEnterPressed.value = false;
+    return;
+  }
+  emit('searchCompany', keyword.value);
+};
+
+const handleEnter = (event: any) => {
+  isEnterPressed.value = true;
+  event.target.blur();
+  emit('searchCompany', keyword.value);
+};
 </script>
 
 <template>
@@ -53,9 +68,9 @@ const handleExportStatusCompany = () => {
           type="text"
           placeholder="Search..."
           class="pl-10 w-[70%]"
-          v-model="companyName"
-          @blur="emit('searchCompanyName', companyName)"
-          @keydown.enter="emit('searchCompanyName', companyName)"
+          v-model="keyword"
+          @blur="onBlur"
+          @keydown.enter.prevent="handleEnter"
         />
         <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
           <Search class="w-4 h-4" />
