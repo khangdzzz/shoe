@@ -121,7 +121,7 @@ const filterByCharacter = (users: CompanyUserStatus[]) => {
     characterSelected.value.some((char) => {
       const [char1, char2] = char.split(',');
 
-      return user.nameKana.includes(char1.trim()) || user.nameKana.includes(char2.trim());
+      return user.nameKana.startsWith(char1.trim()) || user.nameKana.startsWith(char2.trim());
     })
   );
 };
