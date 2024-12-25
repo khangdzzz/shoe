@@ -14,9 +14,10 @@ const route = useRoute();
 const dataInit = useFetchDataInit();
 const system = useSystemStore();
 const company = useCompanyStore();
+const jwt = useJwt();
 const { redirectPage } = useRedirectPage();
 
-const email = route.query.email;
+const email = ref('');
 const token = route.query.token;
 
 const postalCode = ref<PostalCode>();
@@ -35,9 +36,21 @@ const passwordVisible = ref(false);
 const katakanaRegex = /^[\u30A0-\u30FF]+$/;
 
 onMounted(() => {
-  if (!email || !token) {
+  if (!token) {
     redirectPage('/login');
   }
+
+  const tokenDecode = jwt.parseJwt(token?.toString() ?? '');
+
+  if (!tokenDecode || notify.value?.message) {
+    setTimeout(() => {
+      redirectPage('/login');
+    }, 1000);
+  }
+
+  email.value = tokenDecode?.email ?? '';
+
+  setFieldValue('email', email.value);
 });
 
 const kaigoSoftware = computed(() => {
@@ -101,10 +114,7 @@ const {
   values: formValues,
   setFieldValue
 } = useForm({
-  validationSchema: formSchema,
-  initialValues: {
-    email: email?.toString() ?? ''
-  }
+  validationSchema: formSchema
 });
 
 const togglePasswordVisibility = () => {
