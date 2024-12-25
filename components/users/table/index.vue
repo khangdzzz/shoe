@@ -28,7 +28,8 @@ const planSwitchState = ref(false);
 const reportSwitchState = ref(false);
 const isCalenderJapanese = ref(false);
 const isDisableExport = ref(true);
-
+const selectedReportStatus = ref('999');
+const selectedPlanStatus = ref('999');
 const usersNeedCreateReport = ref<CompanyUserStatus[]>([]);
 
 const headers: Header[] = [
@@ -48,6 +49,11 @@ const STATUS: { [key: number]: string } = {
   2: '実行済み',
   3: '実行エラー'
 };
+
+const STATUS_CREATE_REPORT_PLAN = Object.entries(STATUS).map(([key, value]) => ({
+  id: Number(key),
+  value: value
+}));
 
 const isLoading = computed(() => companyStore.isLoadCompanyUsers);
 
@@ -81,6 +87,10 @@ watch(companyUsers, (newUsers) => {
   isDisableExport.value = !isBulkExport;
 });
 
+watch([selectedReportStatus, selectedPlanStatus], () => {
+  companyUsers.value = handleDataCompanyUserStatus();
+});
+
 const handleDataCompanyUserStatus = (companyUsers?: CompanyUserStatus[]) => {
   let filteredUsers = companyUsers ?? [...users.value];
 
@@ -90,7 +100,22 @@ const handleDataCompanyUserStatus = (companyUsers?: CompanyUserStatus[]) => {
 
   if (userNameKanjiSearch.value) filteredUsers = filterByKanji(filteredUsers);
 
+  if (selectedReportStatus.value !== '999' || selectedPlanStatus.value !== '999')
+    filteredUsers = filterByReportStatus(filteredUsers);
+
   return filteredUsers;
+};
+
+const filterByReportStatus = (users: CompanyUserStatus[]) => {
+  const selectReportStatus = Number(selectedReportStatus.value);
+  const selectPlanStatus = Number(selectedPlanStatus.value);
+  return users.filter((user) => {
+    if (selectReportStatus !== 999 && selectPlanStatus !== 999)
+      return user.reportStatus === selectReportStatus && user.planStatus === selectPlanStatus;
+    if (selectReportStatus !== 999) return user.reportStatus === selectReportStatus;
+    if (selectPlanStatus !== 999) return user.planStatus === selectPlanStatus;
+    return true;
+  });
 };
 
 const onChangeReportSwitch = () => {
@@ -413,13 +438,54 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
       </div>
     </div>
     <div class="w-full flex relative flex-col">
+      <table class="w-full table-fixed mb-[4px]">
+        <thead>
+          <tr class="bg-[#ffff]">
+            <th class="w-[32%]"></th>
+            <th class="w-[9%] text-center">
+              <Select v-model="selectedReportStatus">
+                <SelectTrigger class="w-full">
+                  <SelectValue placeholder="" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="999">すべて</SelectItem>
+                  <SelectItem
+                    :value="`${status.id}`"
+                    v-for="status of STATUS_CREATE_REPORT_PLAN"
+                  >
+                    {{ status.value }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </th>
+            <th class="w-[16%]"></th>
+            <th class="w-[9%] text-center">
+              <Select v-model="selectedPlanStatus">
+                <SelectTrigger class="w-full">
+                  <SelectValue placeholder="" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="999">すべて</SelectItem>
+                  <SelectItem
+                    :value="`${status.id}`"
+                    v-for="status of STATUS_CREATE_REPORT_PLAN"
+                  >
+                    {{ status.value }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </th>
+            <th colspan="3"></th>
+          </tr>
+        </thead>
+      </table>
       <div
         class="table-container overflow-auto border-b"
         :class="{ 'border-l': companyUsers.length }"
       >
         <table class="w-full table-fixed">
-          <thead class="bg-[#afeeee] sticky top-0 z-10">
-            <tr>
+          <thead class="sticky top-0 z-10">
+            <tr class="bg-[#afeeee]">
               <th
                 class="py-3"
                 v-for="(header, index) in headers"
@@ -502,8 +568,8 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
                 <span
                   :class="getButtonColorPlan(row)"
                   @click="updatePlanStatus(row)"
-                  >実行 {{ row.reportStatus }}</span
-                >
+                  >実行
+                </span>
               </td>
             </tr>
           </tbody>
@@ -553,7 +619,6 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
 thead th {
   position: sticky;
   top: 0;
-  background-color: #afeeee;
   z-index: 1;
 }
 
