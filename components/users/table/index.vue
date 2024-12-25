@@ -22,7 +22,6 @@ const system = useSystemStore();
 const { toast } = useToast();
 
 const sort = ref('');
-const actionExport = ref('');
 const userNameKanjiSearch = ref('');
 const isDialogOpen = ref(false);
 const planSwitchState = ref(false);
@@ -65,6 +64,8 @@ const isOpenNotifyCrawler = computed(() => companyStore.isOpenNotifyCrawler);
 const companyUsers = ref<CompanyUserStatus[]>([]);
 
 watch(users, () => {
+  planSwitchState.value = false;
+  reportSwitchState.value = false;
   companyUsers.value = handleDataCompanyUserStatus();
 });
 
@@ -101,11 +102,16 @@ const onChangeReportSwitch = () => {
       reportStatus: users.value.find((u) => u.id === user.id)?.reportStatus ?? 0
     }));
     companyUsers.value = handleDataCompanyUserStatus(companyUsers.value);
-  } else companyUsers.value = updateUsersReportStatus(companyUsers.value);
+    planSwitchState.value = false;
+    onChangePlanSwitch(planSwitchState.value);
+  } else {
+    companyUsers.value = updateUsersReportStatus(companyUsers.value);
+    if (planSwitchState.value) onChangePlanSwitch(planSwitchState.value);
+  }
 };
 
-const onChangePlanSwitch = () => {
-  const planStatus = !planSwitchState.value;
+const onChangePlanSwitch = (status?: boolean) => {
+  const planStatus = status !== undefined ? status : !planSwitchState.value;
 
   if (!planStatus) {
     companyUsers.value = companyUsers.value.map((user) => ({
@@ -131,13 +137,24 @@ const filterByKanji = (users: CompanyUserStatus[]) =>
 
 const updateUsersReportStatus = (users: CompanyUserStatus[]) => {
   return users.map((user) => {
-    return { ...user, reportStatus: user.reportStatus === 0 ? VALUE_STATUS_BULK_EXPORT : user.reportStatus };
+    return {
+      ...user,
+      reportStatus: user.reportStatus === 0 || user.reportStatus === 3 ? VALUE_STATUS_BULK_EXPORT : user.reportStatus
+    };
   });
 };
 
-const updateUsersPlanStatus = (users: CompanyUserStatus[]) => {
-  return users.map((user) => {
-    return { ...user, planStatus: user.planStatus === 0 ? VALUE_STATUS_BULK_EXPORT : user.planStatus };
+const updateUsersPlanStatus = (companyUsers: CompanyUserStatus[]) => {
+  return companyUsers.map((companyUser) => {
+    return {
+      ...companyUser,
+      planStatus:
+        (companyUser.planStatus === 0 || companyUser.planStatus === 3) &&
+        companyUser.reportStatus !== 0 &&
+        companyUser.reportStatus !== 3
+          ? VALUE_STATUS_BULK_EXPORT
+          : companyUser.planStatus
+    };
   });
 };
 
@@ -174,7 +191,7 @@ const getStatusColor = (amount: number | null) => {
   return classes;
 };
 
-const getButtonColor = (amount: number | null) => {
+const getButtonColorReport = (amount: number | null) => {
   if (!amount) amount = 0;
 
   let classes = 'flex justify-center items-center py-2 ml-2 rounded-sm mx-1 ';
@@ -182,6 +199,33 @@ const getButtonColor = (amount: number | null) => {
   switch (amount) {
     case 0:
       classes += 'border border-gray-300 hover:bg-[#faeded]';
+      break;
+    case 1:
+    case 2:
+      classes += 'bg-[#afeeed]';
+      break;
+    case 3:
+      classes += 'bg-[#acacac]';
+      break;
+    case VALUE_STATUS_BULK_EXPORT:
+      classes += 'bg-[#afeeed] hover:bg-[#77f6f4]';
+      break;
+  }
+
+  return classes;
+};
+
+const getButtonColorPlan = (row: CompanyUserStatus) => {
+  const reportStatus = row.reportStatus ?? 0;
+  const planStatus = row.planStatus ?? 0;
+
+  let classes = 'flex justify-center items-center py-2 ml-2 rounded-sm mx-1 ';
+
+  switch (planStatus) {
+    case 0:
+      classes += [VALUE_STATUS_BULK_EXPORT, 1, 2].includes(reportStatus)
+        ? 'border border-gray-300 hover:bg-[#faeded]'
+        : 'border border-gray-300 ';
       break;
     case 1:
     case 2:
@@ -231,24 +275,35 @@ const handleSortUsers = (users: any[]) => {
   });
 };
 
-const updateReportStatus = (user: CompanyUserStatus) => {
-  const reportStatus = user.reportStatus;
+const updateReportStatus = (companyUser: CompanyUserStatus) => {
+  const { id, reportStatus } = companyUser;
 
-  if (reportStatus != 0 && reportStatus !== 99) return;
+  if (![0, 3, VALUE_STATUS_BULK_EXPORT].includes(reportStatus)) return;
 
-  const newStatus = reportStatus === VALUE_STATUS_BULK_EXPORT ? 0 : VALUE_STATUS_BULK_EXPORT;
+  const userReportStatus = users.value.find((user) => user.id === id)?.reportStatus ?? 0;
 
-  companyUsers.value = companyUsers.value.map(updateUserReportStatus(user.id, newStatus));
+  const newStatus = reportStatus === VALUE_STATUS_BULK_EXPORT ? userReportStatus : VALUE_STATUS_BULK_EXPORT;
+
+  companyUsers.value = companyUsers.value.map(updateUserReportStatus(companyUser.id, newStatus));
+
+  if (newStatus != VALUE_STATUS_BULK_EXPORT) updatePlanStatus(companyUser, true);
 };
 
-const updatePlanStatus = (user: CompanyUserStatus) => {
-  const planStatus = user.planStatus;
+const updatePlanStatus = (companyUser: CompanyUserStatus, forceCancel?: boolean) => {
+  const { id, planStatus, reportStatus } = companyUser;
 
-  if (planStatus != 0 && planStatus !== 99) return;
+  const userPlanStatus = users.value.find((user) => user.id === id)?.planStatus ?? 0;
 
-  const newStatus = planStatus === VALUE_STATUS_BULK_EXPORT ? 0 : VALUE_STATUS_BULK_EXPORT;
+  if (forceCancel) {
+    companyUsers.value = companyUsers.value.map(updateUserPlanStatus(companyUser.id, userPlanStatus));
+    return;
+  }
 
-  companyUsers.value = companyUsers.value.map(updateUserPlanStatus(user.id, newStatus));
+  if (![0, 3, VALUE_STATUS_BULK_EXPORT].includes(planStatus) || [0, 3].includes(reportStatus)) return;
+
+  const newStatus = planStatus === VALUE_STATUS_BULK_EXPORT ? userPlanStatus : VALUE_STATUS_BULK_EXPORT;
+
+  companyUsers.value = companyUsers.value.map(updateUserPlanStatus(companyUser.id, newStatus));
 };
 
 const updateUserReportStatus = (id: number, status: number) => (user: CompanyUserStatus) =>
@@ -305,7 +360,8 @@ const handleExportCompanyUser = async () => {
 const triggerToast = (variant: 'default' | 'destructive' | null | undefined, message: string) => {
   toast({
     description: message,
-    variant: variant
+    variant: variant,
+    duration: 1000
   });
 };
 </script>
@@ -343,14 +399,14 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
         <div class="flex items-center space-x-2">
           <Switch
             v-model:checked="reportSwitchState"
-            @click="onChangeReportSwitch"
+            @click="() => onChangeReportSwitch()"
           />
           <span>一括</span>
         </div>
         <div class="flex items-center space-x-2">
           <Switch
             v-model:checked="planSwitchState"
-            @click="onChangePlanSwitch"
+            @click="() => onChangePlanSwitch()"
           />
           <span>一括</span>
         </div>
@@ -437,16 +493,16 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
               </td>
               <td>
                 <span
-                  :class="getButtonColor(row.reportStatus)"
+                  :class="getButtonColorReport(row.reportStatus)"
                   @click="updateReportStatus(row)"
                   >実行</span
                 >
               </td>
               <td>
                 <span
-                  :class="getButtonColor(row.planStatus)"
+                  :class="getButtonColorPlan(row)"
                   @click="updatePlanStatus(row)"
-                  >実行</span
+                  >実行 {{ row.reportStatus }}</span
                 >
               </td>
             </tr>
