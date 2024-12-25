@@ -11,6 +11,7 @@ enum CheckType {
 
 const companyAdminStore = useCompanyAdminStore();
 const system = useSystemStore();
+const dataInitStore = useFetchDataInit();
 const { redirectPage } = useRedirectPage();
 const { toast } = useToast();
 
@@ -85,6 +86,7 @@ const isOpenDialogDelete = ref(false);
 const totalRecord = computed(() => companyAdminStore.companyUsers?.totalRecord ?? 0);
 const isLoading = computed(() => companyAdminStore.isLoadCompanyCustomers);
 const notify = computed(() => system.notify);
+const masterData = computed(() => dataInitStore.masterData);
 
 const selectedRows = ref<Set<number>>(new Set());
 
@@ -242,6 +244,11 @@ const getBackgroundColor = (status: number) => {
   if (status == 2) return (className += '!bg-[#feffce]');
   if (status == 3) return (className += '!bg-[#515151] text-white');
 };
+
+const getNameSoftware = (id: number) => {
+  const softwareList = masterData.value?.kaigoSoftwares;
+  return softwareList?.find((item) => item.id == id)?.name ?? '';
+};
 </script>
 
 <template>
@@ -350,7 +357,7 @@ const getBackgroundColor = (status: number) => {
                 <span>{{ row.email ?? '' }}</span>
               </td>
               <td class="px-[5px] text-center">
-                <span>{{ row.kaigoSoftware }}</span>
+                <span>{{ getNameSoftware(row.kaigoSoftware) }}</span>
               </td>
               <td class="px-[5px] text-center">
                 <span>{{ getStatus(row.status) }}</span>
