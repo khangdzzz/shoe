@@ -7,7 +7,7 @@ const isLoadingInit = computed(() => fetchDataInit.isLoadingInit);
 </script>
 
 <template>
-  <div>
+  <div class="px-[4px] pt-[20px]">
     <div
       class="user-list px-4"
       v-html="termHtml"

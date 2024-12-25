@@ -14,7 +14,7 @@ enum BreadcrumbKey {
   CUSTOMER = 'customer',
   DETAIL_MEMBER = 'detail',
   CREATE_CUSTOMER = 'create-new-customer',
-  TERMS = 'terms'
+  POLICY = 'policy'
 }
 
 export const BREADCRUMBS: Breadcrumbs = {
@@ -78,7 +78,7 @@ export const BREADCRUMBS: Breadcrumbs = {
       isLast: true
     }
   ],
-  [BreadcrumbKey.TERMS]: [
+  [BreadcrumbKey.POLICY]: [
     {
       label: '利用規約',
       href: '',
