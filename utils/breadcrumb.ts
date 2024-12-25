@@ -13,7 +13,8 @@ enum BreadcrumbKey {
   MY_PAGE = 'mypage',
   CUSTOMER = 'customer',
   DETAIL_MEMBER = 'detail',
-  CREATE_CUSTOMER = 'create-new-customer'
+  CREATE_CUSTOMER = 'create-new-customer',
+  TERMS = 'terms'
 }
 
 export const BREADCRUMBS: Breadcrumbs = {
@@ -73,6 +74,13 @@ export const BREADCRUMBS: Breadcrumbs = {
     },
     {
       label: '顧客詳細',
+      href: '',
+      isLast: true
+    }
+  ],
+  [BreadcrumbKey.TERMS]: [
+    {
+      label: '利用規約',
       href: '',
       isLast: true
     }

@@ -75,14 +75,16 @@ const onSelectRows = ({
 };
 
 const exportCustomer = async () => {
-  exportData(0);
+  const messageExportSuccess = '顧客情報ダウンロード用のリンクをメールで送信しました。';
+  exportData(0, messageExportSuccess);
 };
 
 const exportStatusCompany = async () => {
-  exportData(1);
+  const messageExportSuccess = '利用状況ダウンロード用のリンクをメールで送信しました。';
+  exportData(1, messageExportSuccess);
 };
 
-const exportData = async (exportType: number) => {
+const exportData = async (exportType: number, messageExportSuccess: string) => {
   if (!isSelectedAll.value && checkedListId.value.length === 0) {
     triggerToast('顧客を選択してください', 'destructive');
     return;
@@ -101,10 +103,7 @@ const exportData = async (exportType: number) => {
   await companyAdminStore.exportCompanyCustomer(body);
 
   if (!system.notify?.message) {
-    triggerToast(
-      `メッセージが「エクスポートしました」だと、わかりにくいですね。\n「ダウンロード用のリンクをメールで送信しました。」`,
-      'default'
-    );
+    triggerToast(messageExportSuccess, 'default');
   }
 };
 
