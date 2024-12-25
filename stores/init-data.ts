@@ -8,7 +8,8 @@ export const useFetchDataInit = defineStore('initData', () => {
   const initData = async () => {
     try {
       isLoadingInit.value = true;
-      await Promise.all([getMasterData(), permissionService.initPermissions(), systemStore.searchTerms()]);
+      systemStore.searchTerms();
+      await Promise.all([getMasterData(), permissionService.initPermissions()]);
     } finally {
       isLoadingInit.value = false;
     }

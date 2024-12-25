@@ -68,12 +68,7 @@ export const BREADCRUMBS: Breadcrumbs = {
   ],
   [BreadcrumbKey.CREATE_CUSTOMER]: [
     {
-      label: '顧客管理',
-      href: '/customer',
-      isLast: false
-    },
-    {
-      label: '顧客詳細',
+      label: '新規顧客登録',
       href: '',
       isLast: true
     }

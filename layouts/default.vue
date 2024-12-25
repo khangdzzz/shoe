@@ -5,10 +5,12 @@ const isOpen = ref(true);
 
 const authStore = useAuthStore();
 const route = useRoute();
+const dataInitStore = useFetchDataInit();
 const { redirectPage } = useRedirectPage();
 
 const currentRoute = computed(() => route.path);
 const isAdmin = computed(() => authStore.isAdmin);
+const isLoadingInit = computed(() => dataInitStore.isLoadingInit);
 const currentPath = ref('');
 
 const toggleSidebar = () => {
@@ -67,7 +69,7 @@ const isPolicyPage = computed(() => {
 
         <div
           class="menu flex flex-col cursor-pointer"
-          v-if="!isPolicyPage"
+          v-if="!isPolicyPage && !isLoadingInit"
         >
           <nav>
             <div
