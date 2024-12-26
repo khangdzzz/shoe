@@ -13,6 +13,10 @@ export const useJwt = () => {
 
       return JSON.parse(jsonPayload);
     } catch (error) {
+      system.setNotify({
+        message: 'トークンが無効です。',
+        type: TYPE_MESSAGE.error
+      });
       return null;
     }
   };

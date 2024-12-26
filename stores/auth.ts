@@ -19,10 +19,14 @@ export const useAuthStore = defineStore('auth', () => {
 
   const getCurrentUser = async (): Promise<ResponseApi<AuthUser> | undefined> => {
     return await apis.archaic?.get('auth/me');
-  }
+  };
 
   const resetPassword = async (password: string, token: string) => {
     return await apis.archaic?.post('auth/reset-password', { password, token });
+  };
+
+  const deleteAuthUser = async () => {
+    return await apis.archaic?.post(`auth/cancelled`, {});
   };
 
   return {
@@ -32,6 +36,7 @@ export const useAuthStore = defineStore('auth', () => {
     verifyEmail,
     forgotPassword,
     getCurrentUser,
-    resetPassword
+    resetPassword,
+    deleteAuthUser
   };
 });

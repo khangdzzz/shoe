@@ -10,10 +10,12 @@ import { Eye, EyeOff, LoaderCircle } from 'lucide-vue-next';
 const route = useRoute();
 const authStore = useAuthStore();
 const system = useSystemStore();
+const jwt = useJwt();
 const { redirectPage } = useRedirectPage();
 
 const token = route.query.token;
 const isLoading = ref(false);
+const email = ref('');
 
 const notify = computed(() => {
   return system.notify;
@@ -23,6 +25,18 @@ onMounted(() => {
   if (!token) {
     redirectPage('/login');
   }
+
+  const tokenDecode = jwt.parseJwt(token?.toString() ?? '');
+
+  if (!tokenDecode || notify.value?.message) {
+    setTimeout(() => {
+      redirectPage('/login');
+    }, 1000);
+  }
+
+  email.value = tokenDecode?.email ?? '';
+
+  setFieldValue('email', email.value);
 });
 
 const passwordVisible = ref(false);
@@ -38,7 +52,12 @@ const togglePasswordConfirmVisibility = () => {
 const formSchema = toTypedSchema(
   z
     .object({
-      password: z.string(formatMessage(MESSAGES.ERR001, FIELDS.password)).min(8, { message: MESSAGES.ERR007 }).max(50),
+      email: z.string(messageRequired(FIELDS.email)).min(1, FIELDS.email),
+      password: z
+        .string(formatMessage(MESSAGES.ERR001, FIELDS.password))
+        .min(8, { message: MESSAGES.ERR007 })
+        .max(50)
+        .regex(/^(?=.*\d).{8,}$/, { message: MESSAGES.ERR007 }),
       passwordConfirmation: z
         .string(formatMessage(MESSAGES.ERR001, FIELDS.confirmPassword))
         .min(8, { message: MESSAGES.ERR007 })
@@ -50,7 +69,7 @@ const formSchema = toTypedSchema(
     })
 );
 
-const { handleSubmit } = useForm({
+const { handleSubmit, setFieldValue } = useForm({
   validationSchema: formSchema
 });
 
@@ -83,6 +102,24 @@ const onSubmit = handleSubmit(async (values) => {
         class="flex flex-col gap-[30px]"
         @submit="onSubmit"
       >
+        <FormField
+          v-slot="{ componentField }"
+          name="email"
+        >
+          <FormItem class="relative">
+            <span class="font-medium">メールアドレス</span>
+            <FormControl>
+              <div class="relative">
+                <Input
+                  disabled
+                  class="bg-[#ccc]"
+                  placeholder="メールアドレス"
+                  v-bind="componentField"
+                />
+              </div>
+            </FormControl>
+          </FormItem>
+        </FormField>
         <FormField
           v-slot="{ componentField }"
           name="password"
