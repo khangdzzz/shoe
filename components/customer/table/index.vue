@@ -15,7 +15,7 @@ const dataInitStore = useFetchDataInit();
 const { redirectPage } = useRedirectPage();
 const { toast } = useToast();
 
-const emit = defineEmits(['update:pagination', 'update:sort', 'getCompanies', 'selectRow']);
+const emit = defineEmits(['update:pagination', 'update:sort', 'getCompanies']);
 
 const STATUS = {
   1: '利用中',
@@ -149,12 +149,6 @@ watch(
     } else {
       checkedIds.push(...selectedRows.value);
     }
-
-    emit('selectRow', {
-      exceptionIds,
-      checkedIds,
-      selectedAll
-    });
   },
   { deep: true }
 );

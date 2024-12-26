@@ -11,9 +11,6 @@ const sort = ref<string>('');
 const targetYearMonth = ref<string>('');
 const status = ref<number[]>([]);
 const keyword = ref<string>('');
-const exceptionListId = ref<number[]>([]);
-const checkedListId = ref<number[]>([]);
-const isSelectedAll = ref<boolean>(false);
 
 const companyAdminStore = useCompanyAdminStore();
 const system = useSystemStore();
@@ -60,20 +57,6 @@ const onSearchCompany = async (value: string) => {
   await getCompanies();
 };
 
-const onSelectRows = ({
-  exceptionIds,
-  checkedIds,
-  selectedAll
-}: {
-  exceptionIds: number[];
-  checkedIds: number[];
-  selectedAll: boolean;
-}) => {
-  exceptionListId.value = exceptionIds;
-  checkedListId.value = checkedIds;
-  isSelectedAll.value = selectedAll;
-};
-
 const exportCustomer = async () => {
   const messageExportSuccess = '顧客情報ダウンロード用のリンクをメールで送信しました。';
   exportData(0, messageExportSuccess);
@@ -85,11 +68,6 @@ const exportStatusCompany = async () => {
 };
 
 const exportData = async (exportType: number, messageExportSuccess: string) => {
-  if (!isSelectedAll.value && checkedListId.value.length === 0) {
-    triggerToast('顧客を選択してください', 'destructive');
-    return;
-  }
-
   const body = {
     exportType: exportType,
     targetYearMonth: targetYearMonth.value,
@@ -135,7 +113,6 @@ onMounted(async () => {
         @update:pagination="onChangePagination"
         @update:sort="onSort"
         @get-companies="getCompanies"
-        @select-row="onSelectRows"
       />
     </div>
   </div>
