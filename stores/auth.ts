@@ -29,6 +29,10 @@ export const useAuthStore = defineStore('auth', () => {
     return await apis.archaic?.post(`auth/cancelled`, {});
   };
 
+  const checkStatusToken = async (type: string, token: string) => {
+    return await apis.archaic?.get(`auth/check-valid-token/${type}/${token}`);
+  };
+
   return {
     isAdmin,
     currentUser,
@@ -37,6 +41,7 @@ export const useAuthStore = defineStore('auth', () => {
     forgotPassword,
     getCurrentUser,
     resetPassword,
-    deleteAuthUser
+    deleteAuthUser,
+    checkStatusToken
   };
 });

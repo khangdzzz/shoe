@@ -1,5 +1,7 @@
 export const useJwt = () => {
   const system = useSystemStore();
+  const authStore = useAuthStore();
+  const { redirectPage } = useRedirectPage();
   const parseJwt = (token: string) => {
     try {
       const base64Url = token.split('.')[1];
@@ -21,7 +23,18 @@ export const useJwt = () => {
     }
   };
 
+  const checkTokenValid = async (type: string, token: string) => {
+    const res = await authStore.checkStatusToken(type, token);
+
+    if (!res) {
+      setTimeout(() => {
+        redirectPage('/login');
+      }, 1000);
+    }
+  };
+
   return {
-    parseJwt
+    parseJwt,
+    checkTokenValid
   };
 };

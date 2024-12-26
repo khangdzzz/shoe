@@ -26,6 +26,8 @@ onMounted(() => {
     redirectPage('/login');
   }
 
+  jwt.checkTokenValid('password', token?.toString() ?? '');
+
   const tokenDecode = jwt.parseJwt(token?.toString() ?? '');
 
   if (!tokenDecode || notify.value?.message) {

@@ -40,6 +40,8 @@ onMounted(() => {
     redirectPage('/login');
   }
 
+  jwt.checkTokenValid('email', token?.toString() ?? '');
+
   const tokenDecode = jwt.parseJwt(token?.toString() ?? '');
 
   if (!tokenDecode || notify.value?.message) {
