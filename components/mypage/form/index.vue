@@ -969,6 +969,13 @@ const resetForm = () => {
                 </div>
               </FormItem>
             </FormField>
+
+            <div class="flex gap-5">
+              <div class="w-[145px] flex items-center"></div>
+              <div class="relative w-[82%] !m-[0px]">
+                <PaymentFormLinkType />
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -101,7 +101,7 @@
 
     <Button
       type="submit"
-      class="flex self-center min-w-[120px] mt-4 ml-16"
+      class="flex self-center min-w-[120px] !m-[0px]"
       :disabled="isSubmitting || isLoading"
     >
       {{ buttonText }}
@@ -119,7 +119,7 @@
     type="button"
     @click="onCancelPaymentMethod"
     variant="destructive"
-    class="flex self-center min-w-[120px] mt-4 ml-16"
+    class="flex self-center min-w-[120px] !m-[0px]"
   >
     支払い方法を変更する
   </Button>
