@@ -1,1 +1,0 @@
-import{n,T as c}from"./DzWMKADV.js";const i=()=>{const e=n();return{parseJwt:t=>{try{const r=t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/"),o=decodeURIComponent(atob(r).split("").map(a=>`%${`00${a.charCodeAt(0).toString(16)}`.slice(-2)}`).join(""));return JSON.parse(o)}catch{return e.setNotify({message:"トークンが無効です。",type:c.error}),null}}}};export{i as u};
