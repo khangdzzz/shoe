@@ -92,6 +92,11 @@ const selectedRows = ref<Set<number>>(new Set());
 
 const companyUsers = computed(() => {
   selectedRows.value = new Set();
+
+  if (isSelectedAll.value == CheckType.All) {
+    selectedRows.value = new Set(companyAdminStore.companyUsers?.results.map((user) => user.id));
+  }
+
   return companyAdminStore.companyUsers?.results ?? [];
 });
 

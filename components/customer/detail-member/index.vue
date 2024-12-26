@@ -44,7 +44,7 @@ const katakanaRegex = /^[\u30A0-\u30FF]+$/;
 
 const kaigoSoftware = computed(() => dataInit.masterData?.kaigoSoftwares);
 
-const currentUser = computed(() => companyAdminStore.companyUser);
+const companyUser = computed(() => companyAdminStore.companyUser);
 
 const isDisableButton = computed(() => changeFields.value.length == 0);
 
@@ -57,17 +57,17 @@ onMounted(async () => {
 
   await companyAdminStore.getCompanyById(Number(idCompany.value));
 
-  if (currentUser.value) {
+  if (companyUser.value) {
     initDataUser();
-    activeStatus.value = currentUser.value.status;
+    activeStatus.value = companyUser.value.status;
   }
 
   isLoadingInit.value = false;
 });
 
 const initDataUser = () => {
-  if (currentUser.value) {
-    const user = currentUser.value;
+  if (companyUser.value) {
+    const user = companyUser.value;
     setFieldValue('companyName', user.companyName);
     setFieldValue('companyNameKana', user.companyNameKana);
     setFieldValue('companyPostCode', user.companyPostCode);
@@ -198,7 +198,7 @@ watch(
 
     const keepLastPlanContentFlg = isRemainOldPlan.value ? 1 : 0;
 
-    if (currentUser.value?.keepLastPlanContentFlg !== keepLastPlanContentFlg)
+    if (companyUser.value?.keepLastPlanContentFlg !== keepLastPlanContentFlg)
       changeFields.value.push(FIELDS.keepLastPlanContentFlg);
   },
   {

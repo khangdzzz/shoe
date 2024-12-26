@@ -106,7 +106,8 @@ const currentUser = computed(() => {
 
 const initDataUser = () => {
   if (currentUser.value) {
-    const { company } = currentUser.value;
+    const { company, paymentMethodInfo } = currentUser.value;
+
     setFieldValue('companyName', company.companyName);
     setFieldValue('companyNameKana', company.companyNameKana);
     setFieldValue('companyPostCode', company.companyPostCode);
@@ -126,7 +127,7 @@ const initDataUser = () => {
     setFieldValue('kaipokeUserPassword', company.kaipokeUserPassword);
     setFieldValue('kaipokeCompanyId', company.kaipokeCompanyId);
     setFieldValue('kaigoSoftware', company.kaigoSoftware.toString());
-    setFieldValue('paymentMethod', company.paymentMethod);
+    setFieldValue('paymentMethod', paymentMethodInfo?.ccDisplayName);
     setFieldValue('email', company.email);
 
     initialFormValues.value = { ...formValues };
@@ -959,6 +960,8 @@ const resetForm = () => {
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Input
+                      disabled
+                      class="bg-[#ccc]"
                       type="text"
                       v-bind="componentField"
                       :class="{

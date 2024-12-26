@@ -119,7 +119,4 @@ export interface ExportCompanyCustomer {
   status?: number[];
   keyword?: string;
   targetYearMonth: string;
-  exceptionListId: number[];
-  checkedListId: number[];
-  isSelectedAll: boolean;
 }

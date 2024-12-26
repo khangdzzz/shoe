@@ -92,9 +92,6 @@ const exportData = async (exportType: number, messageExportSuccess: string) => {
 
   const body = {
     exportType: exportType,
-    checkedListId: checkedListId.value,
-    exceptionListId: exceptionListId.value,
-    isSelectedAll: isSelectedAll.value,
     targetYearMonth: targetYearMonth.value,
     status: status.value,
     keyword: keyword.value
