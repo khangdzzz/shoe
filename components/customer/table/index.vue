@@ -11,10 +11,11 @@ enum CheckType {
 
 const companyAdminStore = useCompanyAdminStore();
 const system = useSystemStore();
+const dataInitStore = useFetchDataInit();
 const { redirectPage } = useRedirectPage();
 const { toast } = useToast();
 
-const emit = defineEmits(['update:pagination', 'update:sort', 'getCompanies', 'selectRow']);
+const emit = defineEmits(['update:pagination', 'update:sort', 'getCompanies']);
 
 const STATUS = {
   1: '利用中',
@@ -85,11 +86,17 @@ const isOpenDialogDelete = ref(false);
 const totalRecord = computed(() => companyAdminStore.companyUsers?.totalRecord ?? 0);
 const isLoading = computed(() => companyAdminStore.isLoadCompanyCustomers);
 const notify = computed(() => system.notify);
+const masterData = computed(() => dataInitStore.masterData);
 
 const selectedRows = ref<Set<number>>(new Set());
 
 const companyUsers = computed(() => {
   selectedRows.value = new Set();
+
+  if (isSelectedAll.value == CheckType.All) {
+    selectedRows.value = new Set(companyAdminStore.companyUsers?.results.map((user) => user.id));
+  }
+
   return companyAdminStore.companyUsers?.results ?? [];
 });
 
@@ -142,12 +149,6 @@ watch(
     } else {
       checkedIds.push(...selectedRows.value);
     }
-
-    emit('selectRow', {
-      exceptionIds,
-      checkedIds,
-      selectedAll
-    });
   },
   { deep: true }
 );
@@ -241,6 +242,11 @@ const getBackgroundColor = (status: number) => {
   if (!status || status == 1) return (className += 'hover:bg-[#afe7ee47]');
   if (status == 2) return (className += '!bg-[#feffce]');
   if (status == 3) return (className += '!bg-[#515151] text-white');
+};
+
+const getNameSoftware = (id: number) => {
+  const softwareList = masterData.value?.kaigoSoftwares;
+  return softwareList?.find((item) => item.id == id)?.name ?? '';
 };
 </script>
 
@@ -350,7 +356,7 @@ const getBackgroundColor = (status: number) => {
                 <span>{{ row.email ?? '' }}</span>
               </td>
               <td class="px-[5px] text-center">
-                <span>{{ row.kaigoSoftware }}</span>
+                <span>{{ getNameSoftware(row.kaigoSoftware) }}</span>
               </td>
               <td class="px-[5px] text-center">
                 <span>{{ getStatus(row.status) }}</span>

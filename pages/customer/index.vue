@@ -10,10 +10,7 @@ const pageSizes = ref<number>(30);
 const sort = ref<string>('');
 const targetYearMonth = ref<string>('');
 const status = ref<number[]>([]);
-const companyName = ref<string>('');
-const exceptionListId = ref<number[]>([]);
-const checkedListId = ref<number[]>([]);
-const isSelectedAll = ref<boolean>(false);
+const keyword = ref<string>('');
 
 const companyAdminStore = useCompanyAdminStore();
 const system = useSystemStore();
@@ -28,7 +25,7 @@ const getCompanies = async () => {
     });
   }
 
-  if (companyName.value) condition += `&companyName=${companyName.value}`;
+  if (keyword.value) condition += `&keyword=${keyword.value}`;
 
   companyAdminStore.searchCompanies(condition);
 };
@@ -55,56 +52,33 @@ const onChangeStatus = async (value: number[]) => {
   await getCompanies();
 };
 
-const onSearchCompanyName = async (value: string) => {
-  companyName.value = value;
+const onSearchCompany = async (value: string) => {
+  keyword.value = value;
   await getCompanies();
 };
 
-const onSelectRows = ({
-  exceptionIds,
-  checkedIds,
-  selectedAll
-}: {
-  exceptionIds: number[];
-  checkedIds: number[];
-  selectedAll: boolean;
-}) => {
-  exceptionListId.value = exceptionIds;
-  checkedListId.value = checkedIds;
-  isSelectedAll.value = selectedAll;
-};
-
 const exportCustomer = async () => {
-  exportData(0);
+  const messageExportSuccess = '顧客情報ダウンロード用のリンクをメールで送信しました。';
+  exportData(0, messageExportSuccess);
 };
 
 const exportStatusCompany = async () => {
-  exportData(1);
+  const messageExportSuccess = '利用状況ダウンロード用のリンクをメールで送信しました。';
+  exportData(1, messageExportSuccess);
 };
 
-const exportData = async (exportType: number) => {
-  if (!isSelectedAll.value && checkedListId.value.length === 0) {
-    triggerToast('顧客を選択してください', 'destructive');
-    return;
-  }
-
+const exportData = async (exportType: number, messageExportSuccess: string) => {
   const body = {
     exportType: exportType,
-    checkedListId: checkedListId.value,
-    exceptionListId: exceptionListId.value,
-    isSelectedAll: isSelectedAll.value,
     targetYearMonth: targetYearMonth.value,
     status: status.value,
-    companyName: companyName.value
+    keyword: keyword.value
   };
 
   await companyAdminStore.exportCompanyCustomer(body);
 
   if (!system.notify?.message) {
-    triggerToast(
-     `メッセージが「エクスポートしました」だと、わかりにくいですね。\n「ダウンロード用のリンクをメールで送信しました。」`,
-      'default'
-    );
+    triggerToast(messageExportSuccess, 'default');
   }
 };
 
@@ -112,7 +86,7 @@ const triggerToast = (message: string, variant: 'default' | 'destructive' | null
   toast({
     description: message,
     variant: variant,
-    duration: 1000,
+    duration: 1000
   });
 };
 
@@ -126,12 +100,20 @@ onMounted(async () => {
     <div class="header flex items-center h-[40px] border-b border-b-[#e2e2e2]">
       <span class="text-base font-bold">顧客管理</span>
     </div>
-    <CustomerSearch @update:change-date="onChangeDate" @update:change-status="onChangeStatus"
-      @search-company-name="onSearchCompanyName" @export-customer="exportCustomer"
-      @export-status-company="exportStatusCompany" />
+    <CustomerSearch
+      @update:change-date="onChangeDate"
+      @update:change-status="onChangeStatus"
+      @search-company="onSearchCompany"
+      @export-customer="exportCustomer"
+      @export-status-company="exportStatusCompany"
+    />
     <div class="body-content flex py-4 w-full gap-2">
-      <CustomerTable class="w-full" @update:pagination="onChangePagination" @update:sort="onSort"
-        @get-companies="getCompanies" @select-row="onSelectRows" />
+      <CustomerTable
+        class="w-full"
+        @update:pagination="onChangePagination"
+        @update:sort="onSort"
+        @get-companies="getCompanies"
+      />
     </div>
   </div>
 </template>

@@ -44,7 +44,7 @@ const katakanaRegex = /^[\u30A0-\u30FF]+$/;
 
 const kaigoSoftware = computed(() => dataInit.masterData?.kaigoSoftwares);
 
-const currentUser = computed(() => companyAdminStore.companyUser);
+const companyUser = computed(() => companyAdminStore.companyUser);
 
 const isDisableButton = computed(() => changeFields.value.length == 0);
 
@@ -57,17 +57,17 @@ onMounted(async () => {
 
   await companyAdminStore.getCompanyById(Number(idCompany.value));
 
-  if (currentUser.value) {
+  if (companyUser.value) {
     initDataUser();
-    activeStatus.value = currentUser.value.status;
+    activeStatus.value = companyUser.value.status;
   }
 
   isLoadingInit.value = false;
 });
 
 const initDataUser = () => {
-  if (currentUser.value) {
-    const user = currentUser.value;
+  if (companyUser.value) {
+    const user = companyUser.value;
     setFieldValue('companyName', user.companyName);
     setFieldValue('companyNameKana', user.companyNameKana);
     setFieldValue('companyPostCode', user.companyPostCode);
@@ -198,7 +198,7 @@ watch(
 
     const keepLastPlanContentFlg = isRemainOldPlan.value ? 1 : 0;
 
-    if (currentUser.value?.keepLastPlanContentFlg !== keepLastPlanContentFlg)
+    if (companyUser.value?.keepLastPlanContentFlg !== keepLastPlanContentFlg)
       changeFields.value.push(FIELDS.keepLastPlanContentFlg);
   },
   {
@@ -437,7 +437,7 @@ const redirectPageAfterAction = (message: string) => {
                 />
                 <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]">
+                    <div class="pic-position flex gap-5 items-center w-[50%]">
                       <span class="label w-[35px]">役職</span>
                       <FormControl>
                         <Input
@@ -449,8 +449,8 @@ const redirectPageAfterAction = (message: string) => {
                         />
                       </FormControl>
                     </div>
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">お名前</span>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">お名前</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="frontPicFamilyName"
@@ -495,9 +495,9 @@ const redirectPageAfterAction = (message: string) => {
                   </div>
 
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]"></div>
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">フリガナ</span>
+                    <div class="pic-position flex gap-5 items-center w-[50%]"></div>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">フリガナ</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="frontPicFamilyNameKana"
@@ -555,7 +555,7 @@ const redirectPageAfterAction = (message: string) => {
                 />
                 <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]">
+                    <div class="pic-position flex gap-5 items-center w-[50%]">
                       <span class="label w-[35px]">役職</span>
                       <FormControl>
                         <Input
@@ -568,8 +568,8 @@ const redirectPageAfterAction = (message: string) => {
                       </FormControl>
                     </div>
 
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">お名前</span>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">お名前</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="picFamilyName"
@@ -614,9 +614,9 @@ const redirectPageAfterAction = (message: string) => {
                   </div>
 
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]"></div>
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">フリガナ</span>
+                    <div class="pic-position flex gap-5 items-center w-[50%]"></div>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">フリガナ</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="picFamilyNameKana"

@@ -6,7 +6,7 @@ export const useCompanyStore = defineStore('company', () => {
   const companyUsers = ref<CompanyUserStatus[]>([]);
   const isLoadCompanyUsers = ref(false);
   const isHaveDataCompanyUsers = ref(true);
-  const userNameKana = ref('');
+  const userNameKana = ref<string[]>();
   const charactersSelected = ref<string[]>([]);
   const isOpenNotifyCrawler = ref(false);
 
@@ -22,11 +22,11 @@ export const useCompanyStore = defineStore('company', () => {
 
     companyUsers.value = res?.data ?? [];
 
-    userNameKana.value = '';
+    userNameKana.value = [];
 
     if (companyUsers.value.length) {
       isHaveDataCompanyUsers.value = true;
-      userNameKana.value = companyUsers.value.map((user) => user.nameKana).join('');
+      userNameKana.value = companyUsers.value.map((user) => user.nameKana);
     } else {
       isHaveDataCompanyUsers.value = false;
     }

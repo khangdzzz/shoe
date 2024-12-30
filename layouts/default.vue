@@ -5,10 +5,13 @@ const isOpen = ref(true);
 
 const authStore = useAuthStore();
 const route = useRoute();
+const dataInitStore = useFetchDataInit();
 const { redirectPage } = useRedirectPage();
 
 const currentRoute = computed(() => route.path);
 const isAdmin = computed(() => authStore.isAdmin);
+const isLoadingInit = computed(() => dataInitStore.isLoadingInit);
+const currentPath = ref('');
 
 const toggleSidebar = () => {
   isOpen.value = !isOpen.value;
@@ -24,8 +27,13 @@ const logout = () => {
 };
 
 onMounted(() => {
+  currentPath.value = currentRoute.value;
   checkWindowWidth();
   window.addEventListener('resize', checkWindowWidth);
+});
+
+const isPolicyPage = computed(() => {
+  return currentRoute.value === '/policy';
 });
 </script>
 
@@ -59,7 +67,10 @@ onMounted(() => {
           </div>
         </div>
 
-        <div class="menu flex flex-col cursor-pointer">
+        <div
+          class="menu flex flex-col cursor-pointer"
+          v-if="!isPolicyPage && !isLoadingInit"
+        >
           <nav>
             <div
               v-show="isOpen && !isAdmin"
@@ -107,7 +118,7 @@ onMounted(() => {
 
       <div
         class="logout flex items-center justify-center px-2 py-10 cursor-pointer"
-        v-show="isOpen"
+        v-show="isOpen && !isPolicyPage"
       >
         <Button
           variant="cancel_btn"

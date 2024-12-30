@@ -63,8 +63,8 @@ const formSchema = toTypedSchema(
       .min(1, messageRequired(FIELDS.picGivenNameKana))
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
     phoneNumber: z.string(messageRequired(FIELDS.phoneNumber)).min(1, FIELDS.phoneNumber),
-    email: z.string(messageRequired(FIELDS.email)).min(1, FIELDS.email),
-    password: z.string().min(8, { message: MESSAGES.ERR007 }).optional(),
+    email: z.string(messageRequired(FIELDS.email)).min(1, FIELDS.email).email({ message: MESSAGES.ERR004 }),
+    password: z.string(messageRequired(FIELDS.password)).min(8, { message: MESSAGES.ERR007 }),
     kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1, FIELDS.kaigoSoftware),
     kaipokeCompanyId: z.string(messageRequired(FIELDS.kaipokeCompanyId)).min(1, FIELDS.kaipokeCompanyId),
     kaipokeUserId: z.string(messageRequired(FIELDS.kaipokeUserId)).min(1, FIELDS.kaipokeUserId),
@@ -83,6 +83,10 @@ const {
 
 const toggleKaipokeUserPasswordVisibility = () => {
   kaipokeUserPasswordVisible.value = !kaipokeUserPasswordVisible.value;
+};
+
+const toggleUserPasswordVisibility = () => {
+  passwordVisible.value = !passwordVisible.value;
 };
 
 const searchPostalCode = async () => {
@@ -118,10 +122,9 @@ const searchPostalCode = async () => {
 const onSubmit = handleSubmit(
   async (values) => {
     isLoading.value = true;
-    const { password, ...rest } = values;
 
     const body = {
-      ...rest,
+      ...values,
       keepLastPlanContentFlg: isRemainOldPlan.value ? 1 : 0
     };
 
@@ -291,7 +294,7 @@ const redirectPageAfterAction = (message: string) => {
                 />
                 <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]">
+                    <div class="pic-position flex gap-5 items-center w-[50%]">
                       <span class="label w-[35px]">役職</span>
                       <FormControl>
                         <Input
@@ -303,8 +306,8 @@ const redirectPageAfterAction = (message: string) => {
                         />
                       </FormControl>
                     </div>
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">お名前</span>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">お名前</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="frontPicFamilyName"
@@ -349,9 +352,9 @@ const redirectPageAfterAction = (message: string) => {
                   </div>
 
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]"></div>
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">フリガナ</span>
+                    <div class="pic-position flex gap-5 items-center w-[50%]"></div>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">フリガナ</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="frontPicFamilyNameKana"
@@ -409,7 +412,7 @@ const redirectPageAfterAction = (message: string) => {
                 />
                 <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]">
+                    <div class="pic-position flex gap-5 items-center w-[50%]">
                       <span class="label w-[35px]">役職</span>
                       <FormControl>
                         <Input
@@ -422,8 +425,8 @@ const redirectPageAfterAction = (message: string) => {
                       </FormControl>
                     </div>
 
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">お名前</span>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">お名前</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="picFamilyName"
@@ -468,9 +471,9 @@ const redirectPageAfterAction = (message: string) => {
                   </div>
 
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]"></div>
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">フリガナ</span>
+                    <div class="pic-position flex gap-5 items-center w-[50%]"></div>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">フリガナ</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="picFamilyNameKana"
@@ -562,8 +565,6 @@ const redirectPageAfterAction = (message: string) => {
                         'border-red-500': errors.length
                       }"
                     />
-
-                    <span class="absolute text-[10px] pt-[2px]">認証済みのメールアドレス</span>
                   </FormControl>
                 </div>
               </FormItem>
@@ -574,14 +575,14 @@ const redirectPageAfterAction = (message: string) => {
               name="password"
             >
               <FormItem class="flex gap-5">
-                <div class="w-[160px]">
-                  <span>パスワード</span>
-                </div>
+                <ShareRequireLabel
+                  label="パスワード"
+                  class="w-[160px]"
+                />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <div class="relative">
                       <Input
-                        disabled
                         :type="passwordVisible ? 'text' : 'password'"
                         v-bind="componentField"
                         placeholder="英小文字、数字を含む、半角英数字８文字以上"
@@ -594,6 +595,7 @@ const redirectPageAfterAction = (message: string) => {
                         type="button"
                         class="absolute right-[15px] top-1/2 transform -translate-y-1/2"
                         aria-label="Toggle password visibility"
+                        @click="toggleUserPasswordVisibility"
                       >
                         <template v-if="!passwordVisible">
                           <EyeOff class="h-5 w-3.5 text-black" />
