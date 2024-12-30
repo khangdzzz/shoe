@@ -223,7 +223,7 @@ const getButtonColorReport = (amount: number | null) => {
 
   switch (amount) {
     case 0:
-      classes += 'border border-gray-300 hover:bg-[#faeded]';
+      classes += isDisableAllButton.value ? 'border border-gray-300 hover:bg-[#faeded]' : 'border border-gray-300 ';
       break;
     case 1:
     case 2:
@@ -248,9 +248,10 @@ const getButtonColorPlan = (row: CompanyUserStatus) => {
 
   switch (planStatus) {
     case 0:
-      classes += [VALUE_STATUS_BULK_EXPORT, 1, 2].includes(reportStatus)
-        ? 'border border-gray-300 hover:bg-[#faeded]'
-        : 'border border-gray-300 ';
+      classes +=
+        [VALUE_STATUS_BULK_EXPORT, 1, 2].includes(reportStatus) && isDisableAllButton.value
+          ? 'border border-gray-300 hover:bg-[#faeded]'
+          : 'border border-gray-300 ';
       break;
     case 1:
     case 2:
@@ -301,6 +302,8 @@ const handleSortUsers = (users: any[]) => {
 };
 
 const updateReportStatus = (companyUser: CompanyUserStatus) => {
+  if (!isDisableAllButton.value) return;
+
   const { id, reportStatus } = companyUser;
 
   if (![0, 3, VALUE_STATUS_BULK_EXPORT].includes(reportStatus)) return;
@@ -315,6 +318,8 @@ const updateReportStatus = (companyUser: CompanyUserStatus) => {
 };
 
 const updatePlanStatus = (companyUser: CompanyUserStatus, forceCancel?: boolean) => {
+  if (!isDisableAllButton.value) return;
+
   const { id, planStatus, reportStatus } = companyUser;
 
   const userPlanStatus = users.value.find((user) => user.id === id)?.planStatus ?? 0;
@@ -389,6 +394,15 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
     duration: 1000
   });
 };
+
+const isDisableAllButton = computed(() => {
+  if (!targetYearMonth?.value) return false;
+
+  const targetDate = new Date(targetYearMonth?.value);
+  const currentDate = new Date();
+
+  return currentDate.getFullYear() === targetDate.getFullYear() && currentDate.getMonth() === targetDate.getMonth();
+});
 </script>
 
 <template>
@@ -423,6 +437,7 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
       <div class="toggle flex gap-5">
         <div class="flex items-center space-x-2">
           <Switch
+            :disabled="!isDisableAllButton"
             v-model:checked="reportSwitchState"
             @click="() => onChangeReportSwitch()"
           />
@@ -430,6 +445,7 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
         </div>
         <div class="flex items-center space-x-2">
           <Switch
+            :disabled="!isDisableAllButton"
             v-model:checked="planSwitchState"
             @click="() => onChangePlanSwitch()"
           />
@@ -590,7 +606,7 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
 
       <div class="flex justify-end mr-[35px]">
         <Button
-          :disabled="isDisableExport"
+          :disabled="isDisableExport || !isDisableAllButton"
           class="flex justify-end mt-[30px]"
           @click="openDialogCreateReport"
         >
