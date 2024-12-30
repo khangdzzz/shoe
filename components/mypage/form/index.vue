@@ -88,7 +88,7 @@ const formSchema = toTypedSchema(
     kaipokeUserPassword: z
       .string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserPassword))
       .min(8, { message: MESSAGES.ERR007 }),
-    paymentMethod: z.string(formatMessage(MESSAGES.ERR001, FIELDS.paymentMethod)).min(1)
+    paymentMethod: z.string().optional()
   })
 );
 
@@ -127,7 +127,7 @@ const initDataUser = () => {
     setFieldValue('kaipokeUserPassword', company.kaipokeUserPassword);
     setFieldValue('kaipokeCompanyId', company.kaipokeCompanyId);
     setFieldValue('kaigoSoftware', company.kaigoSoftware.toString());
-    setFieldValue('paymentMethod', company.paymentMethod);
+    setFieldValue('paymentMethod', paymentMethodInfo?.ccDisplayName || '未登録');
     setFieldValue('email', company.email);
 
     initialFormValues.value = { ...formValues };
@@ -246,6 +246,7 @@ const updateUserInformation = async () => {
 
   delete updatedFormValues.confirmPassword;
   delete updatedFormValues.password;
+  delete updatedFormValues.paymentMethod;
 
   const body = {
     ...updatedFormValues,
@@ -953,13 +954,16 @@ const resetForm = () => {
               name="paymentMethod"
             >
               <FormItem class="flex gap-5">
-                <ShareRequireLabel
+                <span
                   label="決済方法"
-                  class="w-[145px]"
-                />
+                  class="w-[145px] flex items-center"
+                  >決済方法</span
+                >
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Input
+                      disabled
+                      class="bg-[#ccc]"
                       type="text"
                       v-bind="componentField"
                       :class="{
