@@ -20,19 +20,25 @@ const { toast } = useToast();
 const currentUser = computed(() => commonService.getCurrentUserFromStorage());
 
 const getCompanies = async () => {
-  let condition = `page=${page.value}&pageSize=${pageSizes.value}`;
-  if (sort.value) condition += `&sort=${sort.value}`;
+  const params = new URLSearchParams();
+
+  params.append('page', page.value.toString());
+
+  params.append('pageSize', pageSizes.value.toString());
+
+  if (sort.value) params.append('sort', sort.value);
+
   if (status.value.length) {
-    status.value.forEach((value) => {
-      condition += `&status=${value}`;
+    status.value.forEach((value: any) => {
+      params.append('status', value);
     });
   }
 
-  if (keyword.value) condition += `&keyword=${keyword.value}`;
+  if (keyword.value) params.append('keyword', keyword.value);
 
   saveConditionOnLocalStorage();
 
-  await companyAdminStore.searchCompanies(condition);
+  await companyAdminStore.searchCompanies(params.toString());
 };
 
 const saveConditionOnLocalStorage = () => {
