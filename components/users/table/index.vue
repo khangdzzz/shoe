@@ -50,10 +50,6 @@ const STATUS: { [key: number]: string } = {
   3: '実行エラー'
 };
 
-const STATUS_CREATE_REPORT_PLAN = Object.entries(STATUS).map(([key, value]) => ({
-  id: Number(key),
-  value: value
-}));
 
 const isLoading = computed(() => companyStore.isLoadCompanyUsers);
 
@@ -403,6 +399,67 @@ const isDisableAllButton = computed(() => {
 
   return currentDate.getFullYear() === targetDate.getFullYear() && currentDate.getMonth() === targetDate.getMonth();
 });
+
+const selectReportElement = ref<HTMLElement | null>();
+const columnReportElement = ref<HTMLElement | null>();
+const selectPlanElement = ref<HTMLElement | null>();
+const columnPlanElement = ref<HTMLElement | null>();
+const tableElement = ref<HTMLElement | null>();
+const rectTableElement = ref<DOMRect | null>();
+const lastScrollLeft = ref(0);
+
+onMounted(() => {
+  selectReportElement.value = document.getElementById('select-report-element');
+  columnReportElement.value = document.getElementById('column-3');
+  selectPlanElement.value = document.getElementById('select-plan-element');
+  columnPlanElement.value = document.getElementById('column-5');
+  tableElement.value = document.getElementById('table-user');
+  rectTableElement.value = tableElement.value?.getBoundingClientRect();
+  updateHeaderPosition();
+});
+
+const updateHeaderPosition = () => {
+  const rectTable = rectTableElement.value;
+
+  updateElementPosition(selectReportElement.value, columnReportElement.value, 35, rectTable);
+
+  updateElementPosition(selectPlanElement.value, columnPlanElement.value, 35, rectTable);
+};
+
+const updateElementPosition = (
+  targetElement: HTMLElement | null | undefined,
+  referenceElement: HTMLElement | null | undefined,
+  offsetTop: number,
+  rectTable: DOMRect | undefined | null
+) => {
+  if (!targetElement || !referenceElement) return;
+
+  const rect = referenceElement.getBoundingClientRect();
+
+  targetElement.style.left = `${rect.left + window.scrollX}px`;
+  targetElement.style.top = `${rect.top + window.scrollY - offsetTop}px`;
+  targetElement.style.width = `${rect.width - 10}px`;
+
+  if ((rectTable && rectTable.left > rect.left) || window.innerWidth - rect.left - rect.width < 20) {
+    targetElement.style.zIndex = '-1';
+    targetElement.style.display = 'none';
+  } else {
+    targetElement.style.zIndex = '5';
+    targetElement.style.display = 'block';
+  }
+};
+
+const handleTableScroll = (event: any) => {
+  const scrollLeft = event.target.scrollLeft;
+  if (scrollLeft !== lastScrollLeft.value) {
+    updateHeaderPosition();
+  }
+};
+
+const filterStatus = ({ status, type }: { status: string; type: string }) => {
+  if (type === 'report') selectedReportStatus.value = status;
+  if (type === 'plan') selectedPlanStatus.value = status;
+};
 </script>
 
 <template>
@@ -453,64 +510,42 @@ const isDisableAllButton = computed(() => {
         </div>
       </div>
     </div>
-    <div class="w-full flex relative flex-col">
-      <table class="w-full table-fixed mb-[4px]">
-        <thead>
-          <tr class="bg-[#ffff]">
-            <th class="w-[32%]"></th>
-            <th class="w-[9%] text-center">
-              <Select v-model="selectedReportStatus">
-                <SelectTrigger class="w-full">
-                  <SelectValue placeholder="" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="999">すべて</SelectItem>
-                  <SelectItem
-                    :value="`${status.id}`"
-                    v-for="status of STATUS_CREATE_REPORT_PLAN"
-                  >
-                    {{ status.value }}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </th>
-            <th class="w-[16%]"></th>
-            <th class="w-[9%] text-center">
-              <Select v-model="selectedPlanStatus">
-                <SelectTrigger class="w-full">
-                  <SelectValue placeholder="" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="999">すべて</SelectItem>
-                  <SelectItem
-                    :value="`${status.id}`"
-                    v-for="status of STATUS_CREATE_REPORT_PLAN"
-                  >
-                    {{ status.value }}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </th>
-            <th colspan="3"></th>
-          </tr>
-        </thead>
-      </table>
+
+    <UsersSearchStatus
+      :cssStyle="'absolute duration-10 ease-linear whitespace-nowrap top-0'"
+      :type="'report'"
+      @filterStatus="filterStatus"
+      id="select-report-element"
+    />
+
+    <UsersSearchStatus
+      :cssStyle="'absolute duration-10 ease-linear whitespace-nowrap top-0'"
+      :type="'plan'"
+      @filterStatus="filterStatus"
+      id="select-plan-element"
+    />
+    <div class="w-full flex relative flex-col mt-[35px]">
       <div
         class="table-container overflow-auto border-b"
         :class="{ 'border-l': companyUsers.length }"
+        @scroll="handleTableScroll"
       >
-        <table class="w-full table-fixed">
+        <table
+          class="w-full table-fixed"
+          id="table-user"
+        >
           <thead class="sticky top-0 z-10">
-            <tr class="bg-[#afeeee]">
+            <tr class="bg-[#afeeee] mt-[20px]">
               <th
                 class="py-3"
+                :id="`column-${index + 1}`"
                 v-for="(header, index) in headers"
                 :key="index"
                 :style="{ width: header.width }"
               >
                 <span
                   :class="[
-                    'flex items-center justify-center px-4 text-black border-white hover:cursor-pointer',
+                    'flex items-center justify-center px-4 text-black border-white hover:cursor-pointer ',
                     index < headers.length - 1 ? 'border-r-2' : ''
                   ]"
                   @click="updateSort(header)"

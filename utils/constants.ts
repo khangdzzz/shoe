@@ -15,7 +15,8 @@ export const ROUTES_ADMIN = ['/customer', '/customer/detail', '/customer/create-
 export const LOCAL_STORAGE_KEYS = {
   accessToken: 'accessToken',
   refreshToken: 'refreshToken',
-  role: 'role'
+  role: 'role',
+  currentUser: 'currentUser'
 };
 
 export const ACTION_EXPORT = {

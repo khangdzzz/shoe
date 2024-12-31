@@ -4,6 +4,7 @@ import { LoaderCircle } from 'lucide-vue-next';
 
 const { redirectPage } = useRedirectPage();
 const companyAdminStore = useCompanyAdminStore();
+const commonService = useCommon();
 
 const emit = defineEmits([
   'update:changeDate',
@@ -20,6 +21,7 @@ const isEnterPressed = ref(false);
 
 const isLoadingExportCompany = computed(() => companyAdminStore.isLoadingExportCompany);
 const isLoadingExportStatusCompany = computed(() => companyAdminStore.isLoadingExportStatusCompany);
+const currentUser = computed(() => commonService.getCurrentUserFromStorage());
 const onChangeTargetYearMonth = (date: string) => {
   targetYearMonth.value = date;
   emit('update:changeDate', targetYearMonth.value);
@@ -57,6 +59,16 @@ const handleEnter = (event: any) => {
   event.target.blur();
   emit('searchCompany', keyword.value);
 };
+
+onMounted(() => {
+  const storageCondition = commonService.getLocalStorage(`${currentUser.value?.id}_company_admin`);
+
+  if (storageCondition) {
+    const condition = JSON.parse(storageCondition);
+    status.value = condition.status;
+    keyword.value = condition.keyword;
+  }
+});
 </script>
 
 <template>
@@ -81,6 +93,7 @@ const handleEnter = (event: any) => {
           <Checkbox
             id="normal"
             class="bg-white"
+            :checked="status.includes(1)"
             @update:checked="handleCheckboxChange(1, $event)"
           />
           <span
@@ -94,6 +107,7 @@ const handleEnter = (event: any) => {
           <Checkbox
             id="terms"
             class="bg-white"
+            :checked="status.includes(2)"
             @update:checked="handleCheckboxChange(2, $event)"
           />
           <span
@@ -107,6 +121,7 @@ const handleEnter = (event: any) => {
           <Checkbox
             id="temporary"
             class="bg-white"
+            :checked="status.includes(3)"
             @update:checked="handleCheckboxChange(3, $event)"
           />
           <span
