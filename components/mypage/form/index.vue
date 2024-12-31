@@ -49,7 +49,10 @@ const notify = computed(() => {
 
 const formSchema = toTypedSchema(
   z.object({
-    companyName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.companyName)).min(1),
+    companyName: z
+      .string(formatMessage(MESSAGES.ERR001, FIELDS.companyName))
+      .min(1, messageRequired(FIELDS.companyName))
+      .max(250, MESSAGES.ERR011),
     companyNameKana: z
       .string(formatMessage(MESSAGES.ERR001, FIELDS.companyNameKana))
       .min(1, formatMessage(MESSAGES.ERR001, FIELDS.companyNameKana))
