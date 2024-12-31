@@ -33,7 +33,10 @@ const isRemainOldPlan = ref(false);
 
 const formSchema = toTypedSchema(
   z.object({
-    companyName: z.string(messageRequired(FIELDS.companyName)).min(1, messageRequired(FIELDS.companyName)),
+    companyName: z
+      .string(messageRequired(FIELDS.companyName))
+      .min(1, messageRequired(FIELDS.companyName))
+      .max(250, MESSAGES.ERR011),
     companyNameKana: z
       .string(messageRequired(FIELDS.companyNameKana))
       .min(1, messageRequired(FIELDS.companyNameKana))

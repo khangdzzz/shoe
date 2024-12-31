@@ -15,6 +15,7 @@ export const useCommon = () => {
     removeLocalStorage(LOCAL_STORAGE_KEYS.accessToken);
     removeLocalStorage(LOCAL_STORAGE_KEYS.refreshToken);
     removeLocalStorage(LOCAL_STORAGE_KEYS.role);
+    removeLocalStorage(LOCAL_STORAGE_KEYS.currentUser);
   };
 
   const hasLogged = (): boolean => {
@@ -23,11 +24,17 @@ export const useCommon = () => {
     return Boolean(token);
   };
 
+  const getCurrentUserFromStorage = () => {
+    const user = getLocalStorage(LOCAL_STORAGE_KEYS.currentUser);
+    return user ? JSON.parse(user) : null;
+  };
+
   return {
     hasLogged,
     setLocalStorage,
     getLocalStorage,
     removeLocalStorage,
-    removeKeysWhenTokenExpired
+    removeKeysWhenTokenExpired,
+    getCurrentUserFromStorage
   };
 };

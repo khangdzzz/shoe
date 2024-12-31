@@ -15,7 +15,8 @@ export const ROUTES_ADMIN = ['/customer', '/customer/detail', '/customer/create-
 export const LOCAL_STORAGE_KEYS = {
   accessToken: 'accessToken',
   refreshToken: 'refreshToken',
-  role: 'role'
+  role: 'role',
+  currentUser: 'currentUser'
 };
 
 export const ACTION_EXPORT = {
@@ -41,6 +42,7 @@ export const MESSAGES: { [key: string]: string } = {
   ERR008: '支払処理に失敗しました。もう一度お試しください。', // payment -> failure to get sb param
   ERR009: '支払方法の登録のキャンセルに失敗しました。もう一度お試しください。', // payment -> failure to cancel
   ERR010: '支払方法の登録に失敗しました。もう一度お試しください。', // payment -> failure to register
+  ERR011: '会社名 最大255文字', // company name length
   INFO001: '支払方法の登録のキャンセルが完了しました。', // payment -> cancel success
   INFO002: '支払方法の登録が完了しました' // payment -> success
 };

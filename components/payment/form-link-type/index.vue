@@ -121,6 +121,10 @@
     variant="destructive"
     class="flex self-center min-w-[120px] !m-[0px]"
   >
+    <LoaderCircle
+      v-if="isLoadingCancelBank"
+      class="w-4 h-4 mr-2 animate-spin"
+    />
     支払い方法を変更する
   </Button>
 </template>
@@ -128,6 +132,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import Button from '~/components/ui/button/Button.vue';
+import { LoaderCircle } from 'lucide-vue-next';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -139,6 +144,7 @@ const currentUser = computed(() => {
 // Form data
 const isSubmitting = ref(false);
 const isLoading = ref(false);
+const isLoadingCancelBank = ref(false);
 const hasError = ref(false);
 const errorMessage = ref('');
 
@@ -229,7 +235,9 @@ const handleSubmit = async (event: Event) => {
 };
 
 const onCancelPaymentMethod = async () => {
+  isLoadingCancelBank.value = true;
   const res = await companyPaymentStore.cancelCurrentPaymentMethod();
+  isLoadingCancelBank.value = false;
   if (!res) {
     system.setNotify({
       type: TYPE_MESSAGE.error,
@@ -241,7 +249,11 @@ const onCancelPaymentMethod = async () => {
       message: MESSAGES.INFO001
     });
     setTimeout(() => {
-      router.replace('/mypage');
+      const currentRoute = router.currentRoute.value;
+      router.replace({
+        path: currentRoute.path,
+        query: { ...currentRoute.query, refresh: Date.now() }
+      });
     }, 1000);
   }
 };

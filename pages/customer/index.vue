@@ -14,20 +14,43 @@ const keyword = ref<string>('');
 
 const companyAdminStore = useCompanyAdminStore();
 const system = useSystemStore();
+const commonService = useCommon();
 const { toast } = useToast();
 
+const currentUser = computed(() => commonService.getCurrentUserFromStorage());
+
 const getCompanies = async () => {
-  let condition = `page=${page.value}&pageSize=${pageSizes.value}`;
-  if (sort.value) condition += `&sort=${sort.value}`;
+  const params = new URLSearchParams();
+
+  params.append('page', page.value.toString());
+
+  params.append('pageSize', pageSizes.value.toString());
+
+  if (sort.value) params.append('sort', sort.value);
+
   if (status.value.length) {
-    status.value.forEach((value) => {
-      condition += `&status=${value}`;
+    status.value.forEach((value: any) => {
+      params.append('status', value);
     });
   }
 
-  if (keyword.value) condition += `&keyword=${keyword.value}`;
+  if (keyword.value) params.append('keyword', keyword.value);
 
-  companyAdminStore.searchCompanies(condition);
+  saveConditionOnLocalStorage();
+
+  await companyAdminStore.searchCompanies(params.toString());
+};
+
+const saveConditionOnLocalStorage = () => {
+  const storageCondition = {
+    page: page.value,
+    pageSize: pageSizes.value,
+    sort: sort.value,
+    status: status.value,
+    keyword: keyword.value
+  };
+
+  commonService.setLocalStorage(`${currentUser.value?.id}_company_admin`, JSON.stringify(storageCondition));
 };
 
 const onChangePagination = async ({ pageIndex, pageSize }: { pageIndex: number; pageSize: number }) => {
@@ -91,6 +114,16 @@ const triggerToast = (message: string, variant: 'default' | 'destructive' | null
 };
 
 onMounted(async () => {
+  const storageCondition = commonService.getLocalStorage(`${currentUser.value?.id}_company_admin`);
+
+  if (storageCondition) {
+    const condition = JSON.parse(storageCondition);
+    pageSizes.value = condition.pageSize;
+    sort.value = condition.sort;
+    status.value = condition.status;
+    keyword.value = condition.keyword;
+  }
+
   await getCompanies();
 });
 </script>
