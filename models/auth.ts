@@ -32,7 +32,7 @@ export interface AuthUser {
   paymentMethodInfo?: PaymentMethodInfo;
 }
 
-interface PaymentMethodInfo {
+export interface PaymentMethodInfo {
   ccBrand: string;
   ccDisplayName: string;
   ccExpiration: string;

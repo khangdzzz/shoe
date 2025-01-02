@@ -106,7 +106,6 @@ const formSchema = toTypedSchema(
     kaipokeUserId: z.string(messageRequired(FIELDS.kaipokeUserId)).min(1, FIELDS.kaipokeUserId),
     kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 }),
     registerReason: z.string(messageRequired(FIELDS.registerReason)).min(1, FIELDS.registerReason).max(1000),
-    paymentMethod: z.string(messageRequired(FIELDS.paymentMethod)).min(1, FIELDS.paymentMethod),
     terms: z.string(messageRequired(FIELDS.terms)).min(1, FIELDS.terms),
     term: z.boolean({ message: MESSAGES.ERR003 }).refine((value) => value, {
       message: MESSAGES.ERR003
@@ -858,29 +857,6 @@ const onSubmit = handleSubmit(
                       }"
                       placeholder="1000文字以内"
                       class="reason-register relative resize-none"
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
-
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="paymentMethod"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="決済方法"
-                  class="w-[145px]"
-                />
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
-                  <FormControl>
-                    <Input
-                      type="text"
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
                     />
                   </FormControl>
                 </div>

@@ -71,8 +71,7 @@ const formSchema = toTypedSchema(
     kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1, FIELDS.kaigoSoftware),
     kaipokeCompanyId: z.string(messageRequired(FIELDS.kaipokeCompanyId)).min(1, FIELDS.kaipokeCompanyId),
     kaipokeUserId: z.string(messageRequired(FIELDS.kaipokeUserId)).min(1, FIELDS.kaipokeUserId),
-    kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 }),
-    paymentMethod: z.string(messageRequired(FIELDS.paymentMethod)).min(1, FIELDS.paymentMethod)
+    kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 })
   })
 );
 
@@ -731,29 +730,6 @@ const redirectPageAfterAction = (message: string) => {
                     </div>
                   </FormControl>
                   <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
-                </div>
-              </FormItem>
-            </FormField>
-
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="paymentMethod"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="決済方法"
-                  class="w-[160px]"
-                />
-                <div class="relative w-[82%] !m-[0px]">
-                  <FormControl>
-                    <Input
-                      type="text"
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
-                  </FormControl>
                 </div>
               </FormItem>
             </FormField>

@@ -13,10 +13,8 @@ interface InitialFormValues {
 
 const dataInit = useFetchDataInit();
 const system = useSystemStore();
-const authStore = useAuthStore();
 const route = useRoute();
 const companyAdminStore = useCompanyAdminStore();
-const permissionService = usePermission();
 const { redirectPage } = useRedirectPage();
 
 const postalCode = ref<PostalCode>();
@@ -68,6 +66,8 @@ onMounted(async () => {
 const initDataUser = () => {
   if (companyUser.value) {
     const user = companyUser.value;
+    const paymentMethodInfo = companyUser.value?.paymentMethodInfo;
+
     setFieldValue('companyName', user.companyName);
     setFieldValue('companyNameKana', user.companyNameKana);
     setFieldValue('companyPostCode', user.companyPostCode);
@@ -87,7 +87,7 @@ const initDataUser = () => {
     setFieldValue('kaipokeUserPassword', user.kaipokeUserPassword);
     setFieldValue('kaipokeCompanyId', user.kaipokeCompanyId);
     setFieldValue('kaigoSoftware', user.kaigoSoftware.toString());
-    setFieldValue('paymentMethod', user.paymentMethod);
+    setFieldValue('paymentMethod', paymentMethodInfo?.ccDisplayName ?? '未登録');
     setFieldValue('email', user.email);
 
     isRemainOldPlan.value = user.keepLastPlanContentFlg == 1 ? true : false;
@@ -137,7 +137,7 @@ const formSchema = toTypedSchema(
     kaipokeCompanyId: z.string(messageRequired(FIELDS.kaipokeCompanyId)).min(1, FIELDS.kaipokeCompanyId),
     kaipokeUserId: z.string(messageRequired(FIELDS.kaipokeUserId)).min(1, FIELDS.kaipokeUserId),
     kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 }),
-    paymentMethod: z.string(messageRequired(FIELDS.paymentMethod)).min(1, FIELDS.paymentMethod)
+    paymentMethod: z.string().optional()
   })
 );
 
@@ -884,13 +884,12 @@ const redirectPageAfterAction = (message: string) => {
               name="paymentMethod"
             >
               <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="決済方法"
-                  class="w-[160px]"
-                />
+                <span class="flex items-center w-[160px]">決済方法</span>
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Input
+                      disabled
+                      class="bg-[#ccc]"
                       type="text"
                       v-bind="componentField"
                       :class="{
