@@ -391,10 +391,6 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
   });
 };
 
-const isDisableAllButton = computed(
-  () => checkTargetYearMonthMatchCurrentYearMonth(targetYearMonth?.value) && hasRegisterPaymentMethod()
-);
-
 const selectReportElement = ref<HTMLElement | null>();
 const columnReportElement = ref<HTMLElement | null>();
 const selectPlanElement = ref<HTMLElement | null>();
@@ -455,6 +451,19 @@ const filterStatus = ({ status, type }: { status: string; type: string }) => {
   if (type === 'report') selectedReportStatus.value = status;
   if (type === 'plan') selectedPlanStatus.value = status;
 };
+
+onUpdated(() => {
+  updateHeaderPosition();
+});
+
+const isLoadPermission = computed(() => system.isLoadPermission);
+
+const isDisableAllButton = computed(() => {
+  const _forceUpdate = isLoadPermission.value;
+
+  const isCurrentYearMonth = checkTargetYearMonthMatchCurrentYearMonth(targetYearMonth?.value);
+  return isCurrentYearMonth && hasRegisterPaymentMethod();
+});
 </script>
 
 <template>

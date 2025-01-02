@@ -6,6 +6,7 @@ definePageMeta({
 });
 
 const companyStore = useCompanyStore();
+const systemStore = useSystemStore();
 
 const officeId = ref<number | undefined>(undefined);
 const targetYearMonth = ref<string>('');
@@ -39,7 +40,13 @@ onMounted(() => {
   fetchCompanyUseStatus();
 });
 
-const hasRegisterPayment = computed(() => hasRegisterPaymentMethod());
+const isLoadPermission = computed(() => systemStore.isLoadPermission);
+
+const hasRegisterPayment = computed(() => {
+  const _forceUpdate = isLoadPermission.value;
+
+  return hasRegisterPaymentMethod();
+});
 </script>
 
 <template>

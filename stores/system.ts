@@ -11,6 +11,7 @@ interface ValidationNotify {
 export const useSystemStore = defineStore('system', () => {
   const notify = ref<ValidationNotify>();
   const termHtml = ref<string>('');
+  const isLoadPermission = ref();
   const searchPostalCode = async (postalCode: string): Promise<ResponseApi<PostalCode> | undefined> => {
     return await apis.archaic?.get(`zip-code/${postalCode}`);
   };
@@ -37,6 +38,7 @@ export const useSystemStore = defineStore('system', () => {
   return {
     notify,
     termHtml,
+    isLoadPermission,
     setNotify,
     searchTerms,
     searchPostalCode

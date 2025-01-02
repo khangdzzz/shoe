@@ -8,7 +8,7 @@ const props = defineProps({
 
 const { redirectPage } = useRedirectPage();
 
-const isOpenDialog = ref(props.isOpen);
+const isOpenDialog = computed(() => props.isOpen);
 
 const openMyPage = () => {
   redirectPage('/mypage');
