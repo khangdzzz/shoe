@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { Search, ArrowDownUp, ArrowUpDown } from 'lucide-vue-next';
 import { useToast } from '~/components/ui/toast/use-toast';
+import { checkTargetYearMonthMatchCurrentYearMonth, hasRegisterPaymentMethod } from '~/helps';
 import type { Header } from '~/models/common';
 import type { CompanyUserStatus } from '~/models/company';
 
@@ -49,7 +50,6 @@ const STATUS: { [key: number]: string } = {
   2: '実行済み',
   3: '実行エラー'
 };
-
 
 const isLoading = computed(() => companyStore.isLoadCompanyUsers);
 
@@ -391,14 +391,9 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
   });
 };
 
-const isDisableAllButton = computed(() => {
-  if (!targetYearMonth?.value) return false;
-
-  const targetDate = new Date(targetYearMonth?.value);
-  const currentDate = new Date();
-
-  return currentDate.getFullYear() === targetDate.getFullYear() && currentDate.getMonth() === targetDate.getMonth();
-});
+const isDisableAllButton = computed(
+  () => checkTargetYearMonthMatchCurrentYearMonth(targetYearMonth?.value) && hasRegisterPaymentMethod()
+);
 
 const selectReportElement = ref<HTMLElement | null>();
 const columnReportElement = ref<HTMLElement | null>();

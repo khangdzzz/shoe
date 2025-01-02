@@ -957,11 +957,7 @@ const resetForm = () => {
               name="paymentMethod"
             >
               <FormItem class="flex gap-5">
-                <span
-                  label="決済方法"
-                  class="w-[145px] flex items-center"
-                  >決済方法</span
-                >
+                <span class="w-[145px] flex items-center">決済方法</span>
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Input

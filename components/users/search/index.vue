@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { LoaderCircle } from 'lucide-vue-next';
+import { checkTargetYearMonthMatchCurrentYearMonth, hasRegisterPaymentMethod } from '~/helps';
 
 const companyStore = useCompanyStore();
 
@@ -35,6 +36,10 @@ const crawlCompanyUserStatus = async () => {
     isLoading.value = false;
   });
 };
+
+const isDisableAllButton = computed(
+  () => checkTargetYearMonthMatchCurrentYearMonth(targetYearMonth?.value) && hasRegisterPaymentMethod()
+);
 </script>
 
 <template>
@@ -57,7 +62,10 @@ const crawlCompanyUserStatus = async () => {
       />
     </div>
 
-    <Button @click="crawlCompanyUserStatus">
+    <Button
+      @click="crawlCompanyUserStatus"
+      :disabled="!isDisableAllButton"
+    >
       <LoaderCircle
         v-if="isLoading"
         class="w-4 h-4 mr-2 animate-spin"
