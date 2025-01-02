@@ -1,0 +1,1 @@
+import{al as g,V as m,U as S,L as f,am as L,an as h,ao as E}from"./DUmNgXA6.js";const p=g(async n=>{const o=m(),t=f(),s=n.fullPath,e=t.getLocalStorage(S.role),c=t.hasLogged(),i=()=>{s!=="/login"&&o.push("/login")},r=u=>{const a=u===E.admin.toString(),l=a?L:h,d=a?"/customer":"/user-list";l.some(R=>s.includes(R))||o.push(d)};if(!e||!c){i();return}r(e)});export{p as default};
