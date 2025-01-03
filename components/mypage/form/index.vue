@@ -486,7 +486,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -506,7 +506,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -533,7 +533,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -553,7 +553,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -605,7 +605,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -625,7 +625,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -652,7 +652,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -672,7 +672,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length

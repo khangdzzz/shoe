@@ -55,13 +55,20 @@ onMounted(() => {
   setFieldValue('email', email.value);
 });
 
-const kaigoSoftware = computed(() => {
-  return dataInit.masterData?.kaigoSoftwares;
-});
+watch(
+  () => system.termHtml,
+  () => {
+    if (system.termHtml) {
+      const terms = system.termHtml.replace(/<br>/g, '\n');
 
-const notify = computed(() => {
-  return system.notify;
-});
+      setFieldValue('terms', terms);
+    }
+  }
+);
+
+const kaigoSoftware = computed(() => dataInit.masterData?.kaigoSoftwares);
+
+const notify = computed(() => system.notify);
 
 const formSchema = toTypedSchema(
   z.object({
@@ -183,7 +190,7 @@ const onSubmit = handleSubmit(
 
     isLoadingRegister.value = true;
 
-    const { term, ...rest } = values;
+    const { term, terms, ...rest } = values;
 
     const body = {
       ...rest,
@@ -369,7 +376,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -389,7 +396,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -416,7 +423,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -436,7 +443,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -488,7 +495,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -508,7 +515,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -535,7 +542,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -555,7 +562,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -872,18 +879,16 @@ const onSubmit = handleSubmit(
               name="terms"
             >
               <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="利用規約"
-                  class="w-[145px]"
-                />
+                <span class="w-[145px] flex items-center">利用規約</span>
                 <div class="relative w-[71%] !m-[0px] !mr-[25px]">
                   <FormControl>
                     <Textarea
+                      disabled
                       v-bind="componentField"
                       :class="{
                         'border-red-500': errors.length && !componentField.modelValue
                       }"
-                      class="resize-none h-[100px]"
+                      class="resize-none h-[100px] bg-[#ccc]"
                     />
                   </FormControl>
                 </div>

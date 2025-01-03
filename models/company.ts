@@ -44,7 +44,7 @@ export interface RegisterNewUser extends Address, Person, FrontPerson, KaipokeDe
   companyNameKana: string;
   confirmPassword: string;
   verifyToken: string;
-  terms: string;
+  terms?: string;
 }
 
 export interface Company extends Address, Person, FrontPerson, KaipokeDetails, RegisterInfo {
