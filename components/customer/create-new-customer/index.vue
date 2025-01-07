@@ -36,7 +36,7 @@ const formSchema = toTypedSchema(
     companyName: z
       .string(messageRequired(FIELDS.companyName))
       .min(1, messageRequired(FIELDS.companyName))
-      .max(250, MESSAGES.ERR011),
+      .max(255, MESSAGES.ERR011),
     companyNameKana: z
       .string(messageRequired(FIELDS.companyNameKana))
       .min(1, messageRequired(FIELDS.companyNameKana))

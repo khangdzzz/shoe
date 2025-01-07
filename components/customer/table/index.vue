@@ -6,8 +6,8 @@ import { useToast } from '~/components/ui/toast/use-toast';
 const companyAdminStore = useCompanyAdminStore();
 const system = useSystemStore();
 const dataInitStore = useFetchDataInit();
+const customerPageStore = useCustomerPageStore();
 const { redirectPage } = useRedirectPage();
-const commonService = useCommon();
 const { toast } = useToast();
 
 const emit = defineEmits(['update:pagination', 'update:sort', 'getCompanies']);
@@ -89,8 +89,6 @@ const companyUsers = computed(() => {
 
   return companyAdminStore.companyUsers?.results ?? [];
 });
-
-const currentUser = computed(() => commonService.getCurrentUserFromStorage());
 
 const toggleSelectRow = (id: number) => {
   if (selectedRows.value.has(id)) {
@@ -197,20 +195,25 @@ const pagination = ref({
   pageSize: 30
 });
 
-onMounted(() => {
-  const storageCondition = commonService.getLocalStorage(`${currentUser.value?.id}_company_admin`);
+const storageCondition = computed(() => customerPageStore.customerStorageCondition);
 
-  if (storageCondition) {
-    const condition = JSON.parse(storageCondition);
-
-    pagination.value = {
-      pageIndex: 1,
-      pageSize: condition.pageSize
-    };
-
-    sort.value = condition.sort;
-  }
+watch(storageCondition, () => {
+  setConditionFromStore(storageCondition.value);
 });
+
+onMounted(() => {
+  const condition = customerPageStore.getCustomerStorageCondition();
+  setConditionFromStore(condition);
+});
+
+const setConditionFromStore = (condition: CustomerStorageCondition) => {
+  pagination.value = {
+    pageIndex: condition.page,
+    pageSize: condition.pageSize
+  };
+
+  sort.value = condition.sort;
+};
 </script>
 
 <template>

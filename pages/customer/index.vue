@@ -14,10 +14,8 @@ const keyword = ref<string>('');
 
 const companyAdminStore = useCompanyAdminStore();
 const system = useSystemStore();
-const commonService = useCommon();
+const customerPageStore = useCustomerPageStore();
 const { toast } = useToast();
-
-const currentUser = computed(() => commonService.getCurrentUserFromStorage());
 
 const getCompanies = async () => {
   const params = new URLSearchParams();
@@ -36,12 +34,6 @@ const getCompanies = async () => {
 
   if (keyword.value) params.append('keyword', keyword.value);
 
-  saveConditionOnLocalStorage();
-
-  await companyAdminStore.searchCompanies(params.toString());
-};
-
-const saveConditionOnLocalStorage = () => {
   const storageCondition = {
     page: page.value,
     pageSize: pageSizes.value,
@@ -50,7 +42,9 @@ const saveConditionOnLocalStorage = () => {
     keyword: keyword.value
   };
 
-  commonService.setLocalStorage(`${currentUser.value?.id}_company_admin`, JSON.stringify(storageCondition));
+  customerPageStore.setCustomerStorageCondition(storageCondition);
+
+  await companyAdminStore.searchCompanies(params.toString());
 };
 
 const onChangePagination = async ({ pageIndex, pageSize }: { pageIndex: number; pageSize: number }) => {
@@ -72,11 +66,13 @@ const onChangeDate = async (date: string) => {
 
 const onChangeStatus = async (value: number[]) => {
   status.value = value;
+  page.value = 1;
   await getCompanies();
 };
 
 const onSearchCompany = async (value: string) => {
   keyword.value = value;
+  page.value = 1;
   await getCompanies();
 };
 
@@ -114,10 +110,10 @@ const triggerToast = (message: string, variant: 'default' | 'destructive' | null
 };
 
 onMounted(async () => {
-  const storageCondition = commonService.getLocalStorage(`${currentUser.value?.id}_company_admin`);
+  const condition = customerPageStore.getCustomerStorageCondition();
 
-  if (storageCondition) {
-    const condition = JSON.parse(storageCondition);
+  if (condition) {
+    page.value = condition.page;
     pageSizes.value = condition.pageSize;
     sort.value = condition.sort;
     status.value = condition.status;

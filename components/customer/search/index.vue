@@ -5,6 +5,7 @@ import { LoaderCircle } from 'lucide-vue-next';
 const { redirectPage } = useRedirectPage();
 const companyAdminStore = useCompanyAdminStore();
 const commonService = useCommon();
+const customerPageStore = useCustomerPageStore();
 
 const emit = defineEmits([
   'update:changeDate',
@@ -21,7 +22,6 @@ const isEnterPressed = ref(false);
 
 const isLoadingExportCompany = computed(() => companyAdminStore.isLoadingExportCompany);
 const isLoadingExportStatusCompany = computed(() => companyAdminStore.isLoadingExportStatusCompany);
-const currentUser = computed(() => commonService.getCurrentUserFromStorage());
 const onChangeTargetYearMonth = (date: string) => {
   targetYearMonth.value = date;
   emit('update:changeDate', targetYearMonth.value);
@@ -60,14 +60,11 @@ const handleEnter = (event: any) => {
   emit('searchCompany', keyword.value);
 };
 
-onMounted(() => {
-  const storageCondition = commonService.getLocalStorage(`${currentUser.value?.id}_company_admin`);
+const customerStorageCondition = computed(() => customerPageStore.customerStorageCondition);
 
-  if (storageCondition) {
-    const condition = JSON.parse(storageCondition);
-    status.value = condition.status;
-    keyword.value = condition.keyword;
-  }
+watch(customerStorageCondition, () => {
+  status.value = customerStorageCondition.value.status;
+  keyword.value = customerStorageCondition.value.keyword;
 });
 </script>
 

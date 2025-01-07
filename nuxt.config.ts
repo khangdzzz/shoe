@@ -30,7 +30,7 @@ export default defineNuxtConfig({
     }
   },
   imports: {
-    dirs: ['./utils', 'stores']
+    dirs: ['./utils', 'stores', 'stores/pages']
   },
   runtimeConfig: {
     public: {
