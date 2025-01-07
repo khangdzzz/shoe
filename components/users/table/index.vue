@@ -407,6 +407,9 @@ onMounted(() => {
   tableElement.value = document.getElementById('table-user');
   rectTableElement.value = tableElement.value?.getBoundingClientRect();
   updateHeaderPosition();
+
+  window.addEventListener('resize', updateHeaderPosition);
+  window.addEventListener('scroll', updateHeaderPosition);
 });
 
 const updateHeaderPosition = () => {
