@@ -219,7 +219,9 @@ const getButtonColorReport = (amount: number | null) => {
 
   switch (amount) {
     case 0:
-      classes += isDisableAllButton.value ? 'border border-gray-300 hover:bg-[#faeded]' : 'border border-gray-300 ';
+      classes += isDisableAllButton.value
+        ? 'border border-gray-300 hover:bg-[#faeded]'
+        : 'border border-gray-300 bg-[#ccc] opacity-50 cursor-not-allowed';
       break;
     case 1:
     case 2:
@@ -247,7 +249,7 @@ const getButtonColorPlan = (row: CompanyUserStatus) => {
       classes +=
         [VALUE_STATUS_BULK_EXPORT, 1, 2].includes(reportStatus) && isDisableAllButton.value
           ? 'border border-gray-300 hover:bg-[#faeded]'
-          : 'border border-gray-300 ';
+          : 'border border-gray-300 bg-[#ccc] opacity-50 cursor-not-allowed';
       break;
     case 1:
     case 2:
@@ -409,7 +411,6 @@ onMounted(() => {
   updateHeaderPosition();
 
   window.addEventListener('resize', updateHeaderPosition);
-  window.addEventListener('scroll', updateHeaderPosition);
 });
 
 const updateHeaderPosition = () => {
@@ -418,6 +419,12 @@ const updateHeaderPosition = () => {
   updateElementPosition(selectReportElement.value, columnReportElement.value, 35, rectTable);
 
   updateElementPosition(selectPlanElement.value, columnPlanElement.value, 35, rectTable);
+
+  setTimeout(() => {
+    updateElementPosition(selectReportElement.value, columnReportElement.value, 35, rectTable);
+
+    updateElementPosition(selectPlanElement.value, columnPlanElement.value, 35, rectTable);
+  }, 50);
 };
 
 const updateElementPosition = (
