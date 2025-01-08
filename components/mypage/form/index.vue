@@ -476,7 +476,7 @@ const resetForm = () => {
                       </FormControl>
                     </div>
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[16%]">お名前</span>
+                      <span class="label flex w-[19%]">お名前</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="frontPicFamilyName"
@@ -523,7 +523,7 @@ const resetForm = () => {
                   <div class="flex gap-5 items-center !m-[0px]">
                     <div class="pic-position flex gap-5 items-center w-[50%]"></div>
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[16%]">フリガナ</span>
+                      <span class="label flex w-[19%]">フリガナ</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="frontPicFamilyNameKana"
@@ -595,7 +595,7 @@ const resetForm = () => {
                     </div>
 
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[16%]">お名前</span>
+                      <span class="label flex w-[19%]">お名前</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="picFamilyName"
@@ -642,7 +642,7 @@ const resetForm = () => {
                   <div class="flex gap-5 items-center !m-[0px]">
                     <div class="pic-position flex gap-5 items-center w-[50%]"></div>
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[16%]">フリガナ</span>
+                      <span class="label flex w-[19%]">フリガナ</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="picFamilyNameKana"
