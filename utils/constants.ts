@@ -32,6 +32,7 @@ export const SORT = {
 
 export const MESSAGES: { [key: string]: string } = {
   EMPTY: 'データがありません',
+  ERR000: 'システムエラーが発生しました。管理者に連絡してください。',
   ERR001: '{項目名}を入力してください', // field required
   ERR002: '{項目名}を選択してください',
   ERR003: '利用規約をご確認の上、利用規約確認をチェックしてください。',

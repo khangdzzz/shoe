@@ -89,19 +89,52 @@ const exportStatusCompany = async () => {
 const exportData = async (exportType: number, messageExportSuccess: string) => {
   const body = {
     exportType: exportType,
-    targetYearMonth: targetYearMonth.value,
-    status: status.value,
-    keyword: keyword.value
+    targetYearMonth: targetYearMonth.value
   };
 
-  await companyAdminStore.exportCompanyCustomer(body);
+  const downloadUrl = await companyAdminStore.exportCompanyCustomer(body);
+
+  if (!downloadUrl) {
+    triggerToast('データのエクスポートに失敗', 'destructive');
+    return;
+  }
+
+  await downloadFileFromS3(downloadUrl);
 
   if (!system.notify?.message) {
     triggerToast(messageExportSuccess, 'default');
   }
 };
 
+const downloadFileFromS3 = async (url: string) => {
+  try {
+    const fileName = getFileNameFromUrl(url);
+    const response = await fetch(url);
+
+    if (!response.ok || !fileName) {
+      triggerToast('データのエクスポートに失敗', 'destructive');
+      return;
+    }
+
+    const blob = await response.blob();
+    const downloadLink = document.createElement('a');
+    downloadLink.href = URL.createObjectURL(blob);
+    downloadLink.download = fileName;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  } catch (error) {
+    triggerToast('データのエクスポートに失敗', 'destructive');
+  }
+};
+
+const getFileNameFromUrl = (url: string) => {
+  return url.split('/').pop();
+};
+
 const triggerToast = (message: string, variant: 'default' | 'destructive' | null | undefined) => {
+  companyAdminStore.resetLoadingExport();
+
   toast({
     description: message,
     variant: variant,

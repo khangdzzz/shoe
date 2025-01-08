@@ -36,20 +36,28 @@ export const useApi = (baseUrl?: string) => {
 
       return response;
     } catch (error: any) {
-      const { messageCode, messageText, status } = error.data;
+      if (error.data) {
+        const { messageCode, messageText, status } = error.data;
 
-      if (status === 401 && currentPath.value != '/login') {
-        commonService.removeLocalStorage(LOCAL_STORAGE_KEYS.accessToken);
-        await handleRefreshToken();
+        if (status === 401 && currentPath.value != '/login') {
+          commonService.removeLocalStorage(LOCAL_STORAGE_KEYS.accessToken);
+          await handleRefreshToken();
 
-        return;
+          return;
+        }
+
+        system.setNotify({
+          code: messageCode || null,
+          message: messageText || 'エラーが発生しました。',
+          type: TYPE_MESSAGE.error
+        });
+      } else {
+        system.setNotify({
+          code: '',
+          message: MESSAGES.ERR000,
+          type: TYPE_MESSAGE.error
+        });
       }
-
-      system.setNotify({
-        code: messageCode || null,
-        message: messageText || 'エラーが発生しました。',
-        type: TYPE_MESSAGE.error
-      });
     }
   };
 
