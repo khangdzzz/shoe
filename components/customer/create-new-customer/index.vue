@@ -6,6 +6,7 @@ import * as z from 'zod';
 import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
 import type { Company } from '~/models/company';
+import { getPasswordRules } from '~/helps';
 
 interface InitialFormValues {
   [key: string]: any;
@@ -67,7 +68,7 @@ const formSchema = toTypedSchema(
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
     phoneNumber: z.string(messageRequired(FIELDS.phoneNumber)).min(1, FIELDS.phoneNumber),
     email: z.string(messageRequired(FIELDS.email)).min(1, FIELDS.email).email({ message: MESSAGES.ERR004 }),
-    password: z.string(messageRequired(FIELDS.password)).min(8, { message: MESSAGES.ERR007 }),
+    password: getPasswordRules(messageRequired(FIELDS.password)),
     kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1, FIELDS.kaigoSoftware),
     kaipokeCompanyId: z.string(messageRequired(FIELDS.kaipokeCompanyId)).min(1, FIELDS.kaipokeCompanyId),
     kaipokeUserId: z.string(messageRequired(FIELDS.kaipokeUserId)).min(1, FIELDS.kaipokeUserId),
