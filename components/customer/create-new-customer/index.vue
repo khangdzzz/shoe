@@ -6,6 +6,7 @@ import * as z from 'zod';
 import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
 import type { Company } from '~/models/company';
+import { getPasswordRules } from '~/helps';
 
 interface InitialFormValues {
   [key: string]: any;
@@ -36,7 +37,7 @@ const formSchema = toTypedSchema(
     companyName: z
       .string(messageRequired(FIELDS.companyName))
       .min(1, messageRequired(FIELDS.companyName))
-      .max(250, MESSAGES.ERR011),
+      .max(255, MESSAGES.ERR011),
     companyNameKana: z
       .string(messageRequired(FIELDS.companyNameKana))
       .min(1, messageRequired(FIELDS.companyNameKana))
@@ -67,7 +68,7 @@ const formSchema = toTypedSchema(
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
     phoneNumber: z.string(messageRequired(FIELDS.phoneNumber)).min(1, FIELDS.phoneNumber),
     email: z.string(messageRequired(FIELDS.email)).min(1, FIELDS.email).email({ message: MESSAGES.ERR004 }),
-    password: z.string(messageRequired(FIELDS.password)).min(8, { message: MESSAGES.ERR007 }),
+    password: getPasswordRules(messageRequired(FIELDS.password)),
     kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1, FIELDS.kaigoSoftware),
     kaipokeCompanyId: z.string(messageRequired(FIELDS.kaipokeCompanyId)).min(1, FIELDS.kaipokeCompanyId),
     kaipokeUserId: z.string(messageRequired(FIELDS.kaipokeUserId)).min(1, FIELDS.kaipokeUserId),
@@ -309,7 +310,7 @@ const redirectPageAfterAction = (message: string) => {
                       </FormControl>
                     </div>
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[16%]">お名前</span>
+                      <span class="label flex w-[19%]">お名前</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="frontPicFamilyName"
@@ -356,7 +357,7 @@ const redirectPageAfterAction = (message: string) => {
                   <div class="flex gap-5 items-center !m-[0px]">
                     <div class="pic-position flex gap-5 items-center w-[50%]"></div>
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[16%]">フリガナ</span>
+                      <span class="label flex w-[19%]">フリガナ</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="frontPicFamilyNameKana"
@@ -428,7 +429,7 @@ const redirectPageAfterAction = (message: string) => {
                     </div>
 
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[16%]">お名前</span>
+                      <span class="label flex w-[19%]">お名前</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="picFamilyName"
@@ -475,7 +476,7 @@ const redirectPageAfterAction = (message: string) => {
                   <div class="flex gap-5 items-center !m-[0px]">
                     <div class="pic-position flex gap-5 items-center w-[50%]"></div>
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[16%]">フリガナ</span>
+                      <span class="label flex w-[19%]">フリガナ</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="picFamilyNameKana"

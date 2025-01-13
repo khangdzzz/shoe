@@ -14,10 +14,8 @@ const keyword = ref<string>('');
 
 const companyAdminStore = useCompanyAdminStore();
 const system = useSystemStore();
-const commonService = useCommon();
+const customerPageStore = useCustomerPageStore();
 const { toast } = useToast();
-
-const currentUser = computed(() => commonService.getCurrentUserFromStorage());
 
 const getCompanies = async () => {
   const params = new URLSearchParams();
@@ -36,12 +34,6 @@ const getCompanies = async () => {
 
   if (keyword.value) params.append('keyword', keyword.value);
 
-  saveConditionOnLocalStorage();
-
-  await companyAdminStore.searchCompanies(params.toString());
-};
-
-const saveConditionOnLocalStorage = () => {
   const storageCondition = {
     page: page.value,
     pageSize: pageSizes.value,
@@ -50,7 +42,9 @@ const saveConditionOnLocalStorage = () => {
     keyword: keyword.value
   };
 
-  commonService.setLocalStorage(`${currentUser.value?.id}_company_admin`, JSON.stringify(storageCondition));
+  customerPageStore.setCustomerStorageCondition(storageCondition);
+
+  await companyAdminStore.searchCompanies(params.toString());
 };
 
 const onChangePagination = async ({ pageIndex, pageSize }: { pageIndex: number; pageSize: number }) => {
@@ -72,11 +66,13 @@ const onChangeDate = async (date: string) => {
 
 const onChangeStatus = async (value: number[]) => {
   status.value = value;
+  page.value = 1;
   await getCompanies();
 };
 
 const onSearchCompany = async (value: string) => {
   keyword.value = value;
+  page.value = 1;
   await getCompanies();
 };
 
@@ -93,19 +89,52 @@ const exportStatusCompany = async () => {
 const exportData = async (exportType: number, messageExportSuccess: string) => {
   const body = {
     exportType: exportType,
-    targetYearMonth: targetYearMonth.value,
-    status: status.value,
-    keyword: keyword.value
+    targetYearMonth: targetYearMonth.value
   };
 
-  await companyAdminStore.exportCompanyCustomer(body);
+  const downloadUrl = await companyAdminStore.exportCompanyCustomer(body);
+
+  if (!downloadUrl) {
+    triggerToast('データのエクスポートに失敗', 'destructive');
+    return;
+  }
+
+  await downloadFileFromS3(downloadUrl);
 
   if (!system.notify?.message) {
     triggerToast(messageExportSuccess, 'default');
   }
 };
 
+const downloadFileFromS3 = async (url: string) => {
+  try {
+    const fileName = getFileNameFromUrl(url);
+    const response = await fetch(url);
+
+    if (!response.ok || !fileName) {
+      triggerToast('データのエクスポートに失敗', 'destructive');
+      return;
+    }
+
+    const blob = await response.blob();
+    const downloadLink = document.createElement('a');
+    downloadLink.href = URL.createObjectURL(blob);
+    downloadLink.download = fileName;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  } catch (error) {
+    triggerToast('データのエクスポートに失敗', 'destructive');
+  }
+};
+
+const getFileNameFromUrl = (url: string) => {
+  return url.split('/').pop();
+};
+
 const triggerToast = (message: string, variant: 'default' | 'destructive' | null | undefined) => {
+  companyAdminStore.resetLoadingExport();
+
   toast({
     description: message,
     variant: variant,
@@ -114,10 +143,10 @@ const triggerToast = (message: string, variant: 'default' | 'destructive' | null
 };
 
 onMounted(async () => {
-  const storageCondition = commonService.getLocalStorage(`${currentUser.value?.id}_company_admin`);
+  const condition = customerPageStore.getCustomerStorageCondition();
 
-  if (storageCondition) {
-    const condition = JSON.parse(storageCondition);
+  if (condition) {
+    page.value = condition.page;
     pageSizes.value = condition.pageSize;
     sort.value = condition.sort;
     status.value = condition.status;

@@ -6,6 +6,7 @@ import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
 import { Eye, EyeOff, LoaderCircle } from 'lucide-vue-next';
+import { getPasswordRules } from '~/helps';
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -55,15 +56,8 @@ const formSchema = toTypedSchema(
   z
     .object({
       email: z.string(messageRequired(FIELDS.email)).min(1, FIELDS.email),
-      password: z
-        .string(formatMessage(MESSAGES.ERR001, FIELDS.password))
-        .min(8, { message: MESSAGES.ERR007 })
-        .max(50)
-        .regex(/^(?=.*\d).{8,}$/, { message: MESSAGES.ERR007 }),
-      passwordConfirmation: z
-        .string(formatMessage(MESSAGES.ERR001, FIELDS.confirmPassword))
-        .min(8, { message: MESSAGES.ERR007 })
-        .max(50)
+      password: getPasswordRules(formatMessage(MESSAGES.ERR001, FIELDS.password)),
+      passwordConfirmation: getPasswordRules(formatMessage(MESSAGES.ERR001, FIELDS.confirmPassword))
     })
     .refine(({ password, passwordConfirmation }) => password === passwordConfirmation, {
       message: MESSAGES.ERR006,

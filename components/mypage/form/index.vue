@@ -6,6 +6,7 @@ import * as z from 'zod';
 import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
 import type { CompanyUpdateBody } from '~/models/company';
+import { getPasswordRules } from '~/helps';
 
 interface InitialFormValues {
   [key: string]: any;
@@ -52,7 +53,7 @@ const formSchema = toTypedSchema(
     companyName: z
       .string(formatMessage(MESSAGES.ERR001, FIELDS.companyName))
       .min(1, messageRequired(FIELDS.companyName))
-      .max(250, MESSAGES.ERR011),
+      .max(255, MESSAGES.ERR011),
     companyNameKana: z
       .string(formatMessage(MESSAGES.ERR001, FIELDS.companyNameKana))
       .min(1, formatMessage(MESSAGES.ERR001, FIELDS.companyNameKana))
@@ -83,8 +84,8 @@ const formSchema = toTypedSchema(
       .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
     phoneNumber: z.string(formatMessage(MESSAGES.ERR001, FIELDS.phoneNumber)).min(1),
     email: z.string(formatMessage(MESSAGES.ERR001, FIELDS.email)).min(1),
-    password: z.string().min(8, { message: MESSAGES.ERR007 }).optional(),
-    confirmPassword: z.string().min(8, { message: MESSAGES.ERR007 }).optional(),
+    password: getPasswordRules().optional(),
+    confirmPassword: getPasswordRules().optional(),
     kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1),
     kaipokeCompanyId: z.string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeCompanyId)).min(1),
     kaipokeUserId: z.string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserId)).min(1),
@@ -476,7 +477,7 @@ const resetForm = () => {
                       </FormControl>
                     </div>
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[16%]">お名前</span>
+                      <span class="label flex w-[19%]">お名前</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="frontPicFamilyName"
@@ -523,7 +524,7 @@ const resetForm = () => {
                   <div class="flex gap-5 items-center !m-[0px]">
                     <div class="pic-position flex gap-5 items-center w-[50%]"></div>
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[16%]">フリガナ</span>
+                      <span class="label flex w-[19%]">フリガナ</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="frontPicFamilyNameKana"
@@ -595,7 +596,7 @@ const resetForm = () => {
                     </div>
 
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[16%]">お名前</span>
+                      <span class="label flex w-[19%]">お名前</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="picFamilyName"
@@ -642,7 +643,7 @@ const resetForm = () => {
                   <div class="flex gap-5 items-center !m-[0px]">
                     <div class="pic-position flex gap-5 items-center w-[50%]"></div>
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[16%]">フリガナ</span>
+                      <span class="label flex w-[19%]">フリガナ</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="picFamilyNameKana"

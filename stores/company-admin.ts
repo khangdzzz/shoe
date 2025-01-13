@@ -1,3 +1,4 @@
+import type { ResponseApi } from '~/models/common';
 import type { AdminCreateCustomer, Company, ExportCompanyCustomer } from '~/models/company';
 
 export interface CompanyUserResponse {
@@ -48,8 +49,12 @@ export const useCompanyAdminStore = defineStore('companyAdmin', () => {
     if (body.exportType === 1) isLoadingExportStatusCompany.value = true;
     else isLoadingExportCompany.value = true;
 
-    await apis.archaic?.post('company/bulk-export', body);
+    const res: ResponseApi<{ downloadUrl: string }> = await apis.archaic?.post('company/bulk-export', body);
 
+    return res?.data?.downloadUrl;
+  };
+
+  const resetLoadingExport = () => {
     isLoadingExportCompany.value = false;
     isLoadingExportStatusCompany.value = false;
   };
@@ -66,6 +71,7 @@ export const useCompanyAdminStore = defineStore('companyAdmin', () => {
     createNewCompany,
     updateCompanyById,
     exportCompanyCustomer,
-    updateStatusCompanyUser
+    updateStatusCompanyUser,
+    resetLoadingExport
   };
 });
