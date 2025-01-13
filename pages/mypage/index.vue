@@ -38,7 +38,6 @@ onUnmounted(() => {
       {{ paymentMessage.text }}
     </div>
 
-    <PaymentFormLinkType />
     <MypageForm />
   </div>
 </template>

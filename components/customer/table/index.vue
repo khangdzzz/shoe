@@ -3,18 +3,14 @@ import { ArrowDownUp, ArrowUpDown } from 'lucide-vue-next';
 import type { Header } from '~/models/common';
 import { useToast } from '~/components/ui/toast/use-toast';
 
-enum CheckType {
-  All,
-  None,
-  Ticked
-}
-
 const companyAdminStore = useCompanyAdminStore();
 const system = useSystemStore();
+const dataInitStore = useFetchDataInit();
 const { redirectPage } = useRedirectPage();
+const commonService = useCommon();
 const { toast } = useToast();
 
-const emit = defineEmits(['update:pagination', 'update:sort', 'getCompanies', 'selectRow']);
+const emit = defineEmits(['update:pagination', 'update:sort', 'getCompanies']);
 
 const STATUS = {
   1: '利用中',
@@ -79,29 +75,22 @@ const headers = [
   }
 ];
 
-const isSelectedAll = ref(CheckType.None);
 const sort = ref('');
 const isOpenDialogDelete = ref(false);
 const totalRecord = computed(() => companyAdminStore.companyUsers?.totalRecord ?? 0);
 const isLoading = computed(() => companyAdminStore.isLoadCompanyCustomers);
 const notify = computed(() => system.notify);
+const masterData = computed(() => dataInitStore.masterData);
 
 const selectedRows = ref<Set<number>>(new Set());
 
 const companyUsers = computed(() => {
   selectedRows.value = new Set();
+
   return companyAdminStore.companyUsers?.results ?? [];
 });
 
-const toggleSelectAll = (value: boolean) => {
-  if (value) {
-    isSelectedAll.value = CheckType.All;
-    selectedRows.value = new Set(companyUsers.value.map((user) => user.id));
-  } else {
-    isSelectedAll.value = CheckType.None;
-    selectedRows.value.clear();
-  }
-};
+const currentUser = computed(() => commonService.getCurrentUserFromStorage());
 
 const toggleSelectRow = (id: number) => {
   if (selectedRows.value.has(id)) {
@@ -109,56 +98,11 @@ const toggleSelectRow = (id: number) => {
   } else {
     selectedRows.value.add(id);
   }
-
-  const totalUsers = companyUsers.value.length;
-  const selectedCount = selectedRows.value.size;
-
-  if (selectedCount === 0) {
-    isSelectedAll.value = CheckType.None;
-  } else if (selectedCount === totalUsers) {
-    isSelectedAll.value = CheckType.All;
-  } else if (isSelectedAll.value === CheckType.All && selectedCount < totalUsers) {
-    isSelectedAll.value = CheckType.Ticked;
-  }
 };
-
-const ticked = () => {
-  toggleSelectAll(false);
-};
-
-watch(
-  selectedRows,
-  () => {
-    const exceptionIds: number[] = [];
-    const checkedIds: number[] = [];
-    const selectedAll = getStatusSelected();
-
-    if (selectedAll) {
-      companyUsers.value.forEach((user) => {
-        if (!selectedRows.value.has(user.id)) {
-          exceptionIds.push(user.id);
-        }
-      });
-    } else {
-      checkedIds.push(...selectedRows.value);
-    }
-
-    emit('selectRow', {
-      exceptionIds,
-      checkedIds,
-      selectedAll
-    });
-  },
-  { deep: true }
-);
 
 const getStatus = (status: number) => {
   if (!status) return (status = 0);
   return STATUS[status as keyof typeof STATUS];
-};
-
-const getStatusSelected = () => {
-  return isSelectedAll.value === CheckType.All || isSelectedAll.value === CheckType.Ticked ? true : false;
 };
 
 const changePagination = ({ pageIndex, pageSize }: { pageIndex: number; pageSize: number }) => {
@@ -242,6 +186,31 @@ const getBackgroundColor = (status: number) => {
   if (status == 2) return (className += '!bg-[#feffce]');
   if (status == 3) return (className += '!bg-[#515151] text-white');
 };
+
+const getNameSoftware = (id: number) => {
+  const softwareList = masterData.value?.kaigoSoftwares;
+  return softwareList?.find((item) => item.id == id)?.name ?? '';
+};
+
+const pagination = ref({
+  pageIndex: 1,
+  pageSize: 30
+});
+
+onMounted(() => {
+  const storageCondition = commonService.getLocalStorage(`${currentUser.value?.id}_company_admin`);
+
+  if (storageCondition) {
+    const condition = JSON.parse(storageCondition);
+
+    pagination.value = {
+      pageIndex: 1,
+      pageSize: condition.pageSize
+    };
+
+    sort.value = condition.sort;
+  }
+});
 </script>
 
 <template>
@@ -264,6 +233,7 @@ const getBackgroundColor = (status: number) => {
         class="mr-10"
         :length="totalRecord"
         @update:pagination="changePagination"
+        :pagination="pagination"
       />
     </div>
     <div class="w-full flex flex-col relative border-l border-r">
@@ -271,20 +241,10 @@ const getBackgroundColor = (status: number) => {
         <table class="w-full table-fixed">
           <thead class="bg-[#afeeee] sticky top-0 z-10">
             <tr>
-              <th>
-                <span class="flex items-center justify-center px-4 py-[1px] text-black border-white border-r-2">
-                  <Checkbox
-                    id="select-all"
-                    class="bg-white flex items-center justify-center mx-4 text-black border border-gray-300"
-                    :checked="isSelectedAll === 0"
-                    v-if="isSelectedAll === 0 || isSelectedAll === 1"
-                    @update:checked="toggleSelectAll"
-                  />
-                  <ShareIconSelectAll
-                    v-if="isSelectedAll === 2"
-                    @click="ticked"
-                  />
-                </span>
+              <th class="py-3">
+                <span
+                  class="flex items-center justify-center px-4 text-black border-white cursor-pointer border-r-2 p-[9px]"
+                ></span>
               </th>
               <th
                 class="py-3"
@@ -350,7 +310,7 @@ const getBackgroundColor = (status: number) => {
                 <span>{{ row.email ?? '' }}</span>
               </td>
               <td class="px-[5px] text-center">
-                <span>{{ row.kaigoSoftware }}</span>
+                <span>{{ getNameSoftware(row.kaigoSoftware) }}</span>
               </td>
               <td class="px-[5px] text-center">
                 <span>{{ getStatus(row.status) }}</span>

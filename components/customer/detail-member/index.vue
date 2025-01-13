@@ -13,10 +13,8 @@ interface InitialFormValues {
 
 const dataInit = useFetchDataInit();
 const system = useSystemStore();
-const authStore = useAuthStore();
 const route = useRoute();
 const companyAdminStore = useCompanyAdminStore();
-const permissionService = usePermission();
 const { redirectPage } = useRedirectPage();
 
 const postalCode = ref<PostalCode>();
@@ -44,7 +42,7 @@ const katakanaRegex = /^[\u30A0-\u30FF]+$/;
 
 const kaigoSoftware = computed(() => dataInit.masterData?.kaigoSoftwares);
 
-const currentUser = computed(() => companyAdminStore.companyUser);
+const companyUser = computed(() => companyAdminStore.companyUser);
 
 const isDisableButton = computed(() => changeFields.value.length == 0);
 
@@ -57,17 +55,19 @@ onMounted(async () => {
 
   await companyAdminStore.getCompanyById(Number(idCompany.value));
 
-  if (currentUser.value) {
+  if (companyUser.value) {
     initDataUser();
-    activeStatus.value = currentUser.value.status;
+    activeStatus.value = companyUser.value.status;
   }
 
   isLoadingInit.value = false;
 });
 
 const initDataUser = () => {
-  if (currentUser.value) {
-    const user = currentUser.value;
+  if (companyUser.value) {
+    const user = companyUser.value;
+    const paymentMethodInfo = companyUser.value?.paymentMethodInfo;
+
     setFieldValue('companyName', user.companyName);
     setFieldValue('companyNameKana', user.companyNameKana);
     setFieldValue('companyPostCode', user.companyPostCode);
@@ -87,7 +87,7 @@ const initDataUser = () => {
     setFieldValue('kaipokeUserPassword', user.kaipokeUserPassword);
     setFieldValue('kaipokeCompanyId', user.kaipokeCompanyId);
     setFieldValue('kaigoSoftware', user.kaigoSoftware.toString());
-    setFieldValue('paymentMethod', user.paymentMethod);
+    setFieldValue('paymentMethod', paymentMethodInfo?.ccDisplayName ?? '未登録');
     setFieldValue('email', user.email);
 
     isRemainOldPlan.value = user.keepLastPlanContentFlg == 1 ? true : false;
@@ -98,7 +98,10 @@ const initDataUser = () => {
 
 const formSchema = toTypedSchema(
   z.object({
-    companyName: z.string(messageRequired(FIELDS.companyName)).min(1, messageRequired(FIELDS.companyName)),
+    companyName: z
+      .string(messageRequired(FIELDS.companyName))
+      .min(1, messageRequired(FIELDS.companyName))
+      .max(250, MESSAGES.ERR011),
     companyNameKana: z
       .string(messageRequired(FIELDS.companyNameKana))
       .min(1, messageRequired(FIELDS.companyNameKana))
@@ -134,7 +137,7 @@ const formSchema = toTypedSchema(
     kaipokeCompanyId: z.string(messageRequired(FIELDS.kaipokeCompanyId)).min(1, FIELDS.kaipokeCompanyId),
     kaipokeUserId: z.string(messageRequired(FIELDS.kaipokeUserId)).min(1, FIELDS.kaipokeUserId),
     kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 }),
-    paymentMethod: z.string(messageRequired(FIELDS.paymentMethod)).min(1, FIELDS.paymentMethod)
+    paymentMethod: z.string().optional()
   })
 );
 
@@ -198,7 +201,7 @@ watch(
 
     const keepLastPlanContentFlg = isRemainOldPlan.value ? 1 : 0;
 
-    if (currentUser.value?.keepLastPlanContentFlg !== keepLastPlanContentFlg)
+    if (companyUser.value?.keepLastPlanContentFlg !== keepLastPlanContentFlg)
       changeFields.value.push(FIELDS.keepLastPlanContentFlg);
   },
   {
@@ -437,7 +440,7 @@ const redirectPageAfterAction = (message: string) => {
                 />
                 <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]">
+                    <div class="pic-position flex gap-5 items-center w-[50%]">
                       <span class="label w-[35px]">役職</span>
                       <FormControl>
                         <Input
@@ -449,8 +452,8 @@ const redirectPageAfterAction = (message: string) => {
                         />
                       </FormControl>
                     </div>
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">お名前</span>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">お名前</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="frontPicFamilyName"
@@ -460,7 +463,7 @@ const redirectPageAfterAction = (message: string) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -480,7 +483,7 @@ const redirectPageAfterAction = (message: string) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -495,9 +498,9 @@ const redirectPageAfterAction = (message: string) => {
                   </div>
 
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]"></div>
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">フリガナ</span>
+                    <div class="pic-position flex gap-5 items-center w-[50%]"></div>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">フリガナ</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="frontPicFamilyNameKana"
@@ -507,7 +510,7 @@ const redirectPageAfterAction = (message: string) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -527,7 +530,7 @@ const redirectPageAfterAction = (message: string) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -555,7 +558,7 @@ const redirectPageAfterAction = (message: string) => {
                 />
                 <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]">
+                    <div class="pic-position flex gap-5 items-center w-[50%]">
                       <span class="label w-[35px]">役職</span>
                       <FormControl>
                         <Input
@@ -568,8 +571,8 @@ const redirectPageAfterAction = (message: string) => {
                       </FormControl>
                     </div>
 
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">お名前</span>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">お名前</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="picFamilyName"
@@ -579,7 +582,7 @@ const redirectPageAfterAction = (message: string) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -599,7 +602,7 @@ const redirectPageAfterAction = (message: string) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -614,9 +617,9 @@ const redirectPageAfterAction = (message: string) => {
                   </div>
 
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]"></div>
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">フリガナ</span>
+                    <div class="pic-position flex gap-5 items-center w-[50%]"></div>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">フリガナ</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="picFamilyNameKana"
@@ -626,7 +629,7 @@ const redirectPageAfterAction = (message: string) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -646,7 +649,7 @@ const redirectPageAfterAction = (message: string) => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -881,13 +884,12 @@ const redirectPageAfterAction = (message: string) => {
               name="paymentMethod"
             >
               <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="決済方法"
-                  class="w-[160px]"
-                />
+                <span class="flex items-center w-[160px]">決済方法</span>
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Input
+                      disabled
+                      class="bg-[#ccc]"
                       type="text"
                       v-bind="componentField"
                       :class="{

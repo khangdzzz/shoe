@@ -1,3 +1,5 @@
+import type { PaymentMethodInfo } from './auth';
+
 export interface Address {
   companyPostCode: string;
   companyAddress: string;
@@ -34,7 +36,7 @@ export interface Credentials {
 
 export interface RegisterInfo {
   registerReason: string;
-  paymentMethod: string;
+  paymentMethod?: string;
 }
 
 export interface RegisterNewUser extends Address, Person, FrontPerson, KaipokeDetails, Credentials, RegisterInfo {
@@ -42,7 +44,7 @@ export interface RegisterNewUser extends Address, Person, FrontPerson, KaipokeDe
   companyNameKana: string;
   confirmPassword: string;
   verifyToken: string;
-  terms: string;
+  terms?: string;
 }
 
 export interface Company extends Address, Person, FrontPerson, KaipokeDetails, RegisterInfo {
@@ -54,6 +56,8 @@ export interface Company extends Address, Person, FrontPerson, KaipokeDetails, R
   updatedAt: string;
   status: number;
   email?: string;
+  isHasPaymentMethod?: boolean;
+  paymentMethodInfo?: PaymentMethodInfo;
 }
 
 export interface CompanyUpdateBody extends Address, Person, FrontPerson, KaipokeDetails, Credentials {
@@ -104,7 +108,6 @@ export interface AdminCreateCustomer {
   kaipokeCompanyId: string;
   kaipokeUserId: string;
   kaipokeUserPassword: string;
-  paymentMethod: string;
   phoneNumber: string;
   picFamilyName: string;
   picFamilyNameKana: string;
@@ -119,7 +122,4 @@ export interface ExportCompanyCustomer {
   status?: number[];
   keyword?: string;
   targetYearMonth: string;
-  exceptionListId: number[];
-  checkedListId: number[];
-  isSelectedAll: boolean;
 }

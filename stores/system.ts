@@ -10,12 +10,19 @@ interface ValidationNotify {
 
 export const useSystemStore = defineStore('system', () => {
   const notify = ref<ValidationNotify>();
+  const termHtml = ref<string>('');
+  const isLoadPermission = ref();
   const searchPostalCode = async (postalCode: string): Promise<ResponseApi<PostalCode> | undefined> => {
     return await apis.archaic?.get(`zip-code/${postalCode}`);
   };
 
-  const setNotify = ({ code, field, message, type }: ValidationNotify) => {
+  const searchTerms = async () => {
+    const res = await apis.archaic?.get(`term-of-use`);
 
+    if (res?.data) termHtml.value = res.data;
+  };
+
+  const setNotify = ({ code, field, message, type }: ValidationNotify) => {
     notify.value = {
       code,
       field,
@@ -30,7 +37,10 @@ export const useSystemStore = defineStore('system', () => {
 
   return {
     notify,
+    termHtml,
+    isLoadPermission,
     setNotify,
+    searchTerms,
     searchPostalCode
   };
 });

@@ -4,21 +4,24 @@ import { LoaderCircle } from 'lucide-vue-next';
 
 const { redirectPage } = useRedirectPage();
 const companyAdminStore = useCompanyAdminStore();
+const commonService = useCommon();
 
 const emit = defineEmits([
   'update:changeDate',
   'update:changeStatus',
-  'searchCompanyName',
+  'searchCompany',
   'exportCustomer',
   'exportStatusCompany'
 ]);
 
 const targetYearMonth = ref('');
 const status = ref<number[]>([]);
-const companyName = ref('');
+const keyword = ref('');
+const isEnterPressed = ref(false);
 
 const isLoadingExportCompany = computed(() => companyAdminStore.isLoadingExportCompany);
 const isLoadingExportStatusCompany = computed(() => companyAdminStore.isLoadingExportStatusCompany);
+const currentUser = computed(() => commonService.getCurrentUserFromStorage());
 const onChangeTargetYearMonth = (date: string) => {
   targetYearMonth.value = date;
   emit('update:changeDate', targetYearMonth.value);
@@ -42,6 +45,30 @@ const handleExportCustomer = () => {
 const handleExportStatusCompany = () => {
   emit('exportStatusCompany');
 };
+
+const onBlur = () => {
+  if (isEnterPressed.value) {
+    isEnterPressed.value = false;
+    return;
+  }
+  emit('searchCompany', keyword.value);
+};
+
+const handleEnter = (event: any) => {
+  isEnterPressed.value = true;
+  event.target.blur();
+  emit('searchCompany', keyword.value);
+};
+
+onMounted(() => {
+  const storageCondition = commonService.getLocalStorage(`${currentUser.value?.id}_company_admin`);
+
+  if (storageCondition) {
+    const condition = JSON.parse(storageCondition);
+    status.value = condition.status;
+    keyword.value = condition.keyword;
+  }
+});
 </script>
 
 <template>
@@ -53,9 +80,9 @@ const handleExportStatusCompany = () => {
           type="text"
           placeholder="Search..."
           class="pl-10 w-[70%]"
-          v-model="companyName"
-          @blur="emit('searchCompanyName', companyName)"
-          @keydown.enter="emit('searchCompanyName', companyName)"
+          v-model="keyword"
+          @blur="onBlur"
+          @keydown.enter.prevent="handleEnter"
         />
         <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
           <Search class="w-4 h-4" />
@@ -66,6 +93,7 @@ const handleExportStatusCompany = () => {
           <Checkbox
             id="normal"
             class="bg-white"
+            :checked="status.includes(1)"
             @update:checked="handleCheckboxChange(1, $event)"
           />
           <span
@@ -79,6 +107,7 @@ const handleExportStatusCompany = () => {
           <Checkbox
             id="terms"
             class="bg-white"
+            :checked="status.includes(2)"
             @update:checked="handleCheckboxChange(2, $event)"
           />
           <span
@@ -92,6 +121,7 @@ const handleExportStatusCompany = () => {
           <Checkbox
             id="temporary"
             class="bg-white"
+            :checked="status.includes(3)"
             @update:checked="handleCheckboxChange(3, $event)"
           />
           <span

@@ -1,9 +1,12 @@
 <script lang="ts" setup>
+import { hasRegisterPaymentMethod } from '~/helps';
+
 definePageMeta({
   middleware: ['auth', 'auth-redirect']
 });
 
 const companyStore = useCompanyStore();
+const systemStore = useSystemStore();
 
 const officeId = ref<number | undefined>(undefined);
 const targetYearMonth = ref<string>('');
@@ -36,10 +39,19 @@ const fetchCompanyUseStatus = () => {
 onMounted(() => {
   fetchCompanyUseStatus();
 });
+
+const isLoadPermission = computed(() => systemStore.isLoadPermission);
+
+const hasRegisterPayment = computed(() => {
+  const _forceUpdate = isLoadPermission.value;
+
+  return hasRegisterPaymentMethod();
+});
 </script>
 
 <template>
   <div class="user-list px-4">
+    <UsersModalNotifyRegisterPayment :is-open="!hasRegisterPayment" />
     <div class="header flex items-center h-[40px] border-b border-b-[#e2e2e2]">
       <span class="text-base font-bold">利用者選択</span>
     </div>

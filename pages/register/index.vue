@@ -14,9 +14,10 @@ const route = useRoute();
 const dataInit = useFetchDataInit();
 const system = useSystemStore();
 const company = useCompanyStore();
+const jwt = useJwt();
 const { redirectPage } = useRedirectPage();
 
-const email = route.query.email;
+const email = ref('');
 const token = route.query.token;
 
 const postalCode = ref<PostalCode>();
@@ -35,22 +36,46 @@ const passwordVisible = ref(false);
 const katakanaRegex = /^[\u30A0-\u30FF]+$/;
 
 onMounted(() => {
-  if (!email || !token) {
+  if (!token) {
     redirectPage('/login');
   }
+
+  jwt.checkTokenValid('email', token?.toString() ?? '');
+
+  const tokenDecode = jwt.parseJwt(token?.toString() ?? '');
+
+  if (!tokenDecode || notify.value?.message) {
+    setTimeout(() => {
+      redirectPage('/login');
+    }, 1000);
+  }
+
+  email.value = tokenDecode?.email ?? '';
+
+  setFieldValue('email', email.value);
 });
 
-const kaigoSoftware = computed(() => {
-  return dataInit.masterData?.kaigoSoftwares;
-});
+watch(
+  () => system.termHtml,
+  () => {
+    if (system.termHtml) {
+      const terms = system.termHtml.replace(/<br>/g, '\n');
 
-const notify = computed(() => {
-  return system.notify;
-});
+      setFieldValue('terms', terms);
+    }
+  }
+);
+
+const kaigoSoftware = computed(() => dataInit.masterData?.kaigoSoftwares);
+
+const notify = computed(() => system.notify);
 
 const formSchema = toTypedSchema(
   z.object({
-    companyName: z.string(messageRequired(FIELDS.companyName)).min(1, messageRequired(FIELDS.companyName)),
+    companyName: z
+      .string(messageRequired(FIELDS.companyName))
+      .min(1, messageRequired(FIELDS.companyName))
+      .max(250, MESSAGES.ERR011),
     companyNameKana: z
       .string(messageRequired(FIELDS.companyNameKana))
       .min(1, messageRequired(FIELDS.companyNameKana))
@@ -88,7 +113,6 @@ const formSchema = toTypedSchema(
     kaipokeUserId: z.string(messageRequired(FIELDS.kaipokeUserId)).min(1, FIELDS.kaipokeUserId),
     kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 }),
     registerReason: z.string(messageRequired(FIELDS.registerReason)).min(1, FIELDS.registerReason).max(1000),
-    paymentMethod: z.string(messageRequired(FIELDS.paymentMethod)).min(1, FIELDS.paymentMethod),
     terms: z.string(messageRequired(FIELDS.terms)).min(1, FIELDS.terms),
     term: z.boolean({ message: MESSAGES.ERR003 }).refine((value) => value, {
       message: MESSAGES.ERR003
@@ -101,10 +125,7 @@ const {
   values: formValues,
   setFieldValue
 } = useForm({
-  validationSchema: formSchema,
-  initialValues: {
-    email: email?.toString() ?? ''
-  }
+  validationSchema: formSchema
 });
 
 const togglePasswordVisibility = () => {
@@ -169,7 +190,7 @@ const onSubmit = handleSubmit(
 
     isLoadingRegister.value = true;
 
-    const { term, ...rest } = values;
+    const { term, terms, ...rest } = values;
 
     const body = {
       ...rest,
@@ -355,7 +376,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -375,7 +396,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -402,7 +423,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -422,7 +443,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -474,7 +495,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -494,7 +515,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -521,7 +542,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -541,7 +562,7 @@ const onSubmit = handleSubmit(
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -848,29 +869,6 @@ const onSubmit = handleSubmit(
                 </div>
               </FormItem>
             </FormField>
-
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="paymentMethod"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="決済方法"
-                  class="w-[145px]"
-                />
-                <div class="relative w-[71%] !m-[0px] !mr-[25px]">
-                  <FormControl>
-                    <Input
-                      type="text"
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
           </div>
 
           <div class="space"></div>
@@ -881,18 +879,16 @@ const onSubmit = handleSubmit(
               name="terms"
             >
               <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="利用規約"
-                  class="w-[145px]"
-                />
+                <span class="w-[145px] flex items-center">利用規約</span>
                 <div class="relative w-[71%] !m-[0px] !mr-[25px]">
                   <FormControl>
                     <Textarea
+                      disabled
                       v-bind="componentField"
                       :class="{
                         'border-red-500': errors.length && !componentField.modelValue
                       }"
-                      class="resize-none h-[100px]"
+                      class="resize-none h-[100px] bg-[#ccc]"
                     />
                   </FormControl>
                 </div>

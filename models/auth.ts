@@ -29,4 +29,12 @@ export interface AuthUser {
   updatedAt: string;
   company: Company;
   isHasPaymentMethod: boolean;
+  paymentMethodInfo?: PaymentMethodInfo;
+}
+
+export interface PaymentMethodInfo {
+  ccBrand: string;
+  ccDisplayName: string;
+  ccExpiration: string;
+  ccNumberLast4: string;
 }

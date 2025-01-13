@@ -22,7 +22,7 @@ const postalCode = ref<PostalCode>();
 
 const isLoadPostalCode = ref(false);
 const isLoadingRegister = ref(false);
-
+const isLoading = ref(false);
 const password = ref('');
 const isMatchPassword = ref(true);
 const confirmPassword = ref('');
@@ -49,7 +49,10 @@ const notify = computed(() => {
 
 const formSchema = toTypedSchema(
   z.object({
-    companyName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.companyName)).min(1),
+    companyName: z
+      .string(formatMessage(MESSAGES.ERR001, FIELDS.companyName))
+      .min(1, messageRequired(FIELDS.companyName))
+      .max(250, MESSAGES.ERR011),
     companyNameKana: z
       .string(formatMessage(MESSAGES.ERR001, FIELDS.companyNameKana))
       .min(1, formatMessage(MESSAGES.ERR001, FIELDS.companyNameKana))
@@ -88,7 +91,7 @@ const formSchema = toTypedSchema(
     kaipokeUserPassword: z
       .string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserPassword))
       .min(8, { message: MESSAGES.ERR007 }),
-    paymentMethod: z.string(formatMessage(MESSAGES.ERR001, FIELDS.paymentMethod)).min(1)
+    paymentMethod: z.string().optional()
   })
 );
 
@@ -106,7 +109,8 @@ const currentUser = computed(() => {
 
 const initDataUser = () => {
   if (currentUser.value) {
-    const { company } = currentUser.value;
+    const { company, paymentMethodInfo } = currentUser.value;
+
     setFieldValue('companyName', company.companyName);
     setFieldValue('companyNameKana', company.companyNameKana);
     setFieldValue('companyPostCode', company.companyPostCode);
@@ -126,7 +130,7 @@ const initDataUser = () => {
     setFieldValue('kaipokeUserPassword', company.kaipokeUserPassword);
     setFieldValue('kaipokeCompanyId', company.kaipokeCompanyId);
     setFieldValue('kaigoSoftware', company.kaigoSoftware.toString());
-    setFieldValue('paymentMethod', company.paymentMethod);
+    setFieldValue('paymentMethod', paymentMethodInfo?.ccDisplayName || '未登録');
     setFieldValue('email', company.email);
 
     initialFormValues.value = { ...formValues };
@@ -134,7 +138,9 @@ const initDataUser = () => {
 };
 
 onMounted(() => {
+  isLoading.value = true;
   initDataUser();
+  isLoading.value = false;
 });
 
 watch(currentUser, () => {
@@ -191,10 +197,11 @@ watch([confirmPassword, password], () => {
   isMatchPassword.value = password.value === confirmPassword.value;
 });
 
-const isDialogOpen = ref(false);
+const isDialogOpenUpdateInfo = ref(false);
+const isDialogOpenDeleteInfo = ref(false);
 
 const closeDialog = () => {
-  isDialogOpen.value = false;
+  isDialogOpenUpdateInfo.value = false;
 };
 
 watch(
@@ -224,7 +231,7 @@ const onSubmit = handleSubmit(
       return;
     }
 
-    isDialogOpen.value = true;
+    isDialogOpenUpdateInfo.value = true;
   },
   ({ errors }) => {
     const message = Object.values(errors)[0];
@@ -236,11 +243,13 @@ const onSubmit = handleSubmit(
 );
 
 const updateUserInformation = async () => {
+  isLoading.value = true;
   const updatedFormValues = { ...formValues };
   const newPassword = updatedFormValues.password;
 
   delete updatedFormValues.confirmPassword;
   delete updatedFormValues.password;
+  delete updatedFormValues.paymentMethod;
 
   const body = {
     ...updatedFormValues,
@@ -250,9 +259,11 @@ const updateUserInformation = async () => {
 
   await companyStore.updateCompanyInformation(body as CompanyUpdateBody);
 
-  isDialogOpen.value = false;
+  isDialogOpenUpdateInfo.value = false;
 
-  if (system.notify?.message) {
+  isLoading.value = false;
+
+  if (notify.value?.message) {
     return;
   }
 
@@ -268,6 +279,27 @@ const updateUserInformation = async () => {
   }, 500);
 };
 
+const deleteUserInformation = async () => {
+  isLoading.value = true;
+  await authStore.deleteAuthUser();
+
+  isLoading.value = false;
+
+  if (notify.value?.message) {
+    return;
+  }
+
+  system.setNotify({
+    message: '退会を行いました。',
+    type: TYPE_MESSAGE.success
+  });
+
+  setTimeout(() => {
+    localStorage.clear();
+    redirectPage('/login');
+  }, 1000);
+};
+
 const resetForm = () => {
   initDataUser();
   redirectPage('/user-list');
@@ -281,15 +313,24 @@ const resetForm = () => {
       <Button
         class="mr-[64px]"
         variant="cancel_btn"
+        @click="() => (isDialogOpenDeleteInfo = true)"
         >退会</Button
       >
     </div>
     <MypageModalConfirmUpdateUser
-      :isOpen="isDialogOpen"
+      :isOpen="isDialogOpenUpdateInfo"
       :fields="changeFields"
       @close="closeDialog"
       @update="updateUserInformation"
     />
+
+    <MypageModalConfirmDeleteUser
+      :isOpen="isDialogOpenDeleteInfo"
+      @close="() => (isDialogOpenDeleteInfo = false)"
+      @update="deleteUserInformation"
+    />
+
+    <ShareLoading v-if="isLoading" />
     <form
       class="register flex flex-col gap-[25px] pl-[64px] pt-[10px] pb-[15px]"
       @submit="onSubmit"
@@ -422,7 +463,7 @@ const resetForm = () => {
                 />
                 <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]">
+                    <div class="pic-position flex gap-5 items-center w-[50%]">
                       <span class="label w-[35px]">役職</span>
                       <FormControl>
                         <Input
@@ -434,8 +475,8 @@ const resetForm = () => {
                         />
                       </FormControl>
                     </div>
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">お名前</span>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">お名前</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="frontPicFamilyName"
@@ -445,7 +486,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -465,7 +506,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -480,9 +521,9 @@ const resetForm = () => {
                   </div>
 
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]"></div>
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">フリガナ</span>
+                    <div class="pic-position flex gap-5 items-center w-[50%]"></div>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">フリガナ</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="frontPicFamilyNameKana"
@@ -492,7 +533,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -512,7 +553,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -540,7 +581,7 @@ const resetForm = () => {
                 />
                 <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]">
+                    <div class="pic-position flex gap-5 items-center w-[50%]">
                       <span class="label w-[35px]">役職</span>
                       <FormControl>
                         <Input
@@ -553,8 +594,8 @@ const resetForm = () => {
                       </FormControl>
                     </div>
 
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">お名前</span>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">お名前</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="picFamilyName"
@@ -564,7 +605,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -584,7 +625,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -599,9 +640,9 @@ const resetForm = () => {
                   </div>
 
                   <div class="flex gap-5 items-center !m-[0px]">
-                    <div class="pic-position flex gap-5 items-center w-[90%]"></div>
-                    <div class="pic-name flex items-center gap-5">
-                      <span class="label flex w-[54%]">フリガナ</span>
+                    <div class="pic-position flex gap-5 items-center w-[50%]"></div>
+                    <div class="pic-name flex items-center gap-5 w-[50%]">
+                      <span class="label flex w-[16%]">フリガナ</span>
                       <FormField
                         v-slot="{ componentField, errors }"
                         name="picFamilyNameKana"
@@ -611,7 +652,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -631,7 +672,7 @@ const resetForm = () => {
                             <FormControl>
                               <Input
                                 type="text"
-                                class="placeholder:flex placeholder:text-center text-center"
+                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
                                 v-bind="componentField"
                                 :class="{
                                   'border-red-500': errors.length
@@ -916,13 +957,12 @@ const resetForm = () => {
               name="paymentMethod"
             >
               <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="決済方法"
-                  class="w-[145px]"
-                />
+                <span class="w-[145px] flex items-center">決済方法</span>
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Input
+                      disabled
+                      class="bg-[#ccc]"
                       type="text"
                       v-bind="componentField"
                       :class="{
@@ -933,6 +973,13 @@ const resetForm = () => {
                 </div>
               </FormItem>
             </FormField>
+
+            <div class="flex gap-5">
+              <div class="w-[145px] flex items-center"></div>
+              <div class="relative w-[82%] !m-[0px]">
+                <PaymentFormLinkType />
+              </div>
+            </div>
           </div>
         </div>
       </div>

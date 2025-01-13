@@ -6,16 +6,27 @@ const props = defineProps({
   length: {
     type: Number,
     default: 100
+  },
+  pagination: {
+    type: Object,
+    default: () => ({ pageIndex: 1, pageSize: 30 })
   }
 });
 
 const { length } = toRefs(props);
 
-const pageSizeValue = ref('30');
-const currentPageIndex = ref(1);
+const pagination = computed(() => props.pagination);
+
+const pageSizeValue = ref(pagination.value.pageSize.toString());
+const currentPageIndex = ref(pagination.value.pageIndex);
 const paginationSizes = [30, 100, 200];
 const isDropdownOpen = ref(false);
 const dropdownRef = ref<HTMLDivElement | null>(null);
+
+watch(pagination, () => {
+  pageSizeValue.value = pagination.value.pageSize.toString();
+  currentPageIndex.value = pagination.value.pageIndex;
+});
 
 const emit = defineEmits(['update:pagination']);
 
