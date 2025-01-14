@@ -126,3 +126,24 @@ export const CHARACTERS = [
   { label: 'を', label2: 'ヲ', selected: false, disabled: true },
   { label: 'ん', label2: 'ン', selected: false, disabled: true }
 ];
+
+export const PAYMENT_METHOD_TYPES = {
+  bankWithdrawal: 'bank_withdrawal',
+  creditCard: 'credit_card'
+};
+
+export const PAYMENT_METHOD_OPTIONS = {
+  bank_withdrawal: '銀行引き落とし',
+  credit_card: 'クレジットカード'
+};
+
+export const PAYMENT_METHOD_OPTIONS_LIST = [
+  {
+    type: PAYMENT_METHOD_TYPES.bankWithdrawal,
+    value: PAYMENT_METHOD_OPTIONS.bank_withdrawal
+  },
+  {
+    type: PAYMENT_METHOD_TYPES.creditCard,
+    value: PAYMENT_METHOD_OPTIONS.credit_card
+  }
+];

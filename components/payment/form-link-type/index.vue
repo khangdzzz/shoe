@@ -1,6 +1,143 @@
+<script setup lang="ts">
+import Button from '~/components/ui/button/Button.vue';
+import { LoaderCircle } from 'lucide-vue-next';
+import { getTypeRegisterPayment, hasRegisterPaymentMethod } from '~/helps';
+
+const props = defineProps<{ isPaymentByCreditCard: boolean }>();
+
+const router = useRouter();
+const companyPaymentStore = useCompanyPaymentStore();
+const authStore = useAuthStore();
+const system = useSystemStore();
+
+// Form data
+const isSubmitting = ref(false);
+const isLoading = ref(false);
+const isLoadingCancelBank = ref(false);
+const hasError = ref(false);
+const errorMessage = ref('');
+
+const successUrl = ref('');
+const cancelUrl = ref('');
+const errorUrl = ref('');
+const pageconUrl = ref('');
+
+// Payment parameters
+const merchantId = ref('');
+const serviceId = ref('');
+const custCode = ref('');
+const requestDate = ref('');
+const spsHashcode = ref('');
+const formEndpoint = ref('');
+
+const currentUser = computed(() => authStore.currentUser);
+
+const buttonText = computed(() => {
+  if (currentUser.value?.isHasPaymentMethod) return '支払い方法を変更する';
+  if (isLoading.value) return 'パラメータを読み込み中...';
+  if (isSubmitting.value) return '処理中...';
+  return '支払い方法を登録する';
+});
+
+const isShowBtnCancelPaymentMethod = computed(() => {
+  const _forceUpdate = currentUser.value;
+  return hasRegisterPaymentMethod() && getTypeRegisterPayment() == PAYMENT_METHOD_TYPES.creditCard;
+});
+
+const isPaymentByCreditCard = computed(() => props.isPaymentByCreditCard);
+
+// Fetch payment parameters from API
+const fetchPaymentParams = async () => {
+  try {
+    isLoading.value = true;
+    hasError.value = false;
+    errorMessage.value = '';
+
+    const response = await companyPaymentStore.generatePaymentLinkTypeParams();
+
+    // Update values from API response
+    merchantId.value = response.merchantId;
+    serviceId.value = response.serviceId;
+    custCode.value = response.custCode;
+    spsHashcode.value = response.hashCode;
+    formEndpoint.value = response.endPoint + '/f04/FepPayInfoReceive.do';
+    requestDate.value = response.requestDate;
+    successUrl.value = response.isSuccessUrl;
+    cancelUrl.value = response.isCancelUrl;
+    errorUrl.value = response.isFailureUrl;
+    pageconUrl.value = response.notificationUrl;
+
+    return true;
+  } catch (error) {
+    hasError.value = true;
+    system.setNotify({
+      type: TYPE_MESSAGE.error,
+      message: MESSAGES.ERR008
+    });
+    return false;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Handle form submission
+const handleSubmit = async (event: Event) => {
+  try {
+    isSubmitting.value = true;
+
+    // Fetch parameters first
+    const success = await fetchPaymentParams();
+    if (!success) {
+      return;
+    }
+
+    // Validate parameters
+    if (!merchantId.value || !serviceId.value || !custCode.value) {
+      throw new Error(MESSAGES.ERR008);
+    }
+
+    // Submit the form programmatically
+    const form = event.target as HTMLFormElement;
+    form.submit();
+  } catch (error) {
+    hasError.value = true;
+    system.setNotify({
+      type: TYPE_MESSAGE.error,
+      message: MESSAGES.ERR008
+    });
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+const onCancelPaymentMethod = async () => {
+  isLoadingCancelBank.value = true;
+  const res = await companyPaymentStore.cancelCurrentPaymentMethod();
+  isLoadingCancelBank.value = false;
+  if (!res) {
+    system.setNotify({
+      type: TYPE_MESSAGE.error,
+      message: MESSAGES.ERR009
+    });
+  } else {
+    system.setNotify({
+      type: TYPE_MESSAGE.success,
+      message: MESSAGES.INFO001
+    });
+    setTimeout(() => {
+      const currentRoute = router.currentRoute.value;
+      router.replace({
+        path: currentRoute.path,
+        query: { ...currentRoute.query, refresh: Date.now() }
+      });
+    }, 1000);
+  }
+};
+</script>
+
 <template>
   <form
-    v-if="!currentUser?.isHasPaymentMethod"
+    v-if="!isShowBtnCancelPaymentMethod"
     class="payment-form"
     :action="formEndpoint"
     method="POST"
@@ -99,13 +236,20 @@
       :value="spsHashcode"
     />
 
-    <Button
-      type="submit"
-      class="flex self-center min-w-[120px] !m-[0px]"
-      :disabled="isSubmitting || isLoading"
-    >
-      {{ buttonText }}
-    </Button>
+    <div>
+      <Button
+        type="submit"
+        class="flex self-center min-w-[120px] !m-[0px]"
+        :disabled="isSubmitting || isLoading || !isPaymentByCreditCard"
+      >
+        {{ buttonText }}
+      </Button>
+      <span
+        class="text-[10px]"
+        v-if="isSubmitting || isLoading || !isPaymentByCreditCard"
+        >銀行引き落としは個別で担当者から作業します。</span
+      >
+    </div>
 
     <div
       v-if="hasError"
@@ -115,7 +259,7 @@
     </div>
   </form>
   <Button
-    v-if="currentUser?.isHasPaymentMethod"
+    v-if="isShowBtnCancelPaymentMethod"
     type="button"
     @click="onCancelPaymentMethod"
     variant="destructive"
@@ -128,133 +272,3 @@
     支払い方法を変更する
   </Button>
 </template>
-
-<script setup lang="ts">
-import { ref, computed } from 'vue';
-import Button from '~/components/ui/button/Button.vue';
-import { LoaderCircle } from 'lucide-vue-next';
-
-const router = useRouter();
-const authStore = useAuthStore();
-const system = useSystemStore();
-const currentUser = computed(() => {
-  return authStore.currentUser;
-});
-
-// Form data
-const isSubmitting = ref(false);
-const isLoading = ref(false);
-const isLoadingCancelBank = ref(false);
-const hasError = ref(false);
-const errorMessage = ref('');
-
-const successUrl = ref('');
-const cancelUrl = ref('');
-const errorUrl = ref('');
-const pageconUrl = ref('');
-
-// Payment parameters
-const merchantId = ref('');
-const serviceId = ref('');
-const custCode = ref('');
-const requestDate = ref('');
-const spsHashcode = ref('');
-const formEndpoint = ref('');
-
-const companyPaymentStore = useCompanyPaymentStore();
-
-const buttonText = computed(() => {
-  if (currentUser.value?.isHasPaymentMethod) return '支払い方法を変更する';
-  if (isLoading.value) return 'パラメータを読み込み中...';
-  if (isSubmitting.value) return '処理中...';
-  return '支払い方法を登録する';
-});
-
-// Fetch payment parameters from API
-const fetchPaymentParams = async () => {
-  try {
-    isLoading.value = true;
-    hasError.value = false;
-    errorMessage.value = '';
-
-    const response = await companyPaymentStore.generatePaymentLinkTypeParams();
-
-    // Update values from API response
-    merchantId.value = response.merchantId;
-    serviceId.value = response.serviceId;
-    custCode.value = response.custCode;
-    spsHashcode.value = response.hashCode;
-    formEndpoint.value = response.endPoint + '/f04/FepPayInfoReceive.do';
-    requestDate.value = response.requestDate;
-    successUrl.value = response.isSuccessUrl;
-    cancelUrl.value = response.isCancelUrl;
-    errorUrl.value = response.isFailureUrl;
-    pageconUrl.value = response.notificationUrl;
-
-    return true;
-  } catch (error) {
-    hasError.value = true;
-    system.setNotify({
-      type: TYPE_MESSAGE.error,
-      message: MESSAGES.ERR008
-    });
-    return false;
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-// Handle form submission
-const handleSubmit = async (event: Event) => {
-  try {
-    isSubmitting.value = true;
-
-    // Fetch parameters first
-    const success = await fetchPaymentParams();
-    if (!success) {
-      return;
-    }
-
-    // Validate parameters
-    if (!merchantId.value || !serviceId.value || !custCode.value) {
-      throw new Error(MESSAGES.ERR008);
-    }
-
-    // Submit the form programmatically
-    const form = event.target as HTMLFormElement;
-    form.submit();
-  } catch (error) {
-    hasError.value = true;
-    system.setNotify({
-      type: TYPE_MESSAGE.error,
-      message: MESSAGES.ERR008
-    });
-  } finally {
-    isSubmitting.value = false;
-  }
-};
-
-const onCancelPaymentMethod = async () => {
-  isLoadingCancelBank.value = true;
-  const res = await companyPaymentStore.cancelCurrentPaymentMethod();
-  isLoadingCancelBank.value = false;
-  if (!res) {
-    system.setNotify({
-      type: TYPE_MESSAGE.error,
-      message: MESSAGES.ERR009
-    });
-  } else {
-    system.setNotify({
-      type: TYPE_MESSAGE.success,
-      message: MESSAGES.INFO001
-    });
-    setTimeout(() => {
-      const currentRoute = router.currentRoute.value;
-      router.replace({
-        path: currentRoute.path,
-        query: { ...currentRoute.query, refresh: Date.now() }
-      });
-    }, 1000);
-  }
-};
-</script>

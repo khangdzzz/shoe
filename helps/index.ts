@@ -18,6 +18,13 @@ export const hasRegisterPaymentMethod = () => {
   return currentUser?.isHasPaymentMethod;
 };
 
+export const getTypeRegisterPayment = () => {
+  const commonService = useCommon();
+  const currentUser = commonService.getCurrentUserFromStorage();
+
+  return currentUser ? currentUser.company?.paymentMethod : '';
+};
+
 export const getPasswordRules = (messageRequire?: { message: string }) => {
   const baseSchema = messageRequire ? z.string(messageRequire) : z.string();
 

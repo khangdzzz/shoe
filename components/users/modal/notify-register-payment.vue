@@ -1,18 +1,26 @@
 <script setup lang="ts">
-const props = defineProps({
-  isOpen: {
-    type: Boolean,
-    default: false
-  }
-});
+import { hasRegisterPaymentMethod } from '~/helps';
 
+const systemStore = useSystemStore();
 const { redirectPage } = useRedirectPage();
 
-const isOpenDialog = computed(() => props.isOpen);
+const isOpenDialog = ref(false);
+
+const isLoadPermission = computed(() => systemStore.isLoadPermission);
+
+watch(isLoadPermission, () => {
+  isOpenDialog.value = !hasRegisterPaymentMethod();
+});
 
 const openMyPage = () => {
   redirectPage('/mypage');
 };
+
+onMounted(() => {
+  setTimeout(() => {
+    isOpenDialog.value = !hasRegisterPaymentMethod();
+  }, 200);
+});
 </script>
 
 <template>

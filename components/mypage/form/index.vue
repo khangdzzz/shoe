@@ -6,7 +6,7 @@ import * as z from 'zod';
 import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
 import type { CompanyUpdateBody } from '~/models/company';
-import { getPasswordRules } from '~/helps';
+import { getPasswordRules, getTypeRegisterPayment, hasRegisterPaymentMethod } from '~/helps';
 
 interface InitialFormValues {
   [key: string]: any;
@@ -104,7 +104,15 @@ const {
   validationSchema: formSchema
 });
 
+const isPaymentOfCurrentUserByCreditCard = ref(false);
+const hasRegisterPayment = ref(false);
+const isCurrentTypePaymentSetCreditCard = ref(false);
+
 const currentUser = computed(() => {
+  isPaymentOfCurrentUserByCreditCard.value = getTypeRegisterPayment() === PAYMENT_METHOD_TYPES.creditCard;
+
+  hasRegisterPayment.value = hasRegisterPaymentMethod();
+
   return authStore.currentUser;
 });
 
@@ -131,7 +139,7 @@ const initDataUser = () => {
     setFieldValue('kaipokeUserPassword', company.kaipokeUserPassword);
     setFieldValue('kaipokeCompanyId', company.kaipokeCompanyId);
     setFieldValue('kaigoSoftware', company.kaigoSoftware.toString());
-    setFieldValue('paymentMethod', paymentMethodInfo?.ccDisplayName || '未登録');
+    setFieldValue('paymentMethod', company.paymentMethod ?? '');
     setFieldValue('email', company.email);
 
     initialFormValues.value = { ...formValues };
@@ -211,11 +219,17 @@ watch(
     changeFields.value = [];
 
     Object.keys(formValues).forEach((field) => {
-      if ((formValues as any)[field] !== initialFormValues.value[field] && field !== 'confirmPassword') {
+      if (
+        (formValues as any)[field] !== initialFormValues.value[field] &&
+        field !== 'confirmPassword' &&
+        (formValues as any)[field] != PAYMENT_METHOD_TYPES.creditCard
+      ) {
         const japaneseFields = FIELDS[field as keyof typeof FIELDS];
         changeFields.value.push(japaneseFields);
       }
     });
+
+    isCurrentTypePaymentSetCreditCard.value = formValues.paymentMethod === PAYMENT_METHOD_TYPES.creditCard;
   },
   {
     deep: true
@@ -250,7 +264,15 @@ const updateUserInformation = async () => {
 
   delete updatedFormValues.confirmPassword;
   delete updatedFormValues.password;
-  delete updatedFormValues.paymentMethod;
+
+  if (
+    updatedFormValues.paymentMethod == PAYMENT_METHOD_TYPES.creditCard &&
+    getTypeRegisterPayment() != PAYMENT_METHOD_TYPES.creditCard
+  ) {
+    updatedFormValues.paymentMethod = getTypeRegisterPayment() ?? null;
+  }
+
+  if (!updatedFormValues.paymentMethod) updatedFormValues.paymentMethod = getTypeRegisterPayment() ?? null;
 
   const body = {
     ...updatedFormValues,
@@ -304,6 +326,14 @@ const deleteUserInformation = async () => {
 const resetForm = () => {
   initDataUser();
   redirectPage('/user-list');
+};
+
+const getNamePaymentMethod = (paymentMethod: { type: string; value: string }) => {
+  const isCreditCardPayment =
+    paymentMethod.type === PAYMENT_METHOD_TYPES.creditCard &&
+    getTypeRegisterPayment() === PAYMENT_METHOD_TYPES.creditCard;
+
+  return isCreditCardPayment ? currentUser.value?.paymentMethodInfo?.ccDisplayName : paymentMethod.value;
 };
 </script>
 
@@ -961,15 +991,27 @@ const resetForm = () => {
                 <span class="w-[145px] flex items-center">決済方法</span>
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
-                    <Input
-                      disabled
-                      class="bg-[#ccc]"
-                      type="text"
+                    <Select
                       v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
+                      :disabled="isPaymentOfCurrentUserByCreditCard && hasRegisterPayment"
+                    >
+                      <SelectTrigger
+                        :class="{
+                          'border-red-500': errors.length && !componentField.modelValue
+                        }"
+                      >
+                        <SelectValue placeholder="" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem
+                          :value="`${paymentMethod.type}`"
+                          v-for="paymentMethod of PAYMENT_METHOD_OPTIONS_LIST"
+                        >
+                          {{ getNamePaymentMethod(paymentMethod) }}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                   </FormControl>
                 </div>
               </FormItem>
@@ -978,7 +1020,7 @@ const resetForm = () => {
             <div class="flex gap-5">
               <div class="w-[145px] flex items-center"></div>
               <div class="relative w-[82%] !m-[0px]">
-                <PaymentFormLinkType />
+                <PaymentFormLinkType :is-payment-by-credit-card="isCurrentTypePaymentSetCreditCard" />
               </div>
             </div>
           </div>
