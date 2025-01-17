@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-
 definePageMeta({
   middleware: ['auth', 'auth-redirect']
 });
@@ -8,6 +7,7 @@ const companyStore = useCompanyStore();
 
 const officeId = ref<number | undefined>(undefined);
 const targetYearMonth = ref<string>('');
+const userTableComponentRef = ref();
 
 const handleOfficeId = (id: number | undefined) => {
   officeId.value = id;
@@ -15,6 +15,8 @@ const handleOfficeId = (id: number | undefined) => {
 };
 
 const handleTargetYearMonth = (date: string) => {
+  if (userTableComponentRef.value) userTableComponentRef.value?.resetFilterTable();
+
   targetYearMonth.value = date;
   fetchCompanyUseStatus();
 };
@@ -53,6 +55,7 @@ onMounted(() => {
       <UsersSearchCharacter class="px-5 py-10 min-w-[230px]" />
       <UsersTable
         class="w-full"
+        ref="userTableComponentRef"
         :office-id="officeId"
         :target-year-month="formatTargetYearMonth(targetYearMonth)"
       />

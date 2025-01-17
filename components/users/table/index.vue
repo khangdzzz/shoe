@@ -474,6 +474,17 @@ const isDisableAllButton = computed(() => {
   const isCurrentYearMonth = checkTargetYearMonthMatchCurrentYearMonth(targetYearMonth?.value);
   return isCurrentYearMonth && hasRegisterPaymentMethod();
 });
+
+const resetFilterTable = () => {
+  userNameKanjiSearch.value = '';
+  selectedReportStatus.value = '999';
+  selectedPlanStatus.value = '999';
+  isCalenderJapanese.value = false;
+};
+
+defineExpose({
+  resetFilterTable
+});
 </script>
 
 <template>
@@ -526,17 +537,19 @@ const isDisableAllButton = computed(() => {
     </div>
 
     <UsersSearchStatus
+      id="select-report-element"
       :cssStyle="'absolute duration-10 ease-linear whitespace-nowrap top-0'"
       :type="'report'"
-      @filterStatus="filterStatus"
-      id="select-report-element"
+      :selected-status="selectedReportStatus"
+      @filter-status="filterStatus"
     />
 
     <UsersSearchStatus
+      id="select-plan-element"
       :cssStyle="'absolute duration-10 ease-linear whitespace-nowrap top-0'"
       :type="'plan'"
-      @filterStatus="filterStatus"
-      id="select-plan-element"
+      :selected-status="selectedPlanStatus"
+      @filter-status="filterStatus"
     />
     <div class="w-full flex relative flex-col mt-[35px]">
       <div
