@@ -102,6 +102,11 @@ const handleDataCompanyUserStatus = (companyUsers?: CompanyUserStatus[]) => {
   return filteredUsers;
 };
 
+const filterStatus = ({ status, type }: { status: string; type: string }) => {
+  if (type === 'report') selectedReportStatus.value = status;
+  if (type === 'plan') selectedPlanStatus.value = status;
+};
+
 const filterByReportStatus = (users: CompanyUserStatus[]) => {
   const selectReportStatus = Number(selectedReportStatus.value);
   const selectPlanStatus = Number(selectedPlanStatus.value);
@@ -395,8 +400,16 @@ const triggerToast = (variant: 'default' | 'destructive' | null | undefined, mes
 
 const selectReportElement = ref<HTMLElement | null>();
 const columnReportElement = ref<HTMLElement | null>();
+
 const selectPlanElement = ref<HTMLElement | null>();
 const columnPlanElement = ref<HTMLElement | null>();
+
+const toggleReportElement = ref<HTMLElement | null>();
+const columnToggleReportElement = ref<HTMLElement | null>();
+
+const togglePlanElement = ref<HTMLElement | null>();
+const columnTogglePlanElement = ref<HTMLElement | null>();
+
 const tableElement = ref<HTMLElement | null>();
 const rectTableElement = ref<DOMRect | null>();
 const lastScrollLeft = ref(0);
@@ -404,10 +417,19 @@ const lastScrollLeft = ref(0);
 onMounted(() => {
   selectReportElement.value = document.getElementById('select-report-element');
   columnReportElement.value = document.getElementById('column-3');
+
   selectPlanElement.value = document.getElementById('select-plan-element');
   columnPlanElement.value = document.getElementById('column-5');
+
+  toggleReportElement.value = document.getElementById('toggle-report-element');
+  columnToggleReportElement.value = document.getElementById('column-7');
+
+  togglePlanElement.value = document.getElementById('toggle-plan-element');
+  columnTogglePlanElement.value = document.getElementById('column-8');
+
   tableElement.value = document.getElementById('table-user');
   rectTableElement.value = tableElement.value?.getBoundingClientRect();
+
   updateHeaderPosition();
 
   window.addEventListener('resize', updateHeaderPosition);
@@ -415,16 +437,22 @@ onMounted(() => {
 
 const updateHeaderPosition = () => {
   const rectTable = rectTableElement.value;
+  const elements = [
+    { element: selectReportElement.value, column: columnReportElement.value, position: 35 },
+    { element: selectPlanElement.value, column: columnPlanElement.value, position: 35 },
+    { element: toggleReportElement.value, column: columnToggleReportElement.value, position: 30 },
+    { element: togglePlanElement.value, column: columnTogglePlanElement.value, position: 30 }
+  ];
 
-  updateElementPosition(selectReportElement.value, columnReportElement.value, 35, rectTable);
+  const updatePositions = () => {
+    elements.forEach(({ element, column, position }) => {
+      updateElementPosition(element, column, position, rectTable);
+    });
+  };
 
-  updateElementPosition(selectPlanElement.value, columnPlanElement.value, 35, rectTable);
+  updatePositions();
 
-  setTimeout(() => {
-    updateElementPosition(selectReportElement.value, columnReportElement.value, 35, rectTable);
-
-    updateElementPosition(selectPlanElement.value, columnPlanElement.value, 35, rectTable);
-  }, 50);
+  setTimeout(updatePositions, 50);
 };
 
 const updateElementPosition = (
@@ -441,12 +469,12 @@ const updateElementPosition = (
   targetElement.style.top = `${rect.top + window.scrollY - offsetTop}px`;
   targetElement.style.width = `${rect.width - 10}px`;
 
-  if ((rectTable && rectTable.left > rect.left) || window.innerWidth - rect.left - rect.width < 20) {
+  if ((rectTable && rectTable.left > rect.left) || window.innerWidth - rect.left - rect.width < 5) {
     targetElement.style.zIndex = '-1';
     targetElement.style.display = 'none';
   } else {
     targetElement.style.zIndex = '5';
-    targetElement.style.display = 'block';
+    targetElement.style.display = 'flex';
   }
 };
 
@@ -455,11 +483,6 @@ const handleTableScroll = (event: any) => {
   if (scrollLeft !== lastScrollLeft.value) {
     updateHeaderPosition();
   }
-};
-
-const filterStatus = ({ status, type }: { status: string; type: string }) => {
-  if (type === 'report') selectedReportStatus.value = status;
-  if (type === 'plan') selectedPlanStatus.value = status;
 };
 
 onUpdated(() => {
@@ -516,24 +539,6 @@ defineExpose({
           </span>
         </div>
       </div>
-      <div class="toggle flex gap-5">
-        <div class="flex items-center space-x-2">
-          <Switch
-            :disabled="!isDisableAllButton"
-            v-model:checked="reportSwitchState"
-            @click="() => onChangeReportSwitch()"
-          />
-          <span>一括</span>
-        </div>
-        <div class="flex items-center space-x-2">
-          <Switch
-            :disabled="!isDisableAllButton"
-            v-model:checked="planSwitchState"
-            @click="() => onChangePlanSwitch()"
-          />
-          <span>一括</span>
-        </div>
-      </div>
     </div>
 
     <UsersSearchStatus
@@ -551,6 +556,31 @@ defineExpose({
       :selected-status="selectedPlanStatus"
       @filter-status="filterStatus"
     />
+
+    <div
+      id="toggle-report-element"
+      class="flex! items-center justify-center space-x-2 absolute duration-10 ease-linear whitespace-nowrap top-0"
+    >
+      <Switch
+        :disabled="!isDisableAllButton"
+        v-model:checked="reportSwitchState"
+        @click="() => onChangeReportSwitch()"
+      />
+      <span>一括</span>
+    </div>
+
+    <div
+      id="toggle-plan-element"
+      class="flex! items-center justify-center space-x-2 absolute duration-10 ease-linear whitespace-nowrap top-0"
+    >
+      <Switch
+        :disabled="!isDisableAllButton"
+        v-model:checked="planSwitchState"
+        @click="() => onChangePlanSwitch()"
+      />
+      <span>一括</span>
+    </div>
+
     <div class="w-full flex relative flex-col mt-[35px]">
       <div
         class="table-container overflow-auto border-b"
