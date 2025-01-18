@@ -77,16 +77,14 @@ const onSearchCompany = async (value: string) => {
 };
 
 const exportCustomer = async () => {
-  const messageExportSuccess = '顧客情報出力が完了しました。ファイルをダウンロードしてください。';
-  exportData(0, messageExportSuccess);
+  exportData(0);
 };
 
 const exportStatusCompany = async () => {
-  const messageExportSuccess = '利用状況出力が完了しました。ファイルをダウンロードしてください。';
-  exportData(1, messageExportSuccess);
+  exportData(1);
 };
 
-const exportData = async (exportType: number, messageExportSuccess: string) => {
+const exportData = async (exportType: number) => {
   const body = {
     exportType: exportType,
     targetYearMonth: targetYearMonth.value
@@ -100,10 +98,6 @@ const exportData = async (exportType: number, messageExportSuccess: string) => {
   }
 
   await downloadFileFromS3(downloadUrl);
-
-  if (!system.notify?.message) {
-    triggerToast(messageExportSuccess, 'default');
-  }
 };
 
 const downloadFileFromS3 = async (url: string) => {

@@ -118,7 +118,7 @@ const currentUser = computed(() => {
 
 const initDataUser = () => {
   if (currentUser.value) {
-    const { company, paymentMethodInfo } = currentUser.value;
+    const { company } = currentUser.value;
 
     setFieldValue('companyName', company.companyName);
     setFieldValue('companyNameKana', company.companyNameKana);
