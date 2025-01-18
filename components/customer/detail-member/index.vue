@@ -234,6 +234,8 @@ const updateCompanyCustomer = async (status?: number) => {
 
   delete updatedFormValues.password;
 
+  updatedFormValues.paymentMethod = companyUser.value?.paymentMethod;
+
   const body = {
     ...updatedFormValues,
     keepLastPlanContentFlg: isRemainOldPlan.value ? 1 : 0,
@@ -242,13 +244,14 @@ const updateCompanyCustomer = async (status?: number) => {
     ...(status && { status })
   };
 
-  await companyAdminStore.updateCompanyById(Number(idCompany.value), body);
+  await companyAdminStore.updateCompanyById(Number(idCompany.value), body).finally(() => {
+    isLoadingInit.value = false;
+    isOpenDialogConfirmUpdate.value = false;
+  });
 
   if (!system.notify?.message) {
     redirectPageAfterAction('会社情報を更新しました。');
   }
-
-  isLoadingInit.value = false;
 };
 
 const onHandleDelete = async () => {
