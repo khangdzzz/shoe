@@ -87,8 +87,13 @@ const initDataUser = () => {
     setFieldValue('kaipokeUserPassword', user.kaipokeUserPassword);
     setFieldValue('kaipokeCompanyId', user.kaipokeCompanyId);
     setFieldValue('kaigoSoftware', user.kaigoSoftware.toString());
-    setFieldValue('paymentMethod', paymentMethodInfo?.ccDisplayName ?? '未登録');
     setFieldValue('email', user.email);
+
+    const paymentMethod = companyUser.value.isHasPaymentMethod
+      ? (paymentMethodInfo?.ccDisplayName ?? PAYMENT_METHOD_OPTIONS.bank_withdrawal)
+      : '未登録';
+
+    setFieldValue('paymentMethod', paymentMethod);
 
     isRemainOldPlan.value = user.keepLastPlanContentFlg == 1 ? true : false;
 

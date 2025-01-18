@@ -2,10 +2,12 @@
 const props = defineProps<{
   cssStyle?: string;
   type: string;
+  selectedStatus: string;
 }>();
 
 const { type } = toRefs(props);
-const selectedStatus = ref('999');
+
+const selectedStatus = ref(props.selectedStatus);
 
 const STATUS: { [key: number]: string } = {
   0: '未実行',
@@ -22,6 +24,13 @@ const STATUS_CREATE_REPORT_PLAN = Object.entries(STATUS).map(([key, value]) => (
   id: Number(key),
   value: value
 }));
+
+watch(
+  () => props.selectedStatus,
+  (newValue) => {
+    selectedStatus.value = newValue;
+  }
+);
 
 watch(selectedStatus, () => {
   emit('filterStatus', {
@@ -50,5 +59,4 @@ watch(selectedStatus, () => {
   </div>
 </template>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

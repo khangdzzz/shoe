@@ -77,12 +77,12 @@ const onSearchCompany = async (value: string) => {
 };
 
 const exportCustomer = async () => {
-  const messageExportSuccess = '顧客情報ダウンロード用のリンクをメールで送信しました。';
+  const messageExportSuccess = '顧客情報出力が完了しました。ファイルをダウンロードしてください。';
   exportData(0, messageExportSuccess);
 };
 
 const exportStatusCompany = async () => {
-  const messageExportSuccess = '利用状況ダウンロード用のリンクをメールで送信しました。';
+  const messageExportSuccess = '利用状況出力が完了しました。ファイルをダウンロードしてください。';
   exportData(1, messageExportSuccess);
 };
 

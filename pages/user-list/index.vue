@@ -1,15 +1,13 @@
 <script lang="ts" setup>
-import { hasRegisterPaymentMethod } from '~/helps';
-
 definePageMeta({
   middleware: ['auth', 'auth-redirect']
 });
 
 const companyStore = useCompanyStore();
-const systemStore = useSystemStore();
 
 const officeId = ref<number | undefined>(undefined);
 const targetYearMonth = ref<string>('');
+const userTableComponentRef = ref();
 
 const handleOfficeId = (id: number | undefined) => {
   officeId.value = id;
@@ -17,6 +15,8 @@ const handleOfficeId = (id: number | undefined) => {
 };
 
 const handleTargetYearMonth = (date: string) => {
+  if (userTableComponentRef.value) userTableComponentRef.value?.resetFilterTable();
+
   targetYearMonth.value = date;
   fetchCompanyUseStatus();
 };
@@ -39,19 +39,11 @@ const fetchCompanyUseStatus = () => {
 onMounted(() => {
   fetchCompanyUseStatus();
 });
-
-const isLoadPermission = computed(() => systemStore.isLoadPermission);
-
-const hasRegisterPayment = computed(() => {
-  const _forceUpdate = isLoadPermission.value;
-
-  return hasRegisterPaymentMethod();
-});
 </script>
 
 <template>
   <div class="user-list px-4">
-    <UsersModalNotifyRegisterPayment :is-open="!hasRegisterPayment" />
+    <UsersModalNotifyRegisterPayment />
     <div class="header flex items-center h-[40px] border-b border-b-[#e2e2e2]">
       <span class="text-base font-bold">利用者選択</span>
     </div>
@@ -63,6 +55,7 @@ const hasRegisterPayment = computed(() => {
       <UsersSearchCharacter class="px-5 py-10 min-w-[230px]" />
       <UsersTable
         class="w-full"
+        ref="userTableComponentRef"
         :office-id="officeId"
         :target-year-month="formatTargetYearMonth(targetYearMonth)"
       />
