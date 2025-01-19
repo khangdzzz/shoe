@@ -25,6 +25,20 @@ export const getTypeRegisterPayment = () => {
   return currentUser ? currentUser.company?.paymentMethod : '';
 };
 
+export const isAdminUpdatePaymentMethod = () => {
+  const commonService = useCommon();
+  const currentUser = commonService.getCurrentUserFromStorage();
+
+  return currentUser.company?.isAdminUpdatePaymentMethod;
+};
+
+export const getCreditCardInfo = () => {
+  const commonService = useCommon();
+  const currentUser = commonService.getCurrentUserFromStorage();
+
+  return currentUser?.paymentMethodInfo;
+};
+
 export const getPasswordRules = (messageRequire?: { message: string }) => {
   const baseSchema = messageRequire ? z.string(messageRequire) : z.string();
 

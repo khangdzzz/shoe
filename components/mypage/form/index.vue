@@ -6,7 +6,12 @@ import * as z from 'zod';
 import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
 import type { CompanyUpdateBody } from '~/models/company';
-import { getPasswordRules, getTypeRegisterPayment, hasRegisterPaymentMethod } from '~/helps';
+import {
+  getPasswordRules,
+  getTypeRegisterPayment,
+  hasRegisterPaymentMethod,
+  isAdminUpdatePaymentMethod
+} from '~/helps';
 
 interface InitialFormValues {
   [key: string]: any;
@@ -35,6 +40,21 @@ const passwordConfirmVisible = ref(false);
 const passwordVisible = ref(false);
 
 const katakanaRegex = /^[\u30A0-\u30FF]+$/;
+
+const isPaymentOfCurrentUserByCreditCard = ref(false);
+const hasRegisterPayment = ref(false);
+const isCurrentTypePaymentSetCreditCard = ref(false);
+const isAdminUpdatePayment = ref(false);
+
+const currentUser = computed(() => {
+  isPaymentOfCurrentUserByCreditCard.value = getTypeRegisterPayment() === PAYMENT_METHOD_TYPES.creditCard;
+
+  isAdminUpdatePayment.value = isAdminUpdatePaymentMethod();
+
+  hasRegisterPayment.value = hasRegisterPaymentMethod();
+
+  return authStore.currentUser;
+});
 
 const isDisableButton = computed(() => {
   return changeFields.value.length == 0;
@@ -102,18 +122,6 @@ const {
   setFieldValue
 } = useForm({
   validationSchema: formSchema
-});
-
-const isPaymentOfCurrentUserByCreditCard = ref(false);
-const hasRegisterPayment = ref(false);
-const isCurrentTypePaymentSetCreditCard = ref(false);
-
-const currentUser = computed(() => {
-  isPaymentOfCurrentUserByCreditCard.value = getTypeRegisterPayment() === PAYMENT_METHOD_TYPES.creditCard;
-
-  hasRegisterPayment.value = hasRegisterPaymentMethod();
-
-  return authStore.currentUser;
 });
 
 const initDataUser = () => {
@@ -333,7 +341,15 @@ const getNamePaymentMethod = (paymentMethod: { type: string; value: string }) =>
     paymentMethod.type === PAYMENT_METHOD_TYPES.creditCard &&
     getTypeRegisterPayment() === PAYMENT_METHOD_TYPES.creditCard;
 
-  return isCreditCardPayment ? currentUser.value?.paymentMethodInfo?.ccDisplayName : paymentMethod.value;
+  const { paymentMethodInfo } = currentUser.value || {};
+
+  return isCreditCardPayment && paymentMethodInfo ? paymentMethodInfo.ccDisplayName : paymentMethod.value;
+};
+
+const isDisabledSelectPaymentMethod = () => {
+  if (isAdminUpdatePayment.value) return true;
+
+  return isPaymentOfCurrentUserByCreditCard.value && hasRegisterPayment.value;
 };
 </script>
 
@@ -988,12 +1004,12 @@ const getNamePaymentMethod = (paymentMethod: { type: string; value: string }) =>
               name="paymentMethod"
             >
               <FormItem class="flex gap-5">
-                <span class="w-[145px] flex items-center">決済方法</span>
+                <span class="w-[145px] flex items-center">決済方法 {{ isDisabledSelectPaymentMethod() }}</span>
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
                     <Select
                       v-bind="componentField"
-                      :disabled="isPaymentOfCurrentUserByCreditCard && hasRegisterPayment"
+                      :disabled="isDisabledSelectPaymentMethod()"
                     >
                       <SelectTrigger
                         :class="{

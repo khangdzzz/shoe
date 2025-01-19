@@ -32,16 +32,18 @@ const formEndpoint = ref('');
 
 const currentUser = computed(() => authStore.currentUser);
 
+const isShowBtnCancelPaymentMethod = computed(() => {
+  const { paymentMethodInfo } = currentUser.value || {};
+  const isCreditCard = getTypeRegisterPayment() === PAYMENT_METHOD_TYPES.creditCard;
+
+  return hasRegisterPaymentMethod() && isCreditCard && !!paymentMethodInfo;
+});
+
 const buttonText = computed(() => {
   if (currentUser.value?.isHasPaymentMethod) return '支払い方法を変更する';
   if (isLoading.value) return 'パラメータを読み込み中...';
   if (isSubmitting.value) return '処理中...';
   return '支払い方法を登録する';
-});
-
-const isShowBtnCancelPaymentMethod = computed(() => {
-  const _forceUpdate = currentUser.value;
-  return hasRegisterPaymentMethod() && getTypeRegisterPayment() == PAYMENT_METHOD_TYPES.creditCard;
 });
 
 const isPaymentByCreditCard = computed(() => props.isPaymentByCreditCard);
@@ -246,7 +248,7 @@ const onCancelPaymentMethod = async () => {
       </Button>
       <span
         class="text-[10px]"
-        v-if="isSubmitting || isLoading || !isPaymentByCreditCard"
+        v-if="!isPaymentByCreditCard"
         >銀行引き落としは個別で担当者から作業します。</span
       >
     </div>

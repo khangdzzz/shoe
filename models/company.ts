@@ -37,6 +37,7 @@ export interface Credentials {
 export interface RegisterInfo {
   registerReason: string;
   paymentMethod?: string;
+  isAdminUpdatePaymentMethod: boolean;
 }
 
 export interface RegisterNewUser extends Address, Person, FrontPerson, KaipokeDetails, Credentials, RegisterInfo {

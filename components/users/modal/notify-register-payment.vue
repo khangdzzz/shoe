@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { hasRegisterPaymentMethod } from '~/helps';
+import {
+  getCreditCardInfo,
+  getTypeRegisterPayment,
+  hasRegisterPaymentMethod,
+  isAdminUpdatePaymentMethod
+} from '~/helps';
 
 const systemStore = useSystemStore();
 const { redirectPage } = useRedirectPage();
@@ -9,18 +14,38 @@ const isOpenDialog = ref(false);
 const isLoadPermission = computed(() => systemStore.isLoadPermission);
 
 watch(isLoadPermission, () => {
-  isOpenDialog.value = !hasRegisterPaymentMethod();
+  isOpenDialog.value = checkRegisterPaymentMethod();
 });
 
 const openMyPage = () => {
+  isOpenDialog.value = false;
   redirectPage('/mypage');
 };
 
 onMounted(() => {
   setTimeout(() => {
-    isOpenDialog.value = !hasRegisterPaymentMethod();
+    isOpenDialog.value = checkRegisterPaymentMethod();
   }, 200);
 });
+
+const checkRegisterPaymentMethod = () => {
+  const typeRegisterPayment = getTypeRegisterPayment();
+  const isAdminUpdatePayment = isAdminUpdatePaymentMethod();
+  const paymentInfo = getCreditCardInfo();
+
+  if (isAdminUpdatePayment) {
+    if (
+      typeRegisterPayment === PAYMENT_METHOD_TYPES.bankWithdrawal ||
+      (typeRegisterPayment === PAYMENT_METHOD_TYPES.creditCard && paymentInfo)
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  return !hasRegisterPaymentMethod();
+};
 </script>
 
 <template>

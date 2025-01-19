@@ -5,7 +5,6 @@ import { Eye, EyeOff } from 'lucide-vue-next';
 import * as z from 'zod';
 import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
-import type { Company } from '~/models/company';
 import { getPasswordRules } from '~/helps';
 
 interface InitialFormValues {
