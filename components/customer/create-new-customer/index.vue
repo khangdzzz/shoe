@@ -72,7 +72,8 @@ const formSchema = toTypedSchema(
     kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1, FIELDS.kaigoSoftware),
     kaipokeCompanyId: z.string(messageRequired(FIELDS.kaipokeCompanyId)).min(1, FIELDS.kaipokeCompanyId),
     kaipokeUserId: z.string(messageRequired(FIELDS.kaipokeUserId)).min(1, FIELDS.kaipokeUserId),
-    kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 })
+    kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 }),
+    paymentMethod: z.string().default(PAYMENT_METHOD_TYPES.bankWithdrawal)
   })
 );
 
@@ -731,6 +732,36 @@ const redirectPageAfterAction = (message: string) => {
                     </div>
                   </FormControl>
                   <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
+                </div>
+              </FormItem>
+            </FormField>
+
+            <FormField
+              v-slot="{ componentField, errors }"
+              name="paymentMethod"
+            >
+              <FormItem class="flex gap-5">
+                <ShareRequireLabel
+                  label="決済方法"
+                  class="w-[160px]"
+                />
+                <div class="relative w-[82%] !m-[0px]">
+                  <FormControl>
+                    <RadioGroup
+                      class="flex gap-5"
+                      v-bind="componentField"
+                    >
+                      <FormItem
+                        class="flex items-center space-y-0 gap-x-3"
+                        v-for="paymentMethod in PAYMENT_METHOD_OPTIONS_LIST"
+                      >
+                        <FormControl>
+                          <RadioGroupItem :value="paymentMethod.type" />
+                        </FormControl>
+                        <span>{{ paymentMethod.value }}</span>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
                 </div>
               </FormItem>
             </FormField>

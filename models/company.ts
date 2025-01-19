@@ -117,6 +117,7 @@ export interface AdminCreateCustomer {
   picGivenNameKana: string;
   picPosition: string;
   keepLastPlanContentFlg: number;
+  paymentMethod: string;
 }
 
 export interface ExportCompanyCustomer {

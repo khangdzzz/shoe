@@ -503,6 +503,7 @@ const resetFilterTable = () => {
   selectedReportStatus.value = '999';
   selectedPlanStatus.value = '999';
   isCalenderJapanese.value = false;
+  sort.value = '';
 };
 
 defineExpose({

@@ -86,14 +86,9 @@ const initDataUser = () => {
     setFieldValue('kaipokeUserId', user.kaipokeUserId);
     setFieldValue('kaipokeUserPassword', user.kaipokeUserPassword);
     setFieldValue('kaipokeCompanyId', user.kaipokeCompanyId);
+    setFieldValue('paymentMethod', user.paymentMethod);
     setFieldValue('kaigoSoftware', user.kaigoSoftware.toString());
     setFieldValue('email', user.email);
-
-    const paymentMethod = companyUser.value.isHasPaymentMethod
-      ? (paymentMethodInfo?.ccDisplayName ?? PAYMENT_METHOD_OPTIONS.bank_withdrawal)
-      : '未登録';
-
-    setFieldValue('paymentMethod', paymentMethod);
 
     isRemainOldPlan.value = user.keepLastPlanContentFlg == 1 ? true : false;
 
@@ -142,7 +137,7 @@ const formSchema = toTypedSchema(
     kaipokeCompanyId: z.string(messageRequired(FIELDS.kaipokeCompanyId)).min(1, FIELDS.kaipokeCompanyId),
     kaipokeUserId: z.string(messageRequired(FIELDS.kaipokeUserId)).min(1, FIELDS.kaipokeUserId),
     kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 }),
-    paymentMethod: z.string().optional()
+    paymentMethod: z.string().nullable().optional()
   })
 );
 
@@ -233,8 +228,6 @@ const updateCompanyCustomer = async (status?: number) => {
   const newPassword = updatedFormValues.password;
 
   delete updatedFormValues.password;
-
-  updatedFormValues.paymentMethod = companyUser.value?.paymentMethod;
 
   const body = {
     ...updatedFormValues,
@@ -892,18 +885,26 @@ const redirectPageAfterAction = (message: string) => {
               name="paymentMethod"
             >
               <FormItem class="flex gap-5">
-                <span class="flex items-center w-[160px]">決済方法</span>
+                <ShareRequireLabel
+                  label="決済方法"
+                  class="w-[160px]"
+                />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
-                    <Input
-                      disabled
-                      class="bg-[#ccc]"
-                      type="text"
+                    <RadioGroup
+                      class="flex gap-5"
                       v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
+                    >
+                      <FormItem
+                        class="flex items-center space-y-0 gap-x-3"
+                        v-for="paymentMethod in PAYMENT_METHOD_OPTIONS_LIST"
+                      >
+                        <FormControl>
+                          <RadioGroupItem :value="paymentMethod.type" />
+                        </FormControl>
+                        <span>{{ paymentMethod.value }}</span>
+                      </FormItem>
+                    </RadioGroup>
                   </FormControl>
                 </div>
               </FormItem>
