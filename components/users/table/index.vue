@@ -224,16 +224,14 @@ const getButtonColorReport = (amount: number | null) => {
 
   switch (amount) {
     case 0:
+    case 3:
       classes += isDisableAllButton.value
-        ? 'border border-gray-300 hover:bg-[#faeded]'
-        : 'border border-gray-300 bg-[#ccc] opacity-50 cursor-not-allowed';
+        ? 'border border-gray-300 bg-[#ccc] opacity-50 cursor-not-allowed'
+        : 'border border-gray-300 hover:bg-[#faeded]';
       break;
     case 1:
     case 2:
       classes += 'bg-[#afeeed]';
-      break;
-    case 3:
-      classes += 'bg-[#acacac]';
       break;
     case VALUE_STATUS_BULK_EXPORT:
       classes += 'bg-[#afeeed] hover:bg-[#77f6f4]';
@@ -251,17 +249,15 @@ const getButtonColorPlan = (row: CompanyUserStatus) => {
 
   switch (planStatus) {
     case 0:
+    case 3:
       classes +=
-        [VALUE_STATUS_BULK_EXPORT, 1, 2].includes(reportStatus) && isDisableAllButton.value
+        [VALUE_STATUS_BULK_EXPORT, 1, 2].includes(reportStatus) && !isDisableAllButton.value
           ? 'border border-gray-300 hover:bg-[#faeded]'
           : 'border border-gray-300 bg-[#ccc] opacity-50 cursor-not-allowed';
       break;
     case 1:
     case 2:
       classes += 'bg-[#afeeed]';
-      break;
-    case 3:
-      classes += 'bg-[#acacac]';
       break;
     case VALUE_STATUS_BULK_EXPORT:
       classes += 'bg-[#afeeed] hover:bg-[#77f6f4]';
@@ -305,7 +301,7 @@ const handleSortUsers = (users: any[]) => {
 };
 
 const updateReportStatus = (companyUser: CompanyUserStatus) => {
-  if (!isDisableAllButton.value) return;
+  if (isDisableAllButton.value) return;
 
   const { id, reportStatus } = companyUser;
 
@@ -321,7 +317,7 @@ const updateReportStatus = (companyUser: CompanyUserStatus) => {
 };
 
 const updatePlanStatus = (companyUser: CompanyUserStatus, forceCancel?: boolean) => {
-  if (!isDisableAllButton.value) return;
+  if (isDisableAllButton.value) return;
 
   const { id, planStatus, reportStatus } = companyUser;
 
@@ -495,7 +491,7 @@ const isDisableAllButton = computed(() => {
   const _forceUpdate = isLoadPermission.value;
 
   const isCurrentYearMonth = checkTargetYearMonthMatchCurrentYearMonth(targetYearMonth?.value);
-  return isCurrentYearMonth && hasRegisterPaymentMethod();
+  return isCurrentYearMonth && hasRegisterPaymentMethod() ? false : true;
 });
 
 const resetFilterTable = () => {
@@ -563,7 +559,7 @@ defineExpose({
       class="flex! items-center justify-center space-x-2 absolute duration-10 ease-linear whitespace-nowrap top-0"
     >
       <Switch
-        :disabled="!isDisableAllButton"
+        :disabled="isDisableAllButton"
         v-model:checked="reportSwitchState"
         @click="() => onChangeReportSwitch()"
       />
@@ -575,7 +571,7 @@ defineExpose({
       class="flex! items-center justify-center space-x-2 absolute duration-10 ease-linear whitespace-nowrap top-0"
     >
       <Switch
-        :disabled="!isDisableAllButton"
+        :disabled="isDisableAllButton"
         v-model:checked="planSwitchState"
         @click="() => onChangePlanSwitch()"
       />
@@ -731,7 +727,7 @@ defineExpose({
 
       <div class="flex justify-end mr-[35px]">
         <Button
-          :disabled="isDisableExport || !isDisableAllButton"
+          :disabled="isDisableExport || isDisableAllButton"
           class="flex justify-end mt-[30px]"
           @click="openDialogCreateReport"
         >
