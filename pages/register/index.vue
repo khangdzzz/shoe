@@ -889,7 +889,7 @@ const onSubmit = handleSubmit(
                       :class="{
                         'border-red-500': errors.length && !componentField.modelValue
                       }"
-                      class="resize-none h-[100px] bg-[#ccc]"
+                      class="resize-none h-[100px] bg-[#fff] text-black disabled:opacity-80"
                     />
                   </FormControl>
                 </div>
