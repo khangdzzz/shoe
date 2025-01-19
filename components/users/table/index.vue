@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Search, ArrowDownUp, ArrowUpDown } from 'lucide-vue-next';
+import { Search, ArrowDownUp, ArrowUpDown, ShieldAlert } from 'lucide-vue-next';
 import { useToast } from '~/components/ui/toast/use-toast';
 import { checkTargetYearMonthMatchCurrentYearMonth, hasRegisterPaymentMethod } from '~/helps';
 import type { Header } from '~/models/common';
@@ -35,11 +35,11 @@ const usersNeedCreateReport = ref<CompanyUserStatus[]>([]);
 
 const headers: Header[] = [
   { label: '利用者', width: '16%', key: 'nameKanji', isSort: true },
-  { label: '生年月日', width: '16%', key: 'birthday', isSort: true },
-  { label: '報告書', width: '9%', key: 'reportStatus', isSort: false },
-  { label: '実行日時', width: '16%', key: 'reportDate', isSort: false },
-  { label: '計画書', width: '9%', key: 'planStatus', isSort: false },
-  { label: '実行日時', width: '16%', key: 'planDate', isSort: false },
+  { label: '生年月日', width: '12%', key: 'birthday', isSort: true },
+  { label: '報告書', width: '12%', key: 'reportStatus', isSort: false },
+  { label: '実行日時', width: '15%', key: 'reportDate', isSort: false },
+  { label: '計画書', width: '12%', key: 'planStatus', isSort: false },
+  { label: '実行日時', width: '15%', key: 'planDate', isSort: false },
   { label: '報告書', width: '9%', key: 'actionReport', isSort: false },
   { label: '計画書', width: '9%', key: 'actionPlan', isSort: false }
 ];
@@ -649,8 +649,23 @@ defineExpose({
                 <span
                   class="px-[18px] py-[8px] rounded-sm"
                   :class="getStatusColor(row.reportStatus)"
-                  >{{ getStatus(row.reportStatus) }}</span
-                >
+                  >{{ getStatus(row.reportStatus) }}
+
+                  <TooltipProvider v-if="row.reportErrorMessage">
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <ShieldAlert
+                          width="16"
+                          height="16"
+                          class="ml-[5px] hover:text-[#5566da] text-[red]"
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p v-html="row.reportErrorMessage"></p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </span>
               </td>
               <td>
                 <span>{{ formatDate(row.reportDate, 'YYYY/MM/DD HH:mm') }}</span>
@@ -659,8 +674,25 @@ defineExpose({
                 <span
                   class="px-[18px] py-[8px] rounded-sm"
                   :class="getStatusColor(row.planStatus)"
-                  >{{ getStatus(row.planStatus) }}</span
-                >
+                  >{{ getStatus(row.planStatus) }}
+                  <TooltipProvider v-if="row.planErrorMessage">
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <ShieldAlert
+                          width="16"
+                          height="16"
+                          class="ml-[5px] hover:text-[#5566da] text-[red]"
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p
+                          class="text-[12px]"
+                          v-html="row.planErrorMessage"
+                        ></p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </span>
               </td>
               <td>
                 <span>{{ formatDate(row.planDate, 'YYYY/MM/DD HH:mm') }}</span>

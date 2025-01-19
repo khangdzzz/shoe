@@ -81,6 +81,8 @@ export interface CompanyUserStatus {
   reportDate: string | null;
   reportStatus: number;
   targetYearMonth: string | null;
+  planErrorMessage: string | null;
+  reportErrorMessage: string | null;
 }
 
 export interface BulkExportReport {
