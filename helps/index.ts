@@ -30,7 +30,7 @@ export const getPasswordRules = (messageRequire?: { message: string }) => {
 
   return baseSchema
     .min(8, { message: MESSAGES.ERR007 })
-    .regex(/[a-zA-Z]/, 'パスワードには少なくとも1つの英字を含める必要があります。')
-    .regex(/\d/, 'パスワードには少なくとも1つの数字を含める必要があります。')
-    .regex(/[@$!%*?&]/, 'パスワードには少なくとも1つの特殊文字（@$!%*?&）を含める必要があります。');
+    .regex(/[a-zA-Z]/, MESSAGES.ERR007)
+    .regex(/\d/, MESSAGES.ERR007)
+    .regex(/[@$!%*?&]/, MESSAGES.ERR007);
 };
