@@ -5,15 +5,10 @@ import { Eye, EyeOff } from 'lucide-vue-next';
 import * as z from 'zod';
 import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
-import { getPasswordRules } from '~/helps';
-
-interface InitialFormValues {
-  [key: string]: any;
-}
+import { getPasswordRules, validateRequiredAndLimit } from '~/helps';
 
 const dataInit = useFetchDataInit();
 const system = useSystemStore();
-const route = useRoute();
 const companyAdminStore = useCompanyAdminStore();
 const { redirectPage } = useRedirectPage();
 
@@ -21,8 +16,6 @@ const passwordVisible = ref(false);
 const postalCode = ref<PostalCode>();
 
 const kaipokeUserPasswordVisible = ref(false);
-
-const katakanaRegex = /^[\u30A0-\u30FF]+$/;
 
 const kaigoSoftware = computed(() => dataInit.masterData?.kaigoSoftwares);
 
@@ -33,44 +26,26 @@ const isRemainOldPlan = ref(false);
 
 const formSchema = toTypedSchema(
   z.object({
-    companyName: z
-      .string(messageRequired(FIELDS.companyName))
-      .min(1, messageRequired(FIELDS.companyName))
-      .max(250, MESSAGES.ERR011),
-    companyNameKana: z
-      .string(messageRequired(FIELDS.companyNameKana))
-      .min(1, messageRequired(FIELDS.companyNameKana))
-      .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    companyPostCode: z.string(messageRequired(FIELDS.companyPostCode)).min(1, FIELDS.companyPostCode),
-    companyAddress: z.string(messageRequired(FIELDS.companyAddress)).min(1, FIELDS.companyAddress),
-    frontPicPosition: z.string(messageRequired(FIELDS.frontPicPosition)).min(1, FIELDS.frontPicPosition),
-    frontPicFamilyName: z.string(messageRequired(FIELDS.frontPicFamilyName)).min(1, FIELDS.frontPicFamilyName),
-    frontPicGivenName: z.string(messageRequired(FIELDS.frontPicGivenName)).min(1, FIELDS.frontPicGivenName),
-    frontPicFamilyNameKana: z
-      .string(messageRequired(FIELDS.frontPicFamilyNameKana))
-      .min(1, messageRequired(FIELDS.frontPicFamilyNameKana))
-      .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    frontPicGivenNameKana: z
-      .string(messageRequired(FIELDS.frontPicGivenNameKana))
-      .min(1, messageRequired(FIELDS.frontPicGivenNameKana))
-      .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    picPosition: z.string(messageRequired(FIELDS.picPosition)).min(1, FIELDS.picPosition),
-    picFamilyName: z.string(messageRequired(FIELDS.picFamilyName)).min(1, FIELDS.picFamilyName),
-    picGivenName: z.string(messageRequired(FIELDS.picGivenName)).min(1, FIELDS.picGivenName),
-    picFamilyNameKana: z
-      .string(messageRequired(FIELDS.picFamilyNameKana))
-      .min(1, messageRequired(FIELDS.picFamilyNameKana))
-      .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    picGivenNameKana: z
-      .string(messageRequired(FIELDS.picGivenNameKana))
-      .min(1, messageRequired(FIELDS.picGivenNameKana))
-      .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    phoneNumber: z.string(messageRequired(FIELDS.phoneNumber)).min(1, FIELDS.phoneNumber),
-    email: z.string(messageRequired(FIELDS.email)).min(1, FIELDS.email).email({ message: MESSAGES.ERR004 }),
+    companyName: validateRequiredAndLimit(FIELDS.companyName, 250),
+    companyNameKana: validateRequiredAndLimit(FIELDS.companyNameKana, 250, true),
+    companyPostCode: validateRequiredAndLimit(FIELDS.companyPostCode, 10),
+    companyAddress: validateRequiredAndLimit(FIELDS.companyAddress, 250),
+    frontPicPosition: validateRequiredAndLimit(FIELDS.frontPicPosition, 100),
+    frontPicFamilyName: validateRequiredAndLimit(FIELDS.frontPicFamilyName, 100),
+    frontPicGivenName: validateRequiredAndLimit(FIELDS.frontPicGivenName, 100),
+    frontPicFamilyNameKana: validateRequiredAndLimit(FIELDS.frontPicFamilyNameKana, 100, true),
+    frontPicGivenNameKana: validateRequiredAndLimit(FIELDS.frontPicGivenNameKana, 100, true),
+    picPosition: validateRequiredAndLimit(FIELDS.picPosition, 100),
+    picFamilyName: validateRequiredAndLimit(FIELDS.picFamilyName, 100),
+    picGivenName: validateRequiredAndLimit(FIELDS.picGivenName, 100),
+    picFamilyNameKana: validateRequiredAndLimit(FIELDS.picFamilyNameKana, 100, true),
+    picGivenNameKana: validateRequiredAndLimit(FIELDS.picGivenNameKana, 100, true),
+    phoneNumber: validateRequiredAndLimit(FIELDS.phoneNumber, 20),
+    email: validateRequiredAndLimit(FIELDS.email, 250),
     password: getPasswordRules(messageRequired(FIELDS.password)),
     kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1, FIELDS.kaigoSoftware),
-    kaipokeCompanyId: z.string(messageRequired(FIELDS.kaipokeCompanyId)).min(1, FIELDS.kaipokeCompanyId),
-    kaipokeUserId: z.string(messageRequired(FIELDS.kaipokeUserId)).min(1, FIELDS.kaipokeUserId),
+    kaipokeCompanyId: validateRequiredAndLimit(FIELDS.kaipokeCompanyId, 100),
+    kaipokeUserId: validateRequiredAndLimit(FIELDS.kaipokeUserId, 100),
     kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 }),
     paymentMethod: z.string().default(PAYMENT_METHOD_TYPES.bankWithdrawal)
   })

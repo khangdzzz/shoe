@@ -61,3 +61,18 @@ export const getPasswordRules = (messageRequire?: { message: string }) => {
     .regex(/\d/, MESSAGES.ERR007)
     .regex(/[@$!%*?&]/, MESSAGES.ERR007);
 };
+
+export const validateRequiredAndLimit = (field: string, limit: number, isKana?: boolean) => {
+  const katakanaRegex = /^[\u30A0-\u30FF]+$/;
+
+  const baseSchema = z
+    .string(messageRequired(field))
+    .min(1, messageRequired(field))
+    .max(limit, messageLimit(field, limit.toString()));
+
+  return isKana
+    ? baseSchema.regex(katakanaRegex, {
+        message: MESSAGES.ERR005
+      })
+    : baseSchema;
+};

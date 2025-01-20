@@ -6,10 +6,13 @@
  */
 export const formatMessage = (message: string, filedName: string) => {
   message = message.replace(/{[^}]+}/, filedName);
-
   return {
     message
   };
 };
 
 export const messageRequired = (field: string) => formatMessage(MESSAGES.ERR001, field);
+
+export const messageLimit = (field: string, limit: string) => {
+  return MESSAGES.ERR011.replace('{field}', field).replace('{limit}', limit);
+}

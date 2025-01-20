@@ -6,7 +6,12 @@ import * as z from 'zod';
 import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
 import type { CompanyUpdateBody } from '~/models/company';
-import { getPasswordRules, getTypeRegisterPayment, isAdminUpdatePaymentMethod } from '~/helps';
+import {
+  getPasswordRules,
+  getTypeRegisterPayment,
+  isAdminUpdatePaymentMethod,
+  validateRequiredAndLimit
+} from '~/helps';
 
 interface InitialFormValues {
   [key: string]: any;
@@ -59,45 +64,27 @@ const notify = computed(() => {
 
 const formSchema = toTypedSchema(
   z.object({
-    companyName: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.companyName))
-      .min(1, messageRequired(FIELDS.companyName))
-      .max(250, MESSAGES.ERR011),
-    companyNameKana: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.companyNameKana))
-      .min(1, formatMessage(MESSAGES.ERR001, FIELDS.companyNameKana))
-      .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    companyPostCode: z.string(formatMessage(MESSAGES.ERR001, FIELDS.companyPostCode)).min(1),
-    companyAddress: z.string(formatMessage(MESSAGES.ERR001, FIELDS.companyAddress)).min(1),
-    frontPicPosition: z.string(formatMessage(MESSAGES.ERR001, FIELDS.email)).min(1),
-    frontPicFamilyName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicFamilyName)).min(1),
-    frontPicGivenName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicGivenName)).min(1),
-    frontPicFamilyNameKana: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicFamilyNameKana))
-      .min(1)
-      .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    frontPicGivenNameKana: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.frontPicGivenNameKana))
-      .min(1)
-      .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    picPosition: z.string(formatMessage(MESSAGES.ERR001, FIELDS.picPosition)).min(1),
-    picFamilyName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.picFamilyName)).min(1),
-    picGivenName: z.string(formatMessage(MESSAGES.ERR001, FIELDS.picGivenName)).min(1),
-    picFamilyNameKana: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.picFamilyNameKana))
-      .min(1)
-      .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    picGivenNameKana: z
-      .string(formatMessage(MESSAGES.ERR001, FIELDS.picGivenNameKana))
-      .min(1)
-      .regex(katakanaRegex, { message: MESSAGES.ERR005 }),
-    phoneNumber: z.string(formatMessage(MESSAGES.ERR001, FIELDS.phoneNumber)).min(1),
-    email: z.string(formatMessage(MESSAGES.ERR001, FIELDS.email)).min(1),
+    companyName: validateRequiredAndLimit(FIELDS.companyName, 250),
+    companyNameKana: validateRequiredAndLimit(FIELDS.companyNameKana, 250, true),
+    companyPostCode: validateRequiredAndLimit(FIELDS.companyPostCode, 10),
+    companyAddress: validateRequiredAndLimit(FIELDS.companyAddress, 250),
+    frontPicPosition: validateRequiredAndLimit(FIELDS.frontPicPosition, 100),
+    frontPicFamilyName: validateRequiredAndLimit(FIELDS.frontPicFamilyName, 100),
+    frontPicGivenName: validateRequiredAndLimit(FIELDS.frontPicGivenName, 100),
+    frontPicFamilyNameKana: validateRequiredAndLimit(FIELDS.frontPicFamilyNameKana, 100, true),
+    frontPicGivenNameKana: validateRequiredAndLimit(FIELDS.frontPicGivenNameKana, 100, true),
+    picPosition: validateRequiredAndLimit(FIELDS.picPosition, 100),
+    picFamilyName: validateRequiredAndLimit(FIELDS.picFamilyName, 100),
+    picGivenName: validateRequiredAndLimit(FIELDS.picGivenName, 100),
+    picFamilyNameKana: validateRequiredAndLimit(FIELDS.picFamilyNameKana, 100, true),
+    picGivenNameKana: validateRequiredAndLimit(FIELDS.picGivenNameKana, 100, true),
+    phoneNumber: validateRequiredAndLimit(FIELDS.phoneNumber, 20),
+    email: validateRequiredAndLimit(FIELDS.email, 250),
     password: getPasswordRules().optional(),
     confirmPassword: getPasswordRules().optional(),
-    kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1),
-    kaipokeCompanyId: z.string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeCompanyId)).min(1),
-    kaipokeUserId: z.string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserId)).min(1),
+    kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1, FIELDS.kaigoSoftware),
+    kaipokeCompanyId: validateRequiredAndLimit(FIELDS.kaipokeCompanyId, 100),
+    kaipokeUserId: validateRequiredAndLimit(FIELDS.kaipokeUserId, 100),
     kaipokeUserPassword: z
       .string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserPassword))
       .min(8, { message: MESSAGES.ERR007 }),
