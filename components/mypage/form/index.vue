@@ -262,6 +262,8 @@ const onSubmit = handleSubmit(
 );
 
 const updateUserInformation = async () => {
+  system.clearNotify();
+
   isLoading.value = true;
   const updatedFormValues = { ...formValues };
   const newPassword = updatedFormValues.password;
@@ -300,6 +302,8 @@ const updateUserInformation = async () => {
 };
 
 const deleteUserInformation = async () => {
+  system.clearNotify();
+
   isLoading.value = true;
   await authStore.deleteAuthUser();
 

@@ -181,6 +181,8 @@ watch([confirmPassword, password], () => {
 
 const onSubmit = handleSubmit(
   async (values) => {
+    system.clearNotify();
+
     if (!isMatchPassword.value) {
       system.setNotify({
         message: MESSAGES.ERR006,

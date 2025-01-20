@@ -119,34 +119,22 @@ const filterByReportStatus = (users: CompanyUserStatus[]) => {
   });
 };
 
-const onChangeReportSwitch = () => {
-  const reportStatus = !reportSwitchState.value;
-
-  if (!reportStatus) {
-    companyUsers.value = companyUsers.value.map((user) => ({
-      ...user,
-      reportStatus: users.value.find((u) => u.id === user.id)?.reportStatus ?? 0
-    }));
+watch(reportSwitchState, () => {
+  if (!reportSwitchState.value) {
+    companyUsers.value = [...users.value];
     companyUsers.value = handleDataCompanyUserStatus(companyUsers.value);
-    planSwitchState.value = false;
-    onChangePlanSwitch(planSwitchState.value);
   } else {
     companyUsers.value = updateUsersReportStatus(companyUsers.value);
-    if (planSwitchState.value) onChangePlanSwitch(planSwitchState.value);
   }
-};
+});
 
-const onChangePlanSwitch = (status?: boolean) => {
-  const planStatus = status !== undefined ? status : !planSwitchState.value;
+watch(planSwitchState, () => {
+  if (!planSwitchState.value) {
+    companyUsers.value = [...users.value];
 
-  if (!planStatus) {
-    companyUsers.value = companyUsers.value.map((user) => ({
-      ...user,
-      planStatus: users.value.find((u) => u.id === user.id)?.planStatus ?? 0
-    }));
     companyUsers.value = handleDataCompanyUserStatus(companyUsers.value);
   } else companyUsers.value = updateUsersPlanStatus(companyUsers.value);
-};
+});
 
 const filterByCharacter = (users: CompanyUserStatus[]) => {
   return users.filter((user) =>
@@ -175,9 +163,7 @@ const updateUsersPlanStatus = (companyUsers: CompanyUserStatus[]) => {
     return {
       ...companyUser,
       planStatus:
-        (companyUser.planStatus === 0 || companyUser.planStatus === 3) &&
-        companyUser.reportStatus !== 0 &&
-        companyUser.reportStatus !== 3
+        (companyUser.planStatus === 0 || companyUser.planStatus === 3) && companyUser.reportStatus === 2
           ? VALUE_STATUS_BULK_EXPORT
           : companyUser.planStatus
     };
@@ -251,7 +237,7 @@ const getButtonColorPlan = (row: CompanyUserStatus) => {
     case 0:
     case 3:
       classes +=
-        [VALUE_STATUS_BULK_EXPORT, 1, 2].includes(reportStatus) && !isDisableAllButton.value
+        reportStatus == 2 && !isDisableAllButton.value
           ? 'border border-gray-300 hover:bg-[#faeded]'
           : 'border border-gray-300 bg-[#ccc] opacity-50 cursor-not-allowed';
       break;
@@ -312,23 +298,16 @@ const updateReportStatus = (companyUser: CompanyUserStatus) => {
   const newStatus = reportStatus === VALUE_STATUS_BULK_EXPORT ? userReportStatus : VALUE_STATUS_BULK_EXPORT;
 
   companyUsers.value = companyUsers.value.map(updateUserReportStatus(companyUser.id, newStatus));
-
-  if (newStatus != VALUE_STATUS_BULK_EXPORT) updatePlanStatus(companyUser, true);
 };
 
-const updatePlanStatus = (companyUser: CompanyUserStatus, forceCancel?: boolean) => {
+const updatePlanStatus = (companyUser: CompanyUserStatus) => {
   if (isDisableAllButton.value) return;
 
   const { id, planStatus, reportStatus } = companyUser;
 
+  if (![0, 3, VALUE_STATUS_BULK_EXPORT].includes(planStatus) || reportStatus !== 2) return;
+
   const userPlanStatus = users.value.find((user) => user.id === id)?.planStatus ?? 0;
-
-  if (forceCancel) {
-    companyUsers.value = companyUsers.value.map(updateUserPlanStatus(companyUser.id, userPlanStatus));
-    return;
-  }
-
-  if (![0, 3, VALUE_STATUS_BULK_EXPORT].includes(planStatus) || [0, 3].includes(reportStatus)) return;
 
   const newStatus = planStatus === VALUE_STATUS_BULK_EXPORT ? userPlanStatus : VALUE_STATUS_BULK_EXPORT;
 
@@ -348,6 +327,8 @@ const openDialogCreateReport = () => {
 };
 
 const handleExportCompanyUser = async () => {
+  system.clearNotify();
+
   companyStore.isLoadCompanyUsers = true;
 
   const users = usersNeedCreateReport.value.map((user) => {
@@ -561,7 +542,6 @@ defineExpose({
       <Switch
         :disabled="isDisableAllButton"
         v-model:checked="reportSwitchState"
-        @click="() => onChangeReportSwitch()"
       />
       <span>一括</span>
     </div>
@@ -573,7 +553,6 @@ defineExpose({
       <Switch
         :disabled="isDisableAllButton"
         v-model:checked="planSwitchState"
-        @click="() => onChangePlanSwitch()"
       />
       <span>一括</span>
     </div>

@@ -49,9 +49,12 @@ export const useCompanyAdminStore = defineStore('companyAdmin', () => {
     if (body.exportType === 1) isLoadingExportStatusCompany.value = true;
     else isLoadingExportCompany.value = true;
 
-    const res: ResponseApi<{ downloadUrl: string }> = await apis.archaic?.post('company/bulk-export', body);
+    const res: ResponseApi<{ downloadUrl: string; fileName: string }> = await apis.archaic?.post(
+      'company/bulk-export',
+      body
+    );
 
-    return res?.data?.downloadUrl;
+    return res?.data;
   };
 
   const resetLoadingExport = () => {
