@@ -214,7 +214,10 @@ const onSubmit = handleSubmit(
     isOpenDialogConfirmUpdate.value = true;
   },
   ({ errors }) => {
-    const message = Object.values(errors)[0];
+    const fields = Object.keys(FIELDS);
+
+    const message = fields.map((field) => errors[field as keyof typeof errors]).find(Boolean) ?? '';
+
     system.setNotify({
       message,
       type: TYPE_MESSAGE.error
@@ -223,6 +226,8 @@ const onSubmit = handleSubmit(
 );
 
 const updateCompanyCustomer = async (status?: number) => {
+  system.clearNotify();
+
   isLoadingInit.value = true;
   const updatedFormValues = { ...formValues };
   const newPassword = updatedFormValues.password;
@@ -248,6 +253,8 @@ const updateCompanyCustomer = async (status?: number) => {
 };
 
 const onHandleDelete = async () => {
+  system.clearNotify();
+
   isLoadingInit.value = true;
   isOpenDialogDelete.value = false;
 
@@ -272,6 +279,8 @@ const onHandleDelete = async () => {
 };
 
 const onHandleExecutionUpdate = async () => {
+  system.clearNotify();
+
   isLoadingInit.value = true;
   isOpenDialogExecutionUpdate.value = false;
   const status = activeStatus.value === 1 ? 2 : 1;

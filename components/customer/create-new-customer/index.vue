@@ -124,6 +124,8 @@ const searchPostalCode = async () => {
 
 const onSubmit = handleSubmit(
   async (values) => {
+    system.clearNotify();
+
     isLoading.value = true;
 
     const body = {
@@ -140,7 +142,10 @@ const onSubmit = handleSubmit(
     }
   },
   ({ errors }) => {
-    const message = Object.values(errors)[0];
+    const fields = Object.keys(FIELDS);
+
+    const message = fields.map((field) => errors[field as keyof typeof errors]).find(Boolean) ?? '';
+
     system.setNotify({
       message,
       type: TYPE_MESSAGE.error

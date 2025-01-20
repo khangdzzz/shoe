@@ -14,11 +14,18 @@ export const useCompanyAdminStore = defineStore('companyAdmin', () => {
   const isLoadCompanyCustomers = ref(false);
   const isLoadingExportCompany = ref(false);
   const isLoadingExportStatusCompany = ref(false);
+
+  let currentRequestId = 0;
   const searchCompanies = async (condition: string) => {
+    const requestId = Date.now();
+    currentRequestId = requestId;
+
     isLoadCompanyCustomers.value = true;
     const res = await apis.archaic?.get(`company?${condition}`);
 
-    companyUsers.value = res?.data ?? null;
+    if (requestId === currentRequestId) {
+      companyUsers.value = res?.data ?? null;
+    }
 
     isLoadCompanyCustomers.value = false;
   };
