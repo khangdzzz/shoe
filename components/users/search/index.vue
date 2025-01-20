@@ -3,6 +3,7 @@ import { LoaderCircle } from 'lucide-vue-next';
 import { checkTargetYearMonthMatchCurrentYearMonth, hasRegisterPaymentMethod } from '~/helps';
 
 const companyStore = useCompanyStore();
+const system = useSystemStore();
 
 const officeSelected = ref('');
 const targetYearMonth = ref('');
@@ -34,12 +35,19 @@ const crawlCompanyUserStatus = async () => {
 
   await companyStore.crawlCompanyUserStatus().finally(() => {
     isLoading.value = false;
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
   });
 };
 
-const isDisableAllButton = computed(
-  () => checkTargetYearMonthMatchCurrentYearMonth(targetYearMonth?.value) && hasRegisterPaymentMethod()
-);
+const isLoadPermission = computed(() => system.isLoadPermission);
+
+const isDisableAllButton = computed(() => {
+  const _forceUpdate = isLoadPermission.value;
+
+  return checkTargetYearMonthMatchCurrentYearMonth(targetYearMonth?.value) && hasRegisterPaymentMethod();
+});
 </script>
 
 <template>

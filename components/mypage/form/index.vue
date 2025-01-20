@@ -6,12 +6,7 @@ import * as z from 'zod';
 import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
 import type { CompanyUpdateBody } from '~/models/company';
-import {
-  getPasswordRules,
-  getTypeRegisterPayment,
-  hasRegisterPaymentMethod,
-  isAdminUpdatePaymentMethod
-} from '~/helps';
+import { getPasswordRules, getTypeRegisterPayment, isAdminUpdatePaymentMethod } from '~/helps';
 
 interface InitialFormValues {
   [key: string]: any;
@@ -41,17 +36,11 @@ const passwordVisible = ref(false);
 
 const katakanaRegex = /^[\u30A0-\u30FF]+$/;
 
-const isPaymentOfCurrentUserByCreditCard = ref(false);
-const hasRegisterPayment = ref(false);
-const isCurrentTypePaymentSetCreditCard = ref(false);
 const isAdminUpdatePayment = ref(false);
-
+const typeRegisterPayment = ref('');
 const currentUser = computed(() => {
-  isPaymentOfCurrentUserByCreditCard.value = getTypeRegisterPayment() === PAYMENT_METHOD_TYPES.creditCard;
-
   isAdminUpdatePayment.value = isAdminUpdatePaymentMethod();
-
-  hasRegisterPayment.value = hasRegisterPaymentMethod();
+  typeRegisterPayment.value = getTypeRegisterPayment();
 
   return authStore.currentUser;
 });
@@ -126,7 +115,7 @@ const {
 
 const initDataUser = () => {
   if (currentUser.value) {
-    const { company } = currentUser.value;
+    const { company, paymentMethodInfo } = currentUser.value;
 
     setFieldValue('companyName', company.companyName);
     setFieldValue('companyNameKana', company.companyNameKana);
@@ -149,6 +138,15 @@ const initDataUser = () => {
     setFieldValue('kaigoSoftware', company.kaigoSoftware.toString());
     setFieldValue('paymentMethod', company.paymentMethod ?? '');
     setFieldValue('email', company.email);
+
+    const paymentMethod = company.paymentMethod;
+    const type = paymentMethod
+      ? paymentMethod === PAYMENT_METHOD_TYPES.creditCard
+        ? paymentMethodInfo?.ccDisplayName || PAYMENT_METHOD_OPTIONS.credit_card
+        : PAYMENT_METHOD_OPTIONS.bank_withdrawal
+      : PAYMENT_METHOD_OPTIONS.credit_card;
+
+    setFieldValue('paymentMethod', type);
 
     initialFormValues.value = { ...formValues };
   }
@@ -236,8 +234,6 @@ watch(
         changeFields.value.push(japaneseFields);
       }
     });
-
-    isCurrentTypePaymentSetCreditCard.value = formValues.paymentMethod === PAYMENT_METHOD_TYPES.creditCard;
   },
   {
     deep: true
@@ -273,14 +269,7 @@ const updateUserInformation = async () => {
   delete updatedFormValues.confirmPassword;
   delete updatedFormValues.password;
 
-  if (
-    updatedFormValues.paymentMethod == PAYMENT_METHOD_TYPES.creditCard &&
-    getTypeRegisterPayment() != PAYMENT_METHOD_TYPES.creditCard
-  ) {
-    updatedFormValues.paymentMethod = getTypeRegisterPayment() ?? null;
-  }
-
-  if (!updatedFormValues.paymentMethod) updatedFormValues.paymentMethod = getTypeRegisterPayment() ?? null;
+  updatedFormValues.paymentMethod = getTypeRegisterPayment() ?? null;
 
   const body = {
     ...updatedFormValues,
@@ -336,20 +325,8 @@ const resetForm = () => {
   redirectPage('/user-list');
 };
 
-const getNamePaymentMethod = (paymentMethod: { type: string; value: string }) => {
-  const isCreditCardPayment =
-    paymentMethod.type === PAYMENT_METHOD_TYPES.creditCard &&
-    getTypeRegisterPayment() === PAYMENT_METHOD_TYPES.creditCard;
-
-  const { paymentMethodInfo } = currentUser.value || {};
-
-  return isCreditCardPayment && paymentMethodInfo ? paymentMethodInfo.ccDisplayName : paymentMethod.value;
-};
-
-const isDisabledSelectPaymentMethod = () => {
-  if (isAdminUpdatePayment.value) return true;
-
-  return isPaymentOfCurrentUserByCreditCard.value && hasRegisterPayment.value;
+const isShowBtnRegisterCreditCard = () => {
+  return isAdminUpdatePayment && typeRegisterPayment.value == PAYMENT_METHOD_TYPES.bankWithdrawal ? false : true;
 };
 </script>
 
@@ -1004,39 +981,29 @@ const isDisabledSelectPaymentMethod = () => {
               name="paymentMethod"
             >
               <FormItem class="flex gap-5">
-                <span class="w-[145px] flex items-center">決済方法 {{ isDisabledSelectPaymentMethod() }}</span>
+                <span class="w-[145px] flex items-center">決済方法</span>
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
-                    <Select
+                    <Input
+                      type="text"
+                      disabled
                       v-bind="componentField"
-                      :disabled="isDisabledSelectPaymentMethod()"
-                    >
-                      <SelectTrigger
-                        :class="{
-                          'border-red-500': errors.length && !componentField.modelValue
-                        }"
-                      >
-                        <SelectValue placeholder="" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem
-                          :value="`${paymentMethod.type}`"
-                          v-for="paymentMethod of PAYMENT_METHOD_OPTIONS_LIST"
-                        >
-                          {{ getNamePaymentMethod(paymentMethod) }}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
+                      :class="{
+                        'border-red-500': errors.length
+                      }"
+                    />
                   </FormControl>
                 </div>
               </FormItem>
             </FormField>
 
-            <div class="flex gap-5">
+            <div
+              class="flex gap-5"
+              v-if="isShowBtnRegisterCreditCard()"
+            >
               <div class="w-[145px] flex items-center"></div>
               <div class="relative w-[82%] !m-[0px]">
-                <PaymentFormLinkType :is-payment-by-credit-card="isCurrentTypePaymentSetCreditCard" />
+                <PaymentFormLinkType />
               </div>
             </div>
           </div>

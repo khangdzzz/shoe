@@ -98,6 +98,8 @@ const exportData = async (exportType: number) => {
   }
 
   await downloadFileFromS3(downloadUrl);
+
+  companyAdminStore.resetLoadingExport();
 };
 
 const downloadFileFromS3 = async (url: string) => {
@@ -123,12 +125,10 @@ const downloadFileFromS3 = async (url: string) => {
 };
 
 const getFileNameFromUrl = (url: string) => {
-  return url.split('/').pop();
+  return url.split('/exports_').pop();
 };
 
 const triggerToast = (message: string, variant: 'default' | 'destructive' | null | undefined) => {
-  companyAdminStore.resetLoadingExport();
-
   toast({
     description: message,
     variant: variant,

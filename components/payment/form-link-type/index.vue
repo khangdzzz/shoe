@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import Button from '~/components/ui/button/Button.vue';
 import { LoaderCircle } from 'lucide-vue-next';
-import { getTypeRegisterPayment, hasRegisterPaymentMethod } from '~/helps';
-
-const props = defineProps<{ isPaymentByCreditCard: boolean }>();
+import { getTypeRegisterPayment } from '~/helps';
 
 const router = useRouter();
 const companyPaymentStore = useCompanyPaymentStore();
@@ -36,7 +34,7 @@ const isShowBtnCancelPaymentMethod = computed(() => {
   const { paymentMethodInfo } = currentUser.value || {};
   const isCreditCard = getTypeRegisterPayment() === PAYMENT_METHOD_TYPES.creditCard;
 
-  return hasRegisterPaymentMethod() && isCreditCard && !!paymentMethodInfo;
+  return isCreditCard && !!paymentMethodInfo;
 });
 
 const buttonText = computed(() => {
@@ -45,8 +43,6 @@ const buttonText = computed(() => {
   if (isSubmitting.value) return '処理中...';
   return '支払い方法を登録する';
 });
-
-const isPaymentByCreditCard = computed(() => props.isPaymentByCreditCard);
 
 // Fetch payment parameters from API
 const fetchPaymentParams = async () => {
@@ -242,15 +238,10 @@ const onCancelPaymentMethod = async () => {
       <Button
         type="submit"
         class="flex self-center min-w-[120px] !m-[0px]"
-        :disabled="isSubmitting || isLoading || !isPaymentByCreditCard"
+        :disabled="isSubmitting || isLoading"
       >
         {{ buttonText }}
       </Button>
-      <span
-        class="text-[10px]"
-        v-if="!isPaymentByCreditCard"
-        >銀行引き落としは個別で担当者から作業します。</span
-      >
     </div>
 
     <div

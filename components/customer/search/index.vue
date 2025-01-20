@@ -4,7 +4,6 @@ import { LoaderCircle } from 'lucide-vue-next';
 
 const { redirectPage } = useRedirectPage();
 const companyAdminStore = useCompanyAdminStore();
-const commonService = useCommon();
 const customerPageStore = useCustomerPageStore();
 
 const emit = defineEmits([
