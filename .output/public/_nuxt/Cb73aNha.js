@@ -1,1 +1,0 @@
-import{ap as g,Y as m,X as S,N as f,aq as h,ar as L,as as E}from"./CjpW1lXB.js";const T=g(async n=>{const o=m(),s=f(),t=n.fullPath,e=s.getLocalStorage(S.role),c=s.hasLogged(),i=()=>{t!=="/login"&&o.push("/login")},r=u=>{const a=u===E.admin.toString(),l=a?h:L,d=a?"/customer":"/user-list";l.some(R=>t.includes(R))||o.push(d)};if(!e||!c){i();return}r(e)});export{T as default};
