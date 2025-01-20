@@ -10,15 +10,17 @@ const targetYearMonth = ref<string>('');
 const userTableComponentRef = ref();
 
 const handleOfficeId = (id: number | undefined) => {
+  if (userTableComponentRef.value) userTableComponentRef.value?.resetFilterTable(true);
+
   officeId.value = id;
-  fetchCompanyUseStatus();
+  fetchCompanyUseStatus(true);
 };
 
 const handleTargetYearMonth = (date: string) => {
-  if (userTableComponentRef.value) userTableComponentRef.value?.resetFilterTable();
+  if (userTableComponentRef.value) userTableComponentRef.value?.resetFilterTable(false);
 
   targetYearMonth.value = date;
-  fetchCompanyUseStatus();
+  fetchCompanyUseStatus(false);
 };
 
 const formatTargetYearMonth = (date: string) => {
@@ -27,17 +29,20 @@ const formatTargetYearMonth = (date: string) => {
   return `${year}-${month}-01`;
 };
 
-const fetchCompanyUseStatus = () => {
+const fetchCompanyUseStatus = (isClearKana?: boolean) => {
   if (officeId.value && targetYearMonth.value) {
-    companyStore.getCompanyUseStatus({
-      officeId: officeId.value,
-      targetYearMonth: formatTargetYearMonth(targetYearMonth.value)
-    });
+    companyStore.getCompanyUseStatus(
+      {
+        officeId: officeId.value,
+        targetYearMonth: formatTargetYearMonth(targetYearMonth.value)
+      },
+      isClearKana
+    );
   }
 };
 
 onMounted(() => {
-  fetchCompanyUseStatus();
+  fetchCompanyUseStatus(true);
 });
 </script>
 

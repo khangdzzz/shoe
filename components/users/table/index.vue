@@ -216,8 +216,10 @@ const getButtonColorReport = (amount: number | null) => {
         : 'border border-gray-300 hover:bg-[#faeded]';
       break;
     case 1:
+      classes += 'bg-[#afeeed] cursor-not-allowed';
+      break;
     case 2:
-      classes += 'bg-[#afeeed]';
+      classes += 'bg-[#ccc] cursor-not-allowed';
       break;
     case VALUE_STATUS_BULK_EXPORT:
       classes += 'bg-[#afeeed] hover:bg-[#77f6f4]';
@@ -242,8 +244,10 @@ const getButtonColorPlan = (row: CompanyUserStatus) => {
           : 'border border-gray-300 bg-[#ccc] opacity-50 cursor-not-allowed';
       break;
     case 1:
+      classes += 'bg-[#afeeed] cursor-not-allowed';
+      break;
     case 2:
-      classes += 'bg-[#afeeed]';
+      classes += 'bg-[#ccc] cursor-not-allowed';
       break;
     case VALUE_STATUS_BULK_EXPORT:
       classes += 'bg-[#afeeed] hover:bg-[#77f6f4]';
@@ -475,8 +479,8 @@ const isDisableAllButton = computed(() => {
   return isCurrentYearMonth && hasRegisterPaymentMethod() ? false : true;
 });
 
-const resetFilterTable = () => {
-  userNameKanjiSearch.value = '';
+const resetFilterTable = (isClearSearchName?: boolean) => {
+  if (isClearSearchName) userNameKanjiSearch.value = '';
   selectedReportStatus.value = '999';
   selectedPlanStatus.value = '999';
   isCalenderJapanese.value = false;

@@ -14,9 +14,13 @@ export const useCompanyStore = defineStore('company', () => {
     return await apis.archaic?.post('company/register', { ...body });
   };
 
-  const getCompanyUseStatus = async ({ officeId, targetYearMonth }: { officeId: number; targetYearMonth: string }) => {
+  const getCompanyUseStatus = async (
+    { officeId, targetYearMonth }: { officeId: number; targetYearMonth: string },
+    isClearKana?: boolean
+  ) => {
     isLoadCompanyUsers.value = true;
-    charactersSelected.value = [];
+
+    if (isClearKana) charactersSelected.value = [];
 
     const res = await apis.archaic?.get(`company-user-status?officeId=${officeId}&targetYearMonth=${targetYearMonth}`);
 
