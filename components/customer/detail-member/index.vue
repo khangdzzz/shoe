@@ -86,14 +86,9 @@ const initDataUser = () => {
     setFieldValue('kaipokeUserId', user.kaipokeUserId);
     setFieldValue('kaipokeUserPassword', user.kaipokeUserPassword);
     setFieldValue('kaipokeCompanyId', user.kaipokeCompanyId);
+    setFieldValue('paymentMethod', user.paymentMethod);
     setFieldValue('kaigoSoftware', user.kaigoSoftware.toString());
     setFieldValue('email', user.email);
-
-    const paymentMethod = companyUser.value.isHasPaymentMethod
-      ? (paymentMethodInfo?.ccDisplayName ?? PAYMENT_METHOD_OPTIONS.bank_withdrawal)
-      : '未登録';
-
-    setFieldValue('paymentMethod', paymentMethod);
 
     isRemainOldPlan.value = user.keepLastPlanContentFlg == 1 ? true : false;
 
@@ -106,7 +101,7 @@ const formSchema = toTypedSchema(
     companyName: z
       .string(messageRequired(FIELDS.companyName))
       .min(1, messageRequired(FIELDS.companyName))
-      .max(255, MESSAGES.ERR011),
+      .max(250, MESSAGES.ERR011),
     companyNameKana: z
       .string(messageRequired(FIELDS.companyNameKana))
       .min(1, messageRequired(FIELDS.companyNameKana))
@@ -142,7 +137,7 @@ const formSchema = toTypedSchema(
     kaipokeCompanyId: z.string(messageRequired(FIELDS.kaipokeCompanyId)).min(1, FIELDS.kaipokeCompanyId),
     kaipokeUserId: z.string(messageRequired(FIELDS.kaipokeUserId)).min(1, FIELDS.kaipokeUserId),
     kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 }),
-    paymentMethod: z.string().optional()
+    paymentMethod: z.string().nullable().optional()
   })
 );
 
@@ -219,7 +214,10 @@ const onSubmit = handleSubmit(
     isOpenDialogConfirmUpdate.value = true;
   },
   ({ errors }) => {
-    const message = Object.values(errors)[0];
+    const fields = Object.keys(FIELDS);
+
+    const message = fields.map((field) => errors[field as keyof typeof errors]).find(Boolean) ?? '';
+
     system.setNotify({
       message,
       type: TYPE_MESSAGE.error
@@ -228,13 +226,13 @@ const onSubmit = handleSubmit(
 );
 
 const updateCompanyCustomer = async (status?: number) => {
+  system.clearNotify();
+
   isLoadingInit.value = true;
   const updatedFormValues = { ...formValues };
   const newPassword = updatedFormValues.password;
 
   delete updatedFormValues.password;
-
-  updatedFormValues.paymentMethod = companyUser.value?.paymentMethod;
 
   const body = {
     ...updatedFormValues,
@@ -255,6 +253,8 @@ const updateCompanyCustomer = async (status?: number) => {
 };
 
 const onHandleDelete = async () => {
+  system.clearNotify();
+
   isLoadingInit.value = true;
   isOpenDialogDelete.value = false;
 
@@ -279,6 +279,8 @@ const onHandleDelete = async () => {
 };
 
 const onHandleExecutionUpdate = async () => {
+  system.clearNotify();
+
   isLoadingInit.value = true;
   isOpenDialogExecutionUpdate.value = false;
   const status = activeStatus.value === 1 ? 2 : 1;
@@ -892,18 +894,26 @@ const redirectPageAfterAction = (message: string) => {
               name="paymentMethod"
             >
               <FormItem class="flex gap-5">
-                <span class="flex items-center w-[160px]">決済方法</span>
+                <ShareRequireLabel
+                  label="決済方法"
+                  class="w-[160px]"
+                />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
-                    <Input
-                      disabled
-                      class="bg-[#ccc]"
-                      type="text"
+                    <RadioGroup
+                      class="flex gap-5"
                       v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
+                    >
+                      <FormItem
+                        class="flex items-center space-y-0 gap-x-3"
+                        v-for="paymentMethod in PAYMENT_METHOD_OPTIONS_LIST"
+                      >
+                        <FormControl>
+                          <RadioGroupItem :value="paymentMethod.type" />
+                        </FormControl>
+                        <span>{{ paymentMethod.value }}</span>
+                      </FormItem>
+                    </RadioGroup>
                   </FormControl>
                 </div>
               </FormItem>

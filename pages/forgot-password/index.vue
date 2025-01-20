@@ -25,6 +25,8 @@ const { handleSubmit } = useForm({
 });
 
 const onSubmit = handleSubmit(async (values) => {
+  system.clearNotify();
+
   const email = values.email;
 
   isLoading.value = true;

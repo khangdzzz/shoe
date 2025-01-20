@@ -38,7 +38,10 @@ const { handleSubmit } = useForm({
 });
 
 const onSubmit = handleSubmit(async (values) => {
+  system.clearNotify();
+
   isLoading.value = true;
+
   const res = await authStore.login(values);
 
   if (notify.value?.message) {

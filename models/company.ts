@@ -37,6 +37,7 @@ export interface Credentials {
 export interface RegisterInfo {
   registerReason: string;
   paymentMethod?: string;
+  isAdminUpdatePaymentMethod?: boolean;
 }
 
 export interface RegisterNewUser extends Address, Person, FrontPerson, KaipokeDetails, Credentials, RegisterInfo {
@@ -117,6 +118,7 @@ export interface AdminCreateCustomer {
   picGivenNameKana: string;
   picPosition: string;
   keepLastPlanContentFlg: number;
+  paymentMethod: string;
 }
 
 export interface ExportCompanyCustomer {

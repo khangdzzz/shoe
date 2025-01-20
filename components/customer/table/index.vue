@@ -129,6 +129,8 @@ const openDialogDelete = () => {
 };
 
 const onHandleDelete = async () => {
+  system.clearNotify();
+
   companyAdminStore.isLoadCompanyCustomers = true;
 
   isOpenDialogDelete.value = false;

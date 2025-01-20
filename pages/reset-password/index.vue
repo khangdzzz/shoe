@@ -70,7 +70,10 @@ const { handleSubmit, setFieldValue } = useForm({
 });
 
 const onSubmit = handleSubmit(async (values) => {
+  system.clearNotify();
+
   isLoading.value = true;
+
   const { password } = values;
 
   await authStore.resetPassword(password, token as string);

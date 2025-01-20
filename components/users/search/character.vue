@@ -13,13 +13,17 @@ const characters = ref<Character[]>(CHARACTERS.map((char) => ({ ...char, selecte
 const userNameKana = computed(() => companyStore.userNameKana);
 
 watch(userNameKana, () => {
+  const hasSelectedCharacters = companyStore.charactersSelected.length > 0;
+
   characters.value = CHARACTERS.map((char) => {
     const isMatch = userNameKana.value?.some((name) => name.startsWith(char.label) || name.startsWith(char.label2));
 
     return {
       ...char,
       disabled: !isMatch,
-      selected: false
+      selected: hasSelectedCharacters
+        ? companyStore.charactersSelected.includes(`${char.label}, ${char.label2}`)
+        : false
     };
   });
 });

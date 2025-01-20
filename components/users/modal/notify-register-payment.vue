@@ -13,6 +13,7 @@ watch(isLoadPermission, () => {
 });
 
 const openMyPage = () => {
+  isOpenDialog.value = false;
   redirectPage('/mypage');
 };
 
@@ -20,7 +21,19 @@ onMounted(() => {
   setTimeout(() => {
     isOpenDialog.value = !hasRegisterPaymentMethod();
   }, 200);
+
+  window.addEventListener('keydown', handleKeyDown);
 });
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+});
+
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (event.key === 'Escape' && isOpenDialog.value) {
+    isOpenDialog.value = false;
+  }
+};
 </script>
 
 <template>

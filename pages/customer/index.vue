@@ -90,22 +90,25 @@ const exportData = async (exportType: number) => {
     targetYearMonth: targetYearMonth.value
   };
 
-  const downloadUrl = await companyAdminStore.exportCompanyCustomer(body);
+  const res = await companyAdminStore.exportCompanyCustomer(body);
 
-  if (!downloadUrl) {
+  const { downloadUrl, fileName } = res || {};
+
+  if (!downloadUrl || !fileName) {
     triggerToast('データのエクスポートに失敗', 'destructive');
     return;
   }
 
-  await downloadFileFromS3(downloadUrl);
+  await downloadFileFromS3(downloadUrl, fileName);
+
+  companyAdminStore.resetLoadingExport();
 };
 
-const downloadFileFromS3 = async (url: string) => {
+const downloadFileFromS3 = async (url: string, fileName: string) => {
   try {
-    const fileName = getFileNameFromUrl(url);
     const response = await fetch(url);
 
-    if (!response.ok || !fileName) {
+    if (!response.ok) {
       triggerToast('データのエクスポートに失敗', 'destructive');
       return;
     }
@@ -123,12 +126,10 @@ const downloadFileFromS3 = async (url: string) => {
 };
 
 const getFileNameFromUrl = (url: string) => {
-  return url.split('/').pop();
+  return url.split('/exports_').pop();
 };
 
 const triggerToast = (message: string, variant: 'default' | 'destructive' | null | undefined) => {
-  companyAdminStore.resetLoadingExport();
-
   toast({
     description: message,
     variant: variant,

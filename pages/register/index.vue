@@ -76,7 +76,7 @@ const formSchema = toTypedSchema(
     companyName: z
       .string(messageRequired(FIELDS.companyName))
       .min(1, messageRequired(FIELDS.companyName))
-      .max(255, MESSAGES.ERR011),
+      .max(250, MESSAGES.ERR011),
     companyNameKana: z
       .string(messageRequired(FIELDS.companyNameKana))
       .min(1, messageRequired(FIELDS.companyNameKana))
@@ -181,6 +181,8 @@ watch([confirmPassword, password], () => {
 
 const onSubmit = handleSubmit(
   async (values) => {
+    system.clearNotify();
+
     if (!isMatchPassword.value) {
       system.setNotify({
         message: MESSAGES.ERR006,
@@ -208,7 +210,10 @@ const onSubmit = handleSubmit(
     isLoadingRegister.value = false;
   },
   ({ errors }) => {
-    const message = Object.values(errors)[0];
+    const fields = Object.keys(FIELDS);
+
+    const message = fields.map((field) => errors[field as keyof typeof errors]).find(Boolean) ?? '';
+
     system.setNotify({
       message,
       type: TYPE_MESSAGE.error
@@ -889,7 +894,7 @@ const onSubmit = handleSubmit(
                       :class="{
                         'border-red-500': errors.length && !componentField.modelValue
                       }"
-                      class="resize-none h-[100px] bg-[#ccc]"
+                      class="resize-none h-[100px] bg-[#fff] text-black disabled:opacity-80"
                     />
                   </FormControl>
                 </div>

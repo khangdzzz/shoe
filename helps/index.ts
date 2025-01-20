@@ -13,7 +13,20 @@ export const hasRegisterPaymentMethod = () => {
   const commonService = useCommon();
   const currentUser = commonService.getCurrentUserFromStorage();
 
-  if (!currentUser) return false;
+  const typeRegisterPayment = currentUser.company?.paymentMethod;
+  const isAdminUpdatePayment = currentUser.company?.isAdminUpdatePaymentMethod;
+  const paymentInfo = currentUser?.paymentMethodInfo;
+
+  if (isAdminUpdatePayment) {
+    if (
+      typeRegisterPayment === PAYMENT_METHOD_TYPES.bankWithdrawal ||
+      (typeRegisterPayment === PAYMENT_METHOD_TYPES.creditCard && paymentInfo)
+    ) {
+      return true;
+    }
+
+    return false;
+  }
 
   return currentUser?.isHasPaymentMethod;
 };
@@ -23,6 +36,20 @@ export const getTypeRegisterPayment = () => {
   const currentUser = commonService.getCurrentUserFromStorage();
 
   return currentUser ? currentUser.company?.paymentMethod : '';
+};
+
+export const isAdminUpdatePaymentMethod = () => {
+  const commonService = useCommon();
+  const currentUser = commonService.getCurrentUserFromStorage();
+
+  return currentUser.company?.isAdminUpdatePaymentMethod;
+};
+
+export const getCreditCardInfo = () => {
+  const commonService = useCommon();
+  const currentUser = commonService.getCurrentUserFromStorage();
+
+  return currentUser?.paymentMethodInfo;
 };
 
 export const getPasswordRules = (messageRequire?: { message: string }) => {

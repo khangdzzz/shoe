@@ -31,8 +31,12 @@ export const useSystemStore = defineStore('system', () => {
     };
 
     setTimeout(() => {
-      notify.value = {};
+      clearNotify();
     }, 5000);
+  };
+
+  const clearNotify = () => {
+    notify.value = {};
   };
 
   return {
@@ -41,6 +45,7 @@ export const useSystemStore = defineStore('system', () => {
     isLoadPermission,
     setNotify,
     searchTerms,
+    clearNotify,
     searchPostalCode
   };
 });

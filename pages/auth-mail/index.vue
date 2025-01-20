@@ -25,8 +25,9 @@ const { handleSubmit } = useForm({
 });
 
 const onSubmit = handleSubmit(async (values) => {
-  isLoading.value = true;
+  system.clearNotify();
 
+  isLoading.value = true;
 
   await authStore.verifyEmail(values.email);
 
