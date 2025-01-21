@@ -31,7 +31,7 @@ onBeforeUnmount(() => {
 
 const handleKeyDown = (event: KeyboardEvent) => {
   if (event.key === 'Escape' && isOpenDialog.value) {
-    isOpenDialog.value = false;
+    openMyPage();
   }
 };
 </script>

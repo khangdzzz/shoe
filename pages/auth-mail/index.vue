@@ -16,7 +16,10 @@ const isLoading = ref(false);
 
 const formSchema = toTypedSchema(
   z.object({
-    email: z.string(formatMessage(MESSAGES.ERR001, FIELDS.email)).email({ message: MESSAGES.ERR004 })
+    email: z
+      .string(formatMessage(MESSAGES.ERR001, FIELDS.email))
+      .email({ message: MESSAGES.ERR004 })
+      .max(250, messageLimit(FIELDS.email, '250'))
   })
 );
 
