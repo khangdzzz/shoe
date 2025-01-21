@@ -3,7 +3,6 @@ import Button from '~/components/ui/button/Button.vue';
 import { LoaderCircle } from 'lucide-vue-next';
 import { getTypeRegisterPayment } from '~/helps';
 
-const router = useRouter();
 const companyPaymentStore = useCompanyPaymentStore();
 const authStore = useAuthStore();
 const system = useSystemStore();
@@ -11,7 +10,6 @@ const system = useSystemStore();
 // Form data
 const isSubmitting = ref(false);
 const isLoading = ref(false);
-const isLoadingCancelBank = ref(false);
 const hasError = ref(false);
 const errorMessage = ref('');
 
@@ -30,17 +28,9 @@ const formEndpoint = ref('');
 
 const currentUser = computed(() => authStore.currentUser);
 
-const isShowBtnCancelPaymentMethod = computed(() => {
-  const { paymentMethodInfo } = currentUser.value || {};
-  const isCreditCard = getTypeRegisterPayment() === PAYMENT_METHOD_TYPES.creditCard;
-
-  return isCreditCard && !!paymentMethodInfo;
-});
-
 const buttonText = computed(() => {
-  if (currentUser.value?.isHasPaymentMethod) return '支払い方法を変更する';
-  if (isLoading.value) return 'パラメータを読み込み中...';
-  if (isSubmitting.value) return '処理中...';
+  const isCreditCard = getTypeRegisterPayment() === PAYMENT_METHOD_TYPES.creditCard;
+  if (currentUser.value?.isHasPaymentMethod && isCreditCard) return '支払い方法を変更する';
   return '支払い方法を登録する';
 });
 
@@ -107,35 +97,10 @@ const handleSubmit = async (event: Event) => {
     isSubmitting.value = false;
   }
 };
-
-const onCancelPaymentMethod = async () => {
-  isLoadingCancelBank.value = true;
-  const res = await companyPaymentStore.cancelCurrentPaymentMethod();
-  isLoadingCancelBank.value = false;
-  if (!res) {
-    system.setNotify({
-      type: TYPE_MESSAGE.error,
-      message: MESSAGES.ERR009
-    });
-  } else {
-    system.setNotify({
-      type: TYPE_MESSAGE.success,
-      message: MESSAGES.INFO001
-    });
-    setTimeout(() => {
-      const currentRoute = router.currentRoute.value;
-      router.replace({
-        path: currentRoute.path,
-        query: { ...currentRoute.query, refresh: Date.now() }
-      });
-    }, 1000);
-  }
-};
 </script>
 
 <template>
   <form
-    v-if="!isShowBtnCancelPaymentMethod"
     class="payment-form"
     :action="formEndpoint"
     method="POST"
@@ -240,6 +205,10 @@ const onCancelPaymentMethod = async () => {
         class="flex self-center min-w-[120px] !m-[0px]"
         :disabled="isSubmitting || isLoading"
       >
+        <LoaderCircle
+          v-if="isLoading"
+          class="w-4 h-4 mr-2 animate-spin"
+        />
         {{ buttonText }}
       </Button>
     </div>
@@ -251,17 +220,4 @@ const onCancelPaymentMethod = async () => {
       {{ errorMessage }}
     </div>
   </form>
-  <Button
-    v-if="isShowBtnCancelPaymentMethod"
-    type="button"
-    @click="onCancelPaymentMethod"
-    variant="destructive"
-    class="flex self-center min-w-[120px] !m-[0px]"
-  >
-    <LoaderCircle
-      v-if="isLoadingCancelBank"
-      class="w-4 h-4 mr-2 animate-spin"
-    />
-    支払い方法を変更する
-  </Button>
 </template>
