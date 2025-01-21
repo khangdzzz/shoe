@@ -2,8 +2,10 @@
 import { LoaderCircle } from 'lucide-vue-next';
 import { checkTargetYearMonthMatchCurrentYearMonth, hasRegisterPaymentMethod } from '~/helps';
 
-const companyStore = useCompanyStore();
+const common = useCommon();
 const system = useSystemStore();
+const companyStore = useCompanyStore();
+const userListPage = userListPageStore();
 
 const officeSelected = ref('');
 const targetYearMonth = ref('');
@@ -15,10 +17,21 @@ const emit = defineEmits<{
 }>();
 
 const offices = computed(() => {
-  return companyStore.offices.map((office) => office.officeName);
+  const storedOfficeName = common.getLocalStorage(LOCAL_STORAGE_KEYS.officeName);
+  const officeNames = companyStore.offices.map((office) => office.officeName);
+
+  officeSelected.value = storedOfficeName || officeNames[0] || '';
+
+  if (!storedOfficeName && officeNames[0]) {
+    common.setLocalStorage(LOCAL_STORAGE_KEYS.officeName, officeNames[0]);
+  }
+
+  return officeNames;
 });
 
 const officeId = computed(() => {
+  if (officeSelected.value) common.setLocalStorage(LOCAL_STORAGE_KEYS.officeName, officeSelected.value);
+
   return companyStore.offices.find((office) => office.officeName === officeSelected.value)?.id;
 });
 
@@ -35,9 +48,10 @@ const crawlCompanyUserStatus = async () => {
 
   await companyStore.crawlCompanyUserStatus().finally(() => {
     isLoading.value = false;
+    userListPage.isOpenNotifyCrawl = true;
     setTimeout(() => {
       window.location.reload();
-    }, 500);
+    }, 3500);
   });
 };
 
@@ -59,6 +73,7 @@ const isDisableAllButton = computed(() => {
       <ShareAutoComplete
         :width="'300px'"
         :options="offices"
+        :value-selected="officeSelected"
         @update:selectedValue="(office) => (officeSelected = office)"
       />
     </div>

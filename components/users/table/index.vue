@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { Search, ArrowDownUp, ArrowUpDown, ShieldAlert } from 'lucide-vue-next';
-import { useToast } from '~/components/ui/toast/use-toast';
 import { checkTargetYearMonthMatchCurrentYearMonth, hasRegisterPaymentMethod } from '~/helps';
 import type { Header } from '~/models/common';
 import type { CompanyUserStatus } from '~/models/company';
@@ -19,8 +18,8 @@ const VALUE_STATUS_BULK_EXPORT = 99;
 const { officeId, targetYearMonth } = toRefs(props);
 
 const companyStore = useCompanyStore();
+const userListPage = userListPageStore();
 const system = useSystemStore();
-const { toast } = useToast();
 
 const sort = ref('');
 const userNameKanjiSearch = ref('');
@@ -51,6 +50,12 @@ const STATUS: { [key: number]: string } = {
   3: '実行エラー'
 };
 
+const htmlMessageCrawler = ref(HTML_MESSAGE_CRAWL);
+
+const htmlMessageCreateReport = ref(HTML_MESSAGE_CREATE_REPORT);
+
+const isErrorCreateReport = ref(false);
+
 const isLoading = computed(() => companyStore.isLoadCompanyUsers);
 
 const characterSelected = computed(() => companyStore.charactersSelected);
@@ -60,8 +65,6 @@ const isHaveDataCompanyUsers = computed(() => companyStore.isHaveDataCompanyUser
 const users = computed(() => companyStore.companyUsers);
 
 const notify = computed(() => system.notify);
-
-const isOpenNotifyCrawler = computed(() => companyStore.isOpenNotifyCrawler);
 
 const companyUsers = ref<CompanyUserStatus[]>([]);
 
@@ -354,7 +357,11 @@ const handleExportCompanyUser = async () => {
   await companyStore.bulkExportReport(body);
 
   if (notify.value?.message) {
-    triggerToast('destructive', notify.value.message);
+    htmlMessageCreateReport.value = `
+      <span class="text-red-500">${notify.value.message}</span>
+    `;
+    isErrorCreateReport.value = true;
+    userListPage.isOpenNotifyExport = true;
     companyStore.isLoadCompanyUsers = false;
     return;
   }
@@ -366,17 +373,8 @@ const handleExportCompanyUser = async () => {
 
   companyStore.isLoadCompanyUsers = false;
 
-  const message = `利用者の報告書／計画書実行のリクエストを受領しました。システムからの通知メールにて状況をご確認ください`;
-
-  triggerToast('default', message);
-};
-
-const triggerToast = (variant: 'default' | 'destructive' | null | undefined, message: string) => {
-  toast({
-    description: message,
-    variant: variant,
-    duration: 1000
-  });
+  htmlMessageCreateReport.value = HTML_MESSAGE_CREATE_REPORT;
+  userListPage.isOpenNotifyExport = true;
 };
 
 const selectReportElement = ref<HTMLElement | null>();
@@ -697,16 +695,21 @@ defineExpose({
       </div>
       <ShareLoading v-if="isLoading" />
 
-      <div
-        v-if="isOpenNotifyCrawler"
-        class="absolute w-full h-full bg-[#f7f5f505] flex justify-center items-center z-50"
-      >
-        <div class="flex flex-col items-center bg-[#b5b5b5e6] py-[24px] px-[50px] gap-[8px] rounded-[30px]">
-          <span>利用者情報を最新化しています。 </span>
-          <span>利用者数 一人あたり 5秒要します、しばらくお待ちください！</span>
-          <span> ※実際の速度はカイポケサイトのレスポンス状況により変動いたします。</span>
-        </div>
-      </div>
+      <UsersModalNotifyHandleExport
+        :is-open-notify="userListPage.isOpenNotifyCrawl"
+        :html-message="htmlMessageCrawler"
+        @close="userListPage.isOpenNotifyCrawl = false"
+      />
+
+      <UsersModalNotifyHandleExport
+        :is-open-notify="userListPage.isOpenNotifyExport"
+        :html-message="htmlMessageCreateReport"
+        :is-error="isErrorCreateReport"
+        @close="
+          userListPage.isOpenNotifyExport = false;
+          isErrorCreateReport = false;
+        "
+      />
 
       <div class="flex justify-end mr-[35px]">
         <Button

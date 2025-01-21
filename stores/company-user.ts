@@ -8,7 +8,6 @@ export const useCompanyStore = defineStore('company', () => {
   const isHaveDataCompanyUsers = ref(true);
   const userNameKana = ref<string[]>();
   const charactersSelected = ref<string[]>([]);
-  const isOpenNotifyCrawler = ref(false);
 
   const registerNewUser = async (body: RegisterNewUser) => {
     return await apis.archaic?.post('company/register', { ...body });
@@ -54,10 +53,6 @@ export const useCompanyStore = defineStore('company', () => {
 
   const crawlCompanyUserStatus = async () => {
     await apis.archaic?.post('company-user-status/crawl', {});
-    isOpenNotifyCrawler.value = true;
-    setTimeout(() => {
-      isOpenNotifyCrawler.value = false;
-    }, 2000);
   };
 
   return {
@@ -66,7 +61,6 @@ export const useCompanyStore = defineStore('company', () => {
     companyUsers,
     isLoadCompanyUsers,
     charactersSelected,
-    isOpenNotifyCrawler,
     isHaveDataCompanyUsers,
     getOffices,
     registerNewUser,

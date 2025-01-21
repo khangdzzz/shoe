@@ -16,7 +16,8 @@ export const LOCAL_STORAGE_KEYS = {
   accessToken: 'accessToken',
   refreshToken: 'refreshToken',
   role: 'role',
-  currentUser: 'currentUser'
+  currentUser: 'currentUser',
+  officeName: 'officeName'
 };
 
 export const ACTION_EXPORT = {
@@ -147,3 +148,14 @@ export const PAYMENT_METHOD_OPTIONS_LIST = [
     value: PAYMENT_METHOD_OPTIONS.credit_card
   }
 ];
+
+export const HTML_MESSAGE_CRAWL = `
+  <span>利用者情報を最新化しています。 </span>
+  <span>利用者数 一人あたり 5秒要します、しばらくお待ちください！</span>
+  <span> ※実際の速度はカイポケサイトのレスポンス状況により変動いたします。</span>
+`;
+
+export const HTML_MESSAGE_CREATE_REPORT = `
+  <span>利用者の報告書／計画書実行のリクエストを受領しました。</span>
+  <span>システムからの通知メールにて状況をご確認ください</span>
+`;

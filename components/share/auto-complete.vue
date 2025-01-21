@@ -18,19 +18,19 @@ import { Icon } from '@iconify/vue';
 
 const props = defineProps({
   width: { type: String, default: '100%' },
-  options: { type: Array as () => string[], default: () => [] }
+  options: { type: Array as () => string[], default: () => [] },
+  valueSelected: { type: String, default: '' }
 });
 
 const emit = defineEmits(['update:selectedValue']);
 
-const valueSelected = ref('');
+const valueSelected = ref(props.valueSelected);
 
 watch(
-  () => props.options,
+  () => props.valueSelected,
   () => {
-    valueSelected.value = props.options[0] || '';
-  },
-  { immediate: true }
+    valueSelected.value = props.valueSelected;
+  }
 );
 
 watch(valueSelected, (newValue) => {
