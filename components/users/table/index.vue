@@ -465,7 +465,7 @@ const updateElementPosition = (
 
   targetElement.style.left = `${rect.left + window.scrollX}px`;
   targetElement.style.top = `${rect.top + window.scrollY - offsetTop}px`;
-  targetElement.style.width = `${rect.width - 10}px`;
+  targetElement.style.width = `${rect.width - 2}px`;
 
   if ((rectTable && rectTable.left > rect.left) || window.innerWidth - rect.left - rect.width < 5) {
     targetElement.style.zIndex = '-1';

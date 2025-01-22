@@ -91,10 +91,14 @@ const formSchema = toTypedSchema(
     email: validateRequiredAndLimit(FIELDS.email, 250),
     password: getPasswordRules(messageRequired(FIELDS.password)),
     confirmPassword: getPasswordRules(messageRequired(FIELDS.confirmPassword)),
-    kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1, FIELDS.kaigoSoftware),
+    kaigoSoftware: z
+      .string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware))
+      .min(1, messageRequired(FIELDS.kaigoSoftware)),
     kaipokeCompanyId: validateRequiredAndLimit(FIELDS.kaipokeCompanyId, 100),
     kaipokeUserId: validateRequiredAndLimit(FIELDS.kaipokeUserId, 100),
-    kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 }),
+    kaipokeUserPassword: z
+      .string(messageRequired(FIELDS.kaipokeUserPassword))
+      .min(1, messageRequired(FIELDS.kaipokeUserPassword)),
     registerReason: validateRequiredAndLimit(FIELDS.registerReason, 1000),
     terms: z.string(messageRequired(FIELDS.terms)).min(1, FIELDS.terms),
     term: z.boolean({ message: MESSAGES.ERR003 }).refine((value) => value, {
@@ -263,7 +267,6 @@ const onSubmit = handleSubmit(
                       }"
                     />
                   </FormControl>
-                  <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                 </div>
               </FormItem>
             </FormField>
@@ -658,7 +661,6 @@ const onSubmit = handleSubmit(
                       </button>
                     </div>
                   </FormControl>
-                  <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                 </div>
               </FormItem>
             </FormField>
@@ -708,7 +710,6 @@ const onSubmit = handleSubmit(
                     class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal"
                     >{{ MESSAGES.ERR006 }}</span
                   >
-                  <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                 </div>
               </FormItem>
             </FormField>
@@ -741,7 +742,6 @@ const onSubmit = handleSubmit(
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                   </FormControl>
                 </div>
               </FormItem>
@@ -829,7 +829,6 @@ const onSubmit = handleSubmit(
                       </button>
                     </div>
                   </FormControl>
-                  <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                 </div>
               </FormItem>
             </FormField>

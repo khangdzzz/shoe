@@ -82,12 +82,14 @@ const formSchema = toTypedSchema(
     email: validateRequiredAndLimit(FIELDS.email, 250),
     password: getPasswordRules().optional(),
     confirmPassword: getPasswordRules().optional(),
-    kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1, FIELDS.kaigoSoftware),
+    kaigoSoftware: z
+      .string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware))
+      .min(1, messageRequired(FIELDS.kaigoSoftware)),
     kaipokeCompanyId: validateRequiredAndLimit(FIELDS.kaipokeCompanyId, 100),
     kaipokeUserId: validateRequiredAndLimit(FIELDS.kaipokeUserId, 100),
     kaipokeUserPassword: z
       .string(formatMessage(MESSAGES.ERR001, FIELDS.kaipokeUserPassword))
-      .min(8, { message: MESSAGES.ERR007 }),
+      .min(1, messageRequired(FIELDS.kaipokeUserPassword)),
     paymentMethod: z.string().optional()
   })
 );
@@ -403,7 +405,6 @@ const isShowBtnRegisterCreditCard = () => {
                       }"
                     />
                   </FormControl>
-                  <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                 </div>
               </FormItem>
             </FormField>
@@ -795,7 +796,6 @@ const isShowBtnRegisterCreditCard = () => {
                       </button>
                     </div>
                   </FormControl>
-                  <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                 </div>
               </FormItem>
             </FormField>
@@ -844,7 +844,6 @@ const isShowBtnRegisterCreditCard = () => {
                     class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal"
                     >{{ MESSAGES.ERR006 }}</span
                   >
-                  <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                 </div>
               </FormItem>
             </FormField>
@@ -877,7 +876,6 @@ const isShowBtnRegisterCreditCard = () => {
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                   </FormControl>
                 </div>
               </FormItem>
@@ -965,7 +963,6 @@ const isShowBtnRegisterCreditCard = () => {
                       </button>
                     </div>
                   </FormControl>
-                  <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                 </div>
               </FormItem>
             </FormField>

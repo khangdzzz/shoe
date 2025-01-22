@@ -44,6 +44,8 @@ const companyUser = computed(() => companyAdminStore.companyUser);
 
 const isDisableButton = computed(() => changeFields.value.length == 0);
 
+const isRedirectPage = ref(false);
+
 onMounted(async () => {
   isLoadingInit.value = true;
 
@@ -111,10 +113,14 @@ const formSchema = toTypedSchema(
     phoneNumber: validateRequiredAndLimit(FIELDS.phoneNumber, 20),
     email: validateRequiredAndLimit(FIELDS.email, 250),
     password: getPasswordRules().optional(),
-    kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1, FIELDS.kaigoSoftware),
+    kaigoSoftware: z
+      .string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware))
+      .min(1, messageRequired(FIELDS.kaigoSoftware)),
     kaipokeCompanyId: validateRequiredAndLimit(FIELDS.kaipokeCompanyId, 100),
     kaipokeUserId: validateRequiredAndLimit(FIELDS.kaipokeUserId, 100),
-    kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 }),
+    kaipokeUserPassword: z
+      .string(messageRequired(FIELDS.kaipokeUserPassword))
+      .min(1, messageRequired(FIELDS.kaipokeUserPassword)),
     paymentMethod: z.string().nullable().optional()
   })
 );
@@ -226,7 +232,7 @@ const updateCompanyCustomer = async (status?: number) => {
   });
 
   if (!system.notify?.message) {
-    redirectPageAfterAction('会社情報を更新しました。');
+    redirectPageAfterAction('顧客情報を更新しました');
   }
 };
 
@@ -252,7 +258,7 @@ const onHandleDelete = async () => {
   isLoadingInit.value = false;
 
   if (!system.notify?.message) {
-    redirectPageAfterAction('会社を削除しました。');
+    redirectPageAfterAction('顧客情報を削除しました');
   }
 };
 
@@ -266,28 +272,30 @@ const onHandleExecutionUpdate = async () => {
   await companyAdminStore.updateStatusCompanyUser(Number(idCompany.value), { status });
 
   if (!system.notify?.message) {
-    redirectPageAfterAction('会社情報を更新しました。');
+    redirectPageAfterAction('顧客情報を更新しました');
   }
 
   isLoadingInit.value = false;
 };
 
 const redirectPageAfterAction = (message: string) => {
+  isRedirectPage.value = true;
+  redirectPage('/customer');
+
   system.setNotify({
     message: message,
     type: TYPE_MESSAGE.success
   });
-
-  setTimeout(() => {
-    redirectPage('/customer');
-  }, 500);
 };
 </script>
 
 <template>
   <div class="login-page flex flex-col !h-[100vh] overflow-hidden relative">
     <div class="flex justify-between mt-[15px]">
-      <ShareErrorMessage class="pl-[64px]" />
+      <ShareErrorMessage
+        class="pl-[64px]"
+        v-if="!isRedirectPage"
+      />
     </div>
     <CustomerModalConfirmUpdateCustomer
       :isOpen="isOpenDialogConfirmUpdate"
@@ -350,7 +358,6 @@ const redirectPageAfterAction = (message: string) => {
                       }"
                     />
                   </FormControl>
-                  <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                 </div>
               </FormItem>
             </FormField>
@@ -741,7 +748,6 @@ const redirectPageAfterAction = (message: string) => {
                       </button>
                     </div>
                   </FormControl>
-                  <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                 </div>
               </FormItem>
             </FormField>
@@ -774,7 +780,6 @@ const redirectPageAfterAction = (message: string) => {
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                   </FormControl>
                 </div>
               </FormItem>
@@ -862,7 +867,6 @@ const redirectPageAfterAction = (message: string) => {
                       </button>
                     </div>
                   </FormControl>
-                  <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                 </div>
               </FormItem>
             </FormField>

@@ -24,6 +24,8 @@ const isLoadPostalCode = ref(false);
 
 const isRemainOldPlan = ref(false);
 
+const isRedirectPage = ref(false);
+
 const formSchema = toTypedSchema(
   z.object({
     companyName: validateRequiredAndLimit(FIELDS.companyName, 250),
@@ -43,10 +45,14 @@ const formSchema = toTypedSchema(
     phoneNumber: validateRequiredAndLimit(FIELDS.phoneNumber, 20),
     email: validateRequiredAndLimit(FIELDS.email, 250),
     password: getPasswordRules(messageRequired(FIELDS.password)),
-    kaigoSoftware: z.string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware)).min(1, FIELDS.kaigoSoftware),
+    kaigoSoftware: z
+      .string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware))
+      .min(1, messageRequired(FIELDS.kaigoSoftware)),
     kaipokeCompanyId: validateRequiredAndLimit(FIELDS.kaipokeCompanyId, 100),
     kaipokeUserId: validateRequiredAndLimit(FIELDS.kaipokeUserId, 100),
-    kaipokeUserPassword: z.string(messageRequired(FIELDS.kaipokeUserPassword)).min(8, { message: MESSAGES.ERR007 }),
+    kaipokeUserPassword: z
+      .string(messageRequired(FIELDS.kaipokeUserPassword))
+      .min(1, messageRequired(FIELDS.kaipokeUserPassword)),
     paymentMethod: z.string().default(PAYMENT_METHOD_TYPES.bankWithdrawal)
   })
 );
@@ -113,7 +119,7 @@ const onSubmit = handleSubmit(
     isLoading.value = false;
 
     if (!system.notify?.message) {
-      redirectPageAfterAction('新しい顧客の成功を生み出す。');
+      redirectPageAfterAction('顧客情報を登録しました');
     }
   },
   ({ errors }) => {
@@ -129,21 +135,23 @@ const onSubmit = handleSubmit(
 );
 
 const redirectPageAfterAction = (message: string) => {
+  isRedirectPage.value = true;
+  redirectPage('/customer');
+
   system.setNotify({
     message: message,
     type: TYPE_MESSAGE.success
   });
-
-  setTimeout(() => {
-    redirectPage('/customer');
-  }, 500);
 };
 </script>
 
 <template>
   <div class="login-page flex flex-col !h-[100vh] overflow-hidden relative">
     <div class="flex justify-between mt-[15px]">
-      <ShareErrorMessage class="pl-[64px]" />
+      <ShareErrorMessage
+        class="pl-[64px]"
+        v-if="!isRedirectPage"
+      />
     </div>
     <form
       class="register flex flex-col gap-[25px] pl-[64px] pt-[10px] pb-[15px]"
@@ -199,7 +207,6 @@ const redirectPageAfterAction = (message: string) => {
                       }"
                     />
                   </FormControl>
-                  <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                 </div>
               </FormItem>
             </FormField>
@@ -589,7 +596,6 @@ const redirectPageAfterAction = (message: string) => {
                       </button>
                     </div>
                   </FormControl>
-                  <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                 </div>
               </FormItem>
             </FormField>
@@ -622,7 +628,6 @@ const redirectPageAfterAction = (message: string) => {
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                   </FormControl>
                 </div>
               </FormItem>
@@ -710,7 +715,6 @@ const redirectPageAfterAction = (message: string) => {
                       </button>
                     </div>
                   </FormControl>
-                  <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
                 </div>
               </FormItem>
             </FormField>
