@@ -232,8 +232,6 @@ const setConditionFromStore = (condition: CustomerStorageCondition) => {
           @click="openDialogDelete"
           >削除</span
         >
-
-        <ShareErrorMessage class="pl-[30px] items-center" />
       </div>
 
       <SharePagination
