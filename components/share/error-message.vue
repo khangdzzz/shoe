@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ShieldAlert } from 'lucide-vue-next';
+import { ShieldAlert, CircleCheck } from 'lucide-vue-next';
 
 defineProps({
   type: {
@@ -46,9 +46,16 @@ const notify = computed(() => {
     class="text-[#5566da] flex gap-2 px-3 transition-opacity duration-300 text-[14px]"
   >
     <ShieldAlert
+      width="18"
+      height="18"
+      class="ml-[5px]"
+      v-if="notify?.type === TYPE_MESSAGE.error"
+    />
+    <CircleCheck
       width="20"
       height="20"
       class="ml-[5px]"
+      v-else
     />
     {{ notify?.message }}
   </div>
