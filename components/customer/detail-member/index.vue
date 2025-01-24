@@ -316,113 +316,58 @@ const redirectPageAfterAction = (message: string) => {
             class="mb-[10px]"
           />
           <div class="company flex flex-col gap-5">
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="companyName"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="法人名"
-                  class="w-[160px]"
-                />
-                <div class="relative w-[82%] !m-[0px]">
-                  <FormControl>
-                    <Input
-                      type="text"
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
+            <div class="flex gap-5 items-center">
+              <ShareRequireLabel
+                label="法人名"
+                class="w-[160px] flex-shrink-0"
+              />
+              <ShareInput :name-bind="'companyName'" />
+            </div>
 
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="companyNameKana"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="フリガナ"
-                  class="w-[160px]"
-                />
-                <div class="relative w-[82%] !m-[0px]">
-                  <FormControl>
-                    <Input
-                      type="text"
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
+            <div class="flex gap-5 items-center">
+              <ShareRequireLabel
+                label="フリガナ"
+                class="w-[160px] flex-shrink-0"
+              />
+              <ShareInput :name-bind="'companyNameKana'" />
+            </div>
           </div>
 
           <div class="space"></div>
 
           <div class="information flex flex-col gap-5">
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="companyPostCode"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="郵便番号"
-                  class="w-[160px] flex"
-                />
-                <div class="relative flex !m-[0px] gap-[20px]">
-                  <FormControl>
-                    <Input
-                      type="text"
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
-                  </FormControl>
-                  <Button
-                    @click="searchPostalCode"
-                    type="button"
-                    variant="cancel_btn"
-                    class="!m-[0px] !rounded-3xl"
-                  >
-                    <LoaderCircle
-                      v-if="isLoadPostalCode"
-                      class="w-4 h-4 mr-2 animate-spin"
-                    />
-                    郵便番号から入力
-                  </Button>
-                </div>
-              </FormItem>
-            </FormField>
+            <div class="flex gap-5 items-center">
+              <ShareRequireLabel
+                label="郵便番号"
+                class="w-[160px] flex"
+              />
 
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="companyAddress"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="会社所在地"
-                  class="w-[160px]"
+              <ShareInput
+                :name-bind="'companyPostCode'"
+                :class-form="'w-[20%]'"
+              />
+
+              <Button
+                @click="searchPostalCode"
+                type="button"
+                variant="cancel_btn"
+                class="!m-[0px] !rounded-3xl"
+              >
+                <LoaderCircle
+                  v-if="isLoadPostalCode"
+                  class="w-4 h-4 mr-2 animate-spin"
                 />
-                <div class="relative w-[82%] !m-[0px]">
-                  <FormControl>
-                    <Input
-                      type="text"
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
+                郵便番号から入力
+              </Button>
+            </div>
+
+            <div class="flex gap-5 items-center">
+              <ShareRequireLabel
+                label="会社所在地"
+                class="w-[160px] flex-shrink-0"
+              />
+              <ShareInput :name-bind="'companyAddress'" />
+            </div>
 
             <FormField
               v-slot="{ componentField, errors }"
@@ -431,7 +376,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="代表者"
-                  class="w-[160px] flex pt-[14px] items-baseline"
+                  class="w-[160px] flex pt-[14px] items-baseline flex-shrink-0"
                 />
                 <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
@@ -448,94 +393,34 @@ const redirectPageAfterAction = (message: string) => {
                       </FormControl>
                     </div>
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[19%]">お名前</span>
-                      <FormField
-                        v-slot="{ componentField, errors }"
-                        name="frontPicFamilyName"
-                      >
-                        <FormItem class="flex gap-5">
-                          <div class="relative !m-[0px]">
-                            <FormControl>
-                              <Input
-                                type="text"
-                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
-                                v-bind="componentField"
-                                :class="{
-                                  'border-red-500': errors.length
-                                }"
-                                placeholder="姓"
-                              />
-                            </FormControl>
-                          </div>
-                        </FormItem>
-                      </FormField>
-                      <FormField
-                        v-slot="{ componentField, errors }"
-                        name="frontPicGivenName"
-                      >
-                        <FormItem class="flex gap-5">
-                          <div class="relative !m-[0px]">
-                            <FormControl>
-                              <Input
-                                type="text"
-                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
-                                v-bind="componentField"
-                                :class="{
-                                  'border-red-500': errors.length
-                                }"
-                                placeholder="名"
-                              />
-                            </FormControl>
-                          </div>
-                        </FormItem>
-                      </FormField>
+                      <span class="label flex w-[19%] flex-shrink-0">お名前</span>
+                      <ShareInput
+                        :name-bind="'frontPicFamilyName'"
+                        :placeholder="'姓'"
+                        :class-input="'text-center'"
+                      />
+                      <ShareInput
+                        :name-bind="'frontPicGivenName'"
+                        :placeholder="'名'"
+                        :class-input="'text-center'"
+                      />
                     </div>
                   </div>
 
                   <div class="flex gap-5 items-center !m-[0px]">
                     <div class="pic-position flex gap-5 items-center w-[50%]"></div>
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[19%]">フリガナ</span>
-                      <FormField
-                        v-slot="{ componentField, errors }"
-                        name="frontPicFamilyNameKana"
-                      >
-                        <FormItem class="flex gap-5">
-                          <div class="relative !m-[0px]">
-                            <FormControl>
-                              <Input
-                                type="text"
-                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
-                                v-bind="componentField"
-                                :class="{
-                                  'border-red-500': errors.length
-                                }"
-                                placeholder="せい"
-                              />
-                            </FormControl>
-                          </div>
-                        </FormItem>
-                      </FormField>
-                      <FormField
-                        v-slot="{ componentField, errors }"
-                        name="frontPicGivenNameKana"
-                      >
-                        <FormItem class="flex gap-5">
-                          <div class="relative !m-[0px]">
-                            <FormControl>
-                              <Input
-                                type="text"
-                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
-                                v-bind="componentField"
-                                :class="{
-                                  'border-red-500': errors.length
-                                }"
-                                placeholder="めい"
-                              />
-                            </FormControl>
-                          </div>
-                        </FormItem>
-                      </FormField>
+                      <span class="label flex w-[19%] flex-shrink-0">フリガナ</span>
+                      <ShareInput
+                        :name-bind="'frontPicFamilyNameKana'"
+                        :placeholder="'せい'"
+                        :class-input="'text-center'"
+                      />
+                      <ShareInput
+                        :name-bind="'frontPicGivenNameKana'"
+                        :placeholder="'めい'"
+                        :class-input="'text-center'"
+                      />
                     </div>
                   </div>
                 </div>
@@ -549,7 +434,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="ご担当者"
-                  class="w-[160px] flex pt-[14px] items-baseline"
+                  class="w-[160px] flex pt-[14px] items-baseline flex-shrink-0"
                 />
                 <div class="flex flex-col gap-[15px] w-[82%]">
                   <div class="flex gap-5 items-center !m-[0px]">
@@ -567,94 +452,35 @@ const redirectPageAfterAction = (message: string) => {
                     </div>
 
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[19%]">お名前</span>
-                      <FormField
-                        v-slot="{ componentField, errors }"
-                        name="picFamilyName"
-                      >
-                        <FormItem class="flex gap-5">
-                          <div class="relative !m-[0px]">
-                            <FormControl>
-                              <Input
-                                type="text"
-                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
-                                v-bind="componentField"
-                                :class="{
-                                  'border-red-500': errors.length
-                                }"
-                                placeholder="姓"
-                              />
-                            </FormControl>
-                          </div>
-                        </FormItem>
-                      </FormField>
-                      <FormField
-                        v-slot="{ componentField, errors }"
-                        name="picGivenName"
-                      >
-                        <FormItem class="flex gap-5">
-                          <div class="relative !m-[0px]">
-                            <FormControl>
-                              <Input
-                                type="text"
-                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
-                                v-bind="componentField"
-                                :class="{
-                                  'border-red-500': errors.length
-                                }"
-                                placeholder="名"
-                              />
-                            </FormControl>
-                          </div>
-                        </FormItem>
-                      </FormField>
+                      <span class="label flex w-[19%] flex-shrink-0">お名前</span>
+                      <ShareInput
+                        :name-bind="'picFamilyName'"
+                        :placeholder="'姓'"
+                        :class-input="'text-center'"
+                      />
+
+                      <ShareInput
+                        :name-bind="'picGivenName'"
+                        :placeholder="'名'"
+                        :class-input="'text-center'"
+                      />
                     </div>
                   </div>
 
                   <div class="flex gap-5 items-center !m-[0px]">
                     <div class="pic-position flex gap-5 items-center w-[50%]"></div>
                     <div class="pic-name flex items-center gap-5 w-[50%]">
-                      <span class="label flex w-[19%]">フリガナ</span>
-                      <FormField
-                        v-slot="{ componentField, errors }"
-                        name="picFamilyNameKana"
-                      >
-                        <FormItem class="flex gap-5">
-                          <div class="relative !m-[0px]">
-                            <FormControl>
-                              <Input
-                                type="text"
-                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
-                                v-bind="componentField"
-                                :class="{
-                                  'border-red-500': errors.length
-                                }"
-                                placeholder="せい"
-                              />
-                            </FormControl>
-                          </div>
-                        </FormItem>
-                      </FormField>
-                      <FormField
-                        v-slot="{ componentField, errors }"
-                        name="picGivenNameKana"
-                      >
-                        <FormItem class="flex gap-5">
-                          <div class="relative !m-[0px]">
-                            <FormControl>
-                              <Input
-                                type="text"
-                                class="placeholder:flex placeholder:text-center text-center placeholder:text-[10px]"
-                                v-bind="componentField"
-                                :class="{
-                                  'border-red-500': errors.length
-                                }"
-                                placeholder="めい"
-                              />
-                            </FormControl>
-                          </div>
-                        </FormItem>
-                      </FormField>
+                      <span class="label flex w-[19%] flex-shrink-0">フリガナ</span>
+                      <ShareInput
+                        :name-bind="'picFamilyNameKana'"
+                        :placeholder="'せい'"
+                        :class-input="'text-center'"
+                      />
+                      <ShareInput
+                        :name-bind="'picGivenNameKana'"
+                        :placeholder="'めい'"
+                        :class-input="'text-center'"
+                      />
                     </div>
                   </div>
                 </div>
@@ -665,211 +491,161 @@ const redirectPageAfterAction = (message: string) => {
           <div class="space"></div>
 
           <div class="contact flex flex-col gap-6">
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="phoneNumber"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="電話番号"
-                  class="w-[160px]"
-                />
-                <div class="relative w-[40%] !m-[0px]">
-                  <FormControl>
-                    <Input
-                      type="text"
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
+            <div class="flex gap-5 items-center">
+              <ShareRequireLabel
+                label="電話番号"
+                class="w-[160px] flex-shrink-0"
+              />
+              <ShareInput
+                :name-bind="'phoneNumber'"
+                :class-form="'w-[40%]'"
+              />
+            </div>
 
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="email"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="メールアドレス"
-                  class="w-[160px]"
-                />
-                <div class="relative w-[82%] !m-[0px]">
-                  <FormControl>
-                    <Input
-                      type="text"
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
+            <div class="flex gap-5 items-center -mb-[12.5px]">
+              <ShareRequireLabel
+                label="メールアドレス"
+                class="w-[160px] flex-shrink-0"
+              />
+              <ShareInput
+                :name-bind="'email'"
+                :description="'認証済みのメールアドレス'"
+              />
+            </div>
 
-                    <span class="absolute text-[10px] pt-[2px]">認証済みのメールアドレス</span>
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
-
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="password"
-            >
-              <FormItem class="flex gap-5">
-                <div class="w-[160px]">
-                  <span>パスワード</span>
-                </div>
-                <div class="relative w-[82%] !m-[0px]">
-                  <FormControl>
-                    <div class="relative">
-                      <Input
-                        :type="passwordVisible ? 'text' : 'password'"
-                        v-bind="componentField"
-                        placeholder="英小文字、数字を含む、半角英数字８文字以上"
-                        :class="{
-                          'border-red-500': errors.length
-                        }"
-                        class="placeholder:text-[10px]"
-                      />
-                      <button
-                        type="button"
-                        class="absolute right-[15px] top-1/2 transform -translate-y-1/2"
-                        @click="togglePasswordVisibility"
-                        aria-label="Toggle password visibility"
-                      >
-                        <template v-if="!passwordVisible">
-                          <EyeOff class="h-5 w-3.5 text-black" />
-                        </template>
-                        <template v-else>
-                          <Eye class="h-5 w-3.5 text-black" />
-                        </template>
-                      </button>
-                    </div>
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
-
-            <FormField
-              v-slot="{ componentField, errors, meta }"
-              name="kaigoSoftware"
-            >
-              <FormItem class="relative flex gap-5">
-                <ShareRequireLabel
-                  label="介護ソフト選択"
-                  class="w-[160px]"
-                />
-                <div class="relative w-[82%] !m-[0px]">
-                  <FormControl>
-                    <Select v-bind="componentField">
-                      <SelectTrigger
-                        :class="{
-                          'border-red-500': errors.length && !componentField.modelValue
-                        }"
-                      >
-                        <SelectValue placeholder="Select an option" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem
-                          :value="`${company.id}`"
-                          v-for="company of kaigoSoftware"
+            <div class="flex gap-5 items-center">
+              <div class="w-[160px] flex-shrink-0">
+                <span>パスワード</span>
+              </div>
+              <FormField
+                v-slot="{ componentField, errors }"
+                name="password"
+              >
+                <FormItem class="w-[100%]">
+                  <div class="relative !m-[0px]">
+                    <FormControl>
+                      <div class="relative">
+                        <Input
+                          :type="passwordVisible ? 'text' : 'password'"
+                          v-bind="componentField"
+                          placeholder="英小文字、数字を含む、半角英数字８文字以上"
+                          :class="{
+                            'border-red-500': errors.length
+                          }"
+                          class="placeholder:text-[10px]"
+                        />
+                        <button
+                          type="button"
+                          class="absolute right-[15px] top-1/2 transform -translate-y-1/2"
+                          @click="togglePasswordVisibility"
+                          aria-label="Toggle password visibility"
                         >
-                          {{ company.name }}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
+                          <template v-if="!passwordVisible">
+                            <EyeOff class="h-5 w-3.5 text-black" />
+                          </template>
+                          <template v-else>
+                            <Eye class="h-5 w-3.5 text-black" />
+                          </template>
+                        </button>
+                      </div>
+                    </FormControl>
+                  </div>
+                </FormItem>
+              </FormField>
+            </div>
 
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="kaipokeCompanyId"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="カイポケ法人ID"
-                  class="w-[160px]"
-                />
-                <div class="relative w-[82%] !m-[0px]">
-                  <FormControl>
-                    <Input
-                      type="text"
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
+            <div class="flex gap-5 items-center">
+              <ShareRequireLabel
+                label="介護ソフト選択"
+                class="w-[160px] flex-shrink-0"
+              />
+              <FormField
+                v-slot="{ componentField, errors, meta }"
+                name="kaigoSoftware"
+              >
+                <FormItem class="w-[100%]">
+                  <div class="!m-[0px]">
+                    <FormControl>
+                      <Select v-bind="componentField">
+                        <SelectTrigger
+                          :class="{
+                            'border-red-500': errors.length && !componentField.modelValue
+                          }"
+                        >
+                          <SelectValue placeholder="Select an option" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem
+                            :value="`${company.id}`"
+                            v-for="company of kaigoSoftware"
+                          >
+                            {{ company.name }}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                  </div>
+                </FormItem>
+              </FormField>
+            </div>
 
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="kaipokeUserId"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="カイポケユーザーID"
-                  class="w-[160px]"
-                />
-                <div class="relative w-[82%] !m-[0px]">
-                  <FormControl>
-                    <Input
-                      type="text"
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
+            <div class="flex gap-5 items-center">
+              <ShareRequireLabel
+                label="カイポケ法人ID"
+                class="w-[160px] flex-shrink-0"
+              />
+              <ShareInput :name-bind="'kaipokeCompanyId'" />
+            </div>
 
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="kaipokeUserPassword"
-            >
-              <FormItem class="flex gap-5">
-                <ShareRequireLabel
-                  label="カイポケパスワード"
-                  class="w-[160px]"
-                />
-                <div class="relative w-[82%] !m-[0px]">
-                  <FormControl>
-                    <div class="relative">
-                      <Input
-                        :type="kaipokeUserPasswordVisible ? 'text' : 'password'"
-                        v-bind="componentField"
-                        placeholder="英小文字、数字を含む、半角英数字８文字以上"
-                        :class="{
-                          'border-red-500': errors.length
-                        }"
-                        class="placeholder:text-[10px]"
-                      />
-                      <button
-                        type="button"
-                        class="absolute right-[15px] top-1/2 transform -translate-y-1/2"
-                        @click="toggleKaipokeUserPasswordVisibility"
-                        aria-label="Toggle password visibility"
-                      >
-                        <template v-if="!kaipokeUserPasswordVisible">
-                          <EyeOff class="h-5 w-3.5 text-black" />
-                        </template>
-                        <template v-else>
-                          <Eye class="h-5 w-3.5 text-black" />
-                        </template>
-                      </button>
-                    </div>
-                  </FormControl>
-                </div>
-              </FormItem>
-            </FormField>
+            <div class="flex gap-5 items-center">
+              <ShareRequireLabel
+                label="カイポケユーザーID"
+                class="w-[160px] flex-shrink-0"
+              />
+              <ShareInput :name-bind="'kaipokeUserId'" />
+            </div>
+
+            <div class="flex gap-5 items-center">
+              <ShareRequireLabel
+                label="カイポケパスワード"
+                class="w-[160px] flex-shrink-0"
+              />
+              <FormField
+                v-slot="{ componentField, errors }"
+                name="kaipokeUserPassword"
+              >
+                <FormItem class="w-[100%]">
+                  <div class="relative !m-[0px]">
+                    <FormControl>
+                      <div class="relative">
+                        <Input
+                          :type="kaipokeUserPasswordVisible ? 'text' : 'password'"
+                          v-bind="componentField"
+                          placeholder="英小文字、数字を含む、半角英数字８文字以上"
+                          :class="{
+                            'border-red-500': errors.length
+                          }"
+                          class="placeholder:text-[10px]"
+                        />
+                        <button
+                          type="button"
+                          class="absolute right-[15px] top-1/2 transform -translate-y-1/2"
+                          @click="toggleKaipokeUserPasswordVisibility"
+                          aria-label="Toggle password visibility"
+                        >
+                          <template v-if="!kaipokeUserPasswordVisible">
+                            <EyeOff class="h-5 w-3.5 text-black" />
+                          </template>
+                          <template v-else>
+                            <Eye class="h-5 w-3.5 text-black" />
+                          </template>
+                        </button>
+                      </div>
+                    </FormControl>
+                  </div>
+                </FormItem>
+              </FormField>
+            </div>
 
             <FormField
               v-slot="{ componentField, errors }"
@@ -878,7 +654,7 @@ const redirectPageAfterAction = (message: string) => {
               <FormItem class="flex gap-5">
                 <ShareRequireLabel
                   label="決済方法"
-                  class="w-[160px]"
+                  class="w-[160px] flex-shrink-0"
                 />
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>

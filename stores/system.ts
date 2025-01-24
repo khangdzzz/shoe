@@ -32,7 +32,7 @@ export const useSystemStore = defineStore('system', () => {
 
     setTimeout(() => {
       clearNotify();
-    }, 5000);
+    }, 3000);
   };
 
   const clearNotify = () => {

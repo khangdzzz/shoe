@@ -154,13 +154,14 @@ onMounted(async () => {
 
 <template>
   <div class="user-list px-4">
-    <div class="header flex items-center h-[40px] border-b border-b-[#e2e2e2]">
+    <div class="relative header flex items-center h-[40px] border-b border-b-[#e2e2e2]">
       <span class="text-base font-bold">顧客管理</span>
+      <ShareErrorMessage
+        :class-custom="'absolute z-10 bg-[#ccc] w-[100%] top-[40px]  py-[11px]'"
+        :type="'custom'"
+      />
     </div>
-    <ShareErrorMessage
-      :class-custom="'absolute z-10 bg-[#ccc] w-[100%] py-[11px] '"
-      :type="'custom'"
-    />
+
     <CustomerSearch
       @update:change-date="onChangeDate"
       @update:change-status="onChangeStatus"

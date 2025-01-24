@@ -296,19 +296,19 @@ const setConditionFromStore = (condition: CustomerStorageCondition) => {
                   @update:checked="toggleSelectRow(row.id)"
                 />
               </td>
-              <td class="row-sticky px-[5px]">
+              <td class="row-sticky px-[5px] truncate">
                 <span>{{ row.companyName }}</span>
               </td>
-              <td class="row-sticky px-[5px]">
+              <td class="row-sticky px-[5px] truncate">
                 <span>{{ row.companyAddress }}</span>
               </td>
               <td class="px-[5px]">
                 <span>{{ row.phoneNumber }}</span>
               </td>
-              <td class="px-[5px]">
+              <td class="px-[5px] truncate">
                 <span>{{ row.frontPicFamilyName ?? '' }} {{ row.frontPicGivenName ?? '' }}</span>
               </td>
-              <td class="px-[5px]">
+              <td class="px-[5px] truncate">
                 <span>{{ row.picFamilyName ?? '' }} {{ row.picGivenName ?? '' }}</span>
               </td>
               <td class="px-[5px]">
