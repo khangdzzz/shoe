@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-vue-next';
+import { ChevronLeft, ChevronDown } from 'lucide-vue-next';
 import { ja } from 'date-fns/locale';
+import { getMonth } from 'date-fns';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 interface DatePicker {
@@ -19,6 +20,7 @@ const getCurrentMonthAndYear = (): DatePicker => {
 };
 
 const currentDate = ref<DatePicker>(getCurrentMonthAndYear());
+const yearSelected = ref(getCurrentMonthAndYear().year);
 const targetYearMonth = ref('');
 
 const updateDateLabel = () => {
@@ -54,7 +56,27 @@ const date = ref<DatePicker>({
 
 watch(date, () => {
   currentDate.value = { year: date.value.year, month: date.value.month + 1 };
+  yearSelected.value = date.value.year;
   updateDateLabel();
+});
+
+const filters = computed(() => {
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth();
+
+  if (yearSelected.value === currentYear) {
+    return {
+      months: Array.from({ length: 12 }, (_, index) => {
+        const date = new Date(currentYear, index);
+        return index > currentMonth ? getMonth(date) : null;
+      }).filter(Boolean) as number[]
+    };
+  }
+
+  return {
+    months: yearSelected.value > currentYear ? Array.from({ length: 12 }, (_, index) => index) : []
+  };
 });
 </script>
 
@@ -77,6 +99,8 @@ watch(date, () => {
         auto-apply
         :format-locale="ja"
         format="E"
+        :filters="filters"
+        @update-month-year="(payload: any) => (yearSelected = payload.year)"
       >
         <template #trigger>
           <div
