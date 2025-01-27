@@ -722,6 +722,7 @@ const redirectPageAfterAction = (message: string) => {
           </Button>
 
           <Button
+            v-if="activeStatus !== 3"
             type="button"
             variant="export"
             class="delete flex self-center"
