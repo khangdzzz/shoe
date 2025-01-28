@@ -10,6 +10,8 @@ import * as z from 'zod';
 import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
 import { getPasswordRules, validateRequiredAndLimit } from '~/helps';
+const runtimeConfig = useRuntimeConfig();
+const termOfUseLink = runtimeConfig.public.BASE_URL + '/term-of-use';
 
 const route = useRoute();
 const dataInit = useFetchDataInit();
@@ -55,17 +57,6 @@ onMounted(() => {
 
   setFieldValue('email', email.value);
 });
-
-watch(
-  () => system.termHtml,
-  () => {
-    if (system.termHtml) {
-      const terms = system.termHtml.replace(/<br>/g, '\n');
-
-      setFieldValue('terms', terms);
-    }
-  }
-);
 
 const kaigoSoftware = computed(() => dataInit.masterData?.kaigoSoftwares);
 
@@ -868,16 +859,11 @@ const onSubmit = handleSubmit(
               <FormItem class="flex gap-5">
                 <span class="w-[145px] flex items-center">利用規約</span>
                 <div class="relative w-[71%] !m-[0px] !mr-[25px]">
-                  <FormControl>
-                    <Textarea
-                      disabled
-                      v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length && !componentField.modelValue
-                      }"
-                      class="resize-none h-[100px] bg-[#fff] text-black disabled:opacity-80"
-                    />
-                  </FormControl>
+                  <iframe
+                    :src="termOfUseLink"
+                    class="w-full h-[300px] border rounded"
+                    title="利用規約"
+                  ></iframe>
                 </div>
               </FormItem>
             </FormField>
