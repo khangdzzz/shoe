@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-vue-next';
 import { ja } from 'date-fns/locale';
+import { getMonth } from 'date-fns';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 interface DatePicker {
@@ -22,6 +23,7 @@ const getCurrentMonthAndYear = (): DatePicker => {
   return { year, month };
 };
 
+const yearSelected = ref(getCurrentMonthAndYear().year);
 const currentDate = ref<DatePicker>(getCurrentMonthAndYear());
 const targetYearMonth = ref('');
 
@@ -58,7 +60,35 @@ const date = ref<DatePicker>({
 
 watch(date, () => {
   currentDate.value = { year: date.value.year, month: date.value.month + 1 };
+  yearSelected.value = date.value.year;
   updateDateLabel();
+});
+
+const isNextDisabled = computed(() => {
+  const today = new Date();
+  return (
+    currentDate.value.year > today.getFullYear() ||
+    (currentDate.value.year === today.getFullYear() && currentDate.value.month >= today.getMonth() + 1)
+  );
+});
+
+const filters = computed(() => {
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth();
+
+  if (yearSelected.value === currentYear) {
+    return {
+      months: Array.from({ length: 12 }, (_, index) => {
+        const date = new Date(currentYear, index);
+        return index > currentMonth ? getMonth(date) : null;
+      }).filter(Boolean) as number[]
+    };
+  }
+
+  return {
+    months: yearSelected.value > currentYear ? Array.from({ length: 12 }, (_, index) => index) : []
+  };
 });
 </script>
 
@@ -80,6 +110,8 @@ watch(date, () => {
         auto-apply
         :format-locale="ja"
         format="E"
+        :filters="filters"
+        @update-month-year="(payload: any) => (yearSelected = payload.year)"
       >
         <template #trigger>
           <div class="h-[30px] flex items-center justify-between px-4 bg-white rounded cursor-pointer">
@@ -90,8 +122,10 @@ watch(date, () => {
       </VueDatePicker>
 
       <button
-        class="flex items-center gap-1 bg-gray-300 text-gray-700 pl-3 pr-2 py-[5px] rounded-md hover:bg-gray-400"
+        class="flex items-center gap-1 bg-gray-300 text-gray-700 pl-3 pr-2 py-[5px] rounded-md"
+        :class="{ 'opacity-50': isNextDisabled, 'hover:bg-gray-400': !isNextDisabled }"
         @click="adjustMonth(1)"
+        :disabled="isNextDisabled"
       >
         翌月
         <ChevronRight class="w-4 h-4" />
