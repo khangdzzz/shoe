@@ -2,14 +2,16 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false,
-  modules: ['shadcn-nuxt', '@nuxtjs/tailwindcss',  [
+  modules: [
+    'shadcn-nuxt',
+    '@nuxtjs/tailwindcss',
+    [
       '@pinia/nuxt',
       {
-        autoImports: [
-          'defineStore',
-        ],
-      },
-    ],],
+        autoImports: ['defineStore']
+      }
+    ]
+  ],
   css: ['~/assets/css/main.scss'],
   shadcn: {
     componentDir: './components/ui'
@@ -34,8 +36,19 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      BASE_URL: process.env.BASE_URL,
-    },
+      BASE_URL: process.env.BASE_URL
+    }
   },
-  compatibilityDate: '2024-10-11'
+  compatibilityDate: '2024-10-11',
+  app: {
+    head: {
+      title: 'With Visiting Nurse',
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { hid: 'description', name: 'description', content: 'Nuxt.js TypeScript project' }
+      ],
+      link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.png' }]
+    }
+  }
 });
