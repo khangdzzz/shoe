@@ -9,7 +9,7 @@ definePageMeta({
     <div class="logo mb-2">
       <img
         src="~/assets/images/logo.png"
-        class="h-[46px] w-auto"
+        class="h-[60px] w-auto"
       />
     </div>
 

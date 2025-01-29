@@ -91,7 +91,6 @@ const formSchema = toTypedSchema(
       .string(messageRequired(FIELDS.kaipokeUserPassword))
       .min(1, messageRequired(FIELDS.kaipokeUserPassword)),
     registerReason: validateRequiredAndLimit(FIELDS.registerReason, 1000),
-    terms: z.string(messageRequired(FIELDS.terms)).min(1, FIELDS.terms),
     term: z.boolean({ message: MESSAGES.ERR003 }).refine((value) => value, {
       message: MESSAGES.ERR003
     })
@@ -170,7 +169,7 @@ const onSubmit = handleSubmit(
 
     isLoadingRegister.value = true;
 
-    const { term, terms, ...rest } = values;
+    const { term, ...rest } = values;
 
     const body = {
       ...rest,
@@ -204,7 +203,7 @@ const onSubmit = handleSubmit(
     <div class="logo mb-2">
       <img
         src="~/assets/images/logo.png"
-        class="h-[46px] w-auto"
+        class="h-[60px] w-auto"
       />
     </div>
 
@@ -858,11 +857,8 @@ const onSubmit = handleSubmit(
           <div class="space"></div>
 
           <div class="terms contact flex flex-col">
-            <FormField
-              v-slot="{ componentField, errors }"
-              name="terms"
-            >
-              <FormItem class="flex gap-5">
+            <div>
+              <div class="flex gap-5">
                 <span class="w-[145px] flex items-center">利用規約</span>
                 <div class="relative w-[71%] !m-[0px] !mr-[25px]">
                   <iframe
@@ -871,8 +867,8 @@ const onSubmit = handleSubmit(
                     title="利用規約"
                   ></iframe>
                 </div>
-              </FormItem>
-            </FormField>
+              </div>
+            </div>
             <FormField
               v-slot="{ value, handleChange, errors }"
               type="checkbox"

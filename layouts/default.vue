@@ -48,10 +48,9 @@ const isPolicyPage = computed(() => {
           class="logo gap-4 flex items-center py-[10px]"
           :class="isOpen ? 'justify-between px-2' : 'justify-center'"
         >
-          <div class="w-1 h-1"></div>
           <a
             href="/"
-            class="logo"
+            class="logo flex-1 flex justify-center"
             v-if="isOpen"
           >
             <img
