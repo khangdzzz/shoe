@@ -54,7 +54,7 @@ const isPolicyPage = computed(() => {
             v-if="isOpen"
           >
             <img
-              src="~/assets/images/logo.jpg"
+              src="~/assets/images/logo.png"
               class="h-[46px] w-auto"
             />
           </a>

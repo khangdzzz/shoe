@@ -73,7 +73,12 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
   <div class="login-page flex flex-col items-center justify-center h-[100vh]">
-    <div class="logo">LOGO</div>
+    <div class="logo">
+      <img
+        src="~/assets/images/logo.png"
+        class="h-[46px] w-auto"
+      />
+    </div>
 
     <div class="min-w-[500px]">
       <form
