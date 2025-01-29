@@ -11,7 +11,7 @@ import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
 import { getPasswordRules, validateRequiredAndLimit } from '~/helps';
 const runtimeConfig = useRuntimeConfig();
-const termOfUseLink = runtimeConfig.public.BASE_URL + '/term-of-use';
+const termOfUseLink = runtimeConfig.public.BASE_URL + 'term-of-use';
 
 const route = useRoute();
 const dataInit = useFetchDataInit();
