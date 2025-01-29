@@ -73,7 +73,7 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
   <div class="login-page flex flex-col items-center justify-center h-[100vh]">
-    <div class="logo">
+    <div class="logo mb-2">
       <img
         src="~/assets/images/logo.png"
         class="h-[46px] w-auto"

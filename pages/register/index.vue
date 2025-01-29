@@ -201,7 +201,13 @@ const onSubmit = handleSubmit(
 
 <template>
   <div class="login-page flex flex-col items-center justify-center !h-[100vh] overflow-hidden">
-    <div class="logo">LOGO</div>
+    <div class="logo mb-2">
+      <img
+        src="~/assets/images/logo.png"
+        class="h-[46px] w-auto"
+      />
+    </div>
+
     <div class="form flex flex-col gap-[5px] w-[770px] bg-white px-12 pt-4 pb-8 h-[90%]">
       <ShareErrorMessage />
       <h1 class="text-sm font-bold mb-[20px]">会員登録</h1>
