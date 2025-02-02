@@ -52,7 +52,7 @@ export const useCompanyStore = defineStore('company', () => {
   };
 
   const crawlCompanyUserStatus = async () => {
-    await apis.archaic?.post('company-user-status/crawl', {});
+    return await apis.archaic?.post('company-user-status/crawl', {});
   };
 
   return {

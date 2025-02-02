@@ -45,14 +45,19 @@ watch(targetYearMonth, () => {
 
 const crawlCompanyUserStatus = async () => {
   isLoading.value = true;
-
-  await companyStore.crawlCompanyUserStatus().finally(() => {
+  try {
+    const res = await companyStore.crawlCompanyUserStatus();
+    if (res?.data) {
+      userListPage.isOpenNotifyCrawl = true;
+      setTimeout(() => {
+        window.location.reload();
+      }, 3500);
+    }
+  } catch (error) {
+    console.error(error);
+  } finally {
     isLoading.value = false;
-    userListPage.isOpenNotifyCrawl = true;
-    setTimeout(() => {
-      window.location.reload();
-    }, 3500);
-  });
+  }
 };
 
 const isLoadPermission = computed(() => system.isLoadPermission);
