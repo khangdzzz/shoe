@@ -59,7 +59,7 @@ export const getPasswordRules = (messageRequire?: { message: string }) => {
     .min(8, { message: MESSAGES.ERR007 })
     .regex(/[a-zA-Z]/, MESSAGES.ERR007)
     .regex(/\d/, MESSAGES.ERR007)
-    .regex(/[@$!%*?&^#()\[\]{}|\\/.,;_:`~+=<>]/, MESSAGES.ERR007)
+    .regex(/[@$!%*?&^#()\[\]{}|\\/.,;_:`~+=<>'"-]/, MESSAGES.ERR007)
     .regex(/^(?! )[A-Za-z0-9^$*.[\]{}()?\"!@#%&/\\,><':;|_~`=+\- ]*(?<! )$/, MESSAGES.ERR007);
 };
 
