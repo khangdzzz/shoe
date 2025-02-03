@@ -701,11 +701,6 @@ const onSubmit = handleSubmit(
                       </button>
                     </div>
                   </FormControl>
-                  <span
-                    v-if="!isMatchPassword && !errors.length"
-                    class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal"
-                    >{{ MESSAGES.ERR006 }}</span
-                  >
                 </div>
               </FormItem>
             </FormField>

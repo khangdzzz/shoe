@@ -194,10 +194,6 @@ const searchPostalCode = async () => {
 };
 
 watch([confirmPassword, password], () => {
-  if (!password.value || !confirmPassword.value) {
-    isMatchPassword.value = true;
-    return;
-  }
   isMatchPassword.value = password.value === confirmPassword.value;
 });
 
@@ -582,6 +578,7 @@ const isShowBtnRegisterCreditCard = () => {
                           :type="passwordVisible ? 'text' : 'password'"
                           v-bind="componentField"
                           placeholder="英小文字、数字を含む、半角英数字８文字以上"
+                          v-model="password"
                           :class="{
                             'border-red-500': errors.length
                           }"
@@ -647,11 +644,6 @@ const isShowBtnRegisterCreditCard = () => {
                         </button>
                       </div>
                     </FormControl>
-                    <span
-                      v-if="!isMatchPassword && !errors.length"
-                      class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal"
-                      >{{ MESSAGES.ERR006 }}</span
-                    >
                   </div>
                 </FormItem>
               </FormField>

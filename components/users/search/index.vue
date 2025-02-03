@@ -18,9 +18,12 @@ const offices = computed(() => {
   const storedOfficeName = common.getLocalStorage(LOCAL_STORAGE_KEYS.officeName);
   const officeNames = companyStore.offices.map((office) => office.officeName);
 
-  officeSelected.value = storedOfficeName || officeNames[0] || '';
+  if (storedOfficeName && officeNames.length && officeNames.includes(storedOfficeName)) {
+    officeSelected.value = storedOfficeName;
+  }
 
   if (!storedOfficeName && officeNames[0]) {
+    officeSelected.value = officeNames[0];
     common.setLocalStorage(LOCAL_STORAGE_KEYS.officeName, officeNames[0]);
   }
 

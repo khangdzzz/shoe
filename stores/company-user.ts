@@ -9,6 +9,7 @@ export const useCompanyStore = defineStore('company', () => {
   const userNameKana = ref<string[]>();
   const charactersSelected = ref<string[]>([]);
 
+  const common = useCommon();
   const registerNewUser = async (body: RegisterNewUser) => {
     return await apis.archaic?.post('company/register', { ...body });
   };
@@ -42,9 +43,19 @@ export const useCompanyStore = defineStore('company', () => {
   };
 
   const getOffices = async () => {
+    const storedOfficeName = common.getLocalStorage(LOCAL_STORAGE_KEYS.officeName);
+
     const res = await apis.archaic?.get('office');
 
     offices.value = res?.data ?? [];
+
+    const hasOffices = offices.value.length > 0;
+
+    const isStoredOfficeValid = hasOffices && offices.value.some((office) => office.officeName === storedOfficeName);
+
+    if (!hasOffices || !isStoredOfficeValid) {
+      common.removeLocalStorage(LOCAL_STORAGE_KEYS.officeName);
+    }
   };
 
   const bulkExportReport = async (body: BulkExportReport) => {
