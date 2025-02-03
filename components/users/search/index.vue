@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 import { LoaderCircle } from 'lucide-vue-next';
-import { checkTargetYearMonthMatchCurrentYearMonth, hasRegisterPaymentMethod } from '~/helps';
 
 const common = useCommon();
-const system = useSystemStore();
 const companyStore = useCompanyStore();
 const userListPage = userListPageStore();
 
@@ -59,14 +57,6 @@ const crawlCompanyUserStatus = async () => {
     isLoading.value = false;
   }
 };
-
-const isLoadPermission = computed(() => system.isLoadPermission);
-
-const isDisableAllButton = computed(() => {
-  const _forceUpdate = isLoadPermission.value;
-
-  return checkTargetYearMonthMatchCurrentYearMonth(targetYearMonth?.value) && hasRegisterPaymentMethod();
-});
 </script>
 
 <template>
@@ -90,10 +80,7 @@ const isDisableAllButton = computed(() => {
       />
     </div>
 
-    <Button
-      @click="crawlCompanyUserStatus"
-      :disabled="!isDisableAllButton"
-    >
+    <Button @click="crawlCompanyUserStatus">
       <LoaderCircle
         v-if="isLoading"
         class="w-4 h-4 mr-2 animate-spin"
