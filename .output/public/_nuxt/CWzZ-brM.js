@@ -1,0 +1,1 @@
+import{ar as g,as as m,X as S,N as f,at as h,au as L,av as E}from"./K78HjCDi.js";const p=g(async n=>{const o=m(),t=f(),s=n.fullPath,e=t.getLocalStorage(S.role),c=t.hasLogged(),i=()=>{s!=="/login"&&o.push("/login")},r=u=>{const a=u===E.admin.toString(),l=a?h:L,d=a?"/customer":"/user-list";l.some(R=>s.includes(R))||o.push(d)};if(!e||!c){i();return}r(e)});export{p as default};
