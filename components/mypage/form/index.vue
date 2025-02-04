@@ -82,7 +82,7 @@ const formSchema = toTypedSchema(
     phoneNumber: validateRequiredAndLimit(FIELDS.phoneNumber, 20),
     email: validateRequiredAndLimit(FIELDS.email, 250),
     password: getPasswordRules().optional().or(z.literal('')),
-    confirmPassword: getConfirmPasswordRules().optional().or(z.literal('')),
+    confirmPassword: getPasswordRules().optional().or(z.literal('')),
     kaigoSoftware: z
       .string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware))
       .min(1, messageRequired(FIELDS.kaigoSoftware)),
