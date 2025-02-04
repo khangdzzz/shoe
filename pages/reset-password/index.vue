@@ -6,7 +6,7 @@ import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 import * as z from 'zod';
 import { Eye, EyeOff, LoaderCircle } from 'lucide-vue-next';
-import { getPasswordRules } from '~/helps';
+import { getConfirmPasswordRules, getPasswordRules } from '~/helps';
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -15,6 +15,7 @@ const jwt = useJwt();
 const { redirectPage } = useRedirectPage();
 
 const token = route.query.token;
+const isSubmit = ref(false);
 const isLoading = ref(false);
 const email = ref('');
 
@@ -57,7 +58,7 @@ const formSchema = toTypedSchema(
     .object({
       email: z.string(messageRequired(FIELDS.email)).min(1, FIELDS.email),
       password: getPasswordRules(formatMessage(MESSAGES.ERR001, FIELDS.password)),
-      passwordConfirmation: getPasswordRules(formatMessage(MESSAGES.ERR001, FIELDS.confirmPassword))
+      passwordConfirmation: getConfirmPasswordRules(formatMessage(MESSAGES.ERR001, FIELDS.confirmPassword))
     })
     .refine(({ password, passwordConfirmation }) => password === passwordConfirmation, {
       message: MESSAGES.ERR006,
@@ -69,21 +70,26 @@ const { handleSubmit, setFieldValue } = useForm({
   validationSchema: formSchema
 });
 
-const onSubmit = handleSubmit(async (values) => {
-  system.clearNotify();
+const onSubmit = handleSubmit(
+  async (values) => {
+    system.clearNotify();
 
-  isLoading.value = true;
+    isLoading.value = true;
 
-  const { password } = values;
+    const { password } = values;
 
-  await authStore.resetPassword(password, token as string);
+    await authStore.resetPassword(password, token as string);
 
-  if (!notify.value?.message) {
-    redirectPage('/confirm-email-change-password');
+    if (!notify.value?.message) {
+      redirectPage('/confirm-email-change-password');
+    }
+
+    isLoading.value = false;
+  },
+  () => {
+    isSubmit.value = true;
   }
-
-  isLoading.value = false;
-});
+);
 </script>
 
 <template>
@@ -94,7 +100,6 @@ const onSubmit = handleSubmit(async (values) => {
         class="h-[60px] w-auto"
       />
     </div>
-
 
     <div class="flex flex-col min-w-[500px] bg-white px-12 py-8">
       <ShareErrorMessage />
@@ -153,7 +158,10 @@ const onSubmit = handleSubmit(async (values) => {
                 </button>
               </div>
             </FormControl>
-            <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
+            <FormMessage
+              v-if="isSubmit"
+              class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal"
+            />
           </FormItem>
         </FormField>
         <FormField
@@ -183,7 +191,10 @@ const onSubmit = handleSubmit(async (values) => {
                   </template>
                 </button>
               </div>
-              <FormMessage class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal" />
+              <FormMessage
+                v-if="isSubmit"
+                class="absolute top-full left-0 mt-1 text-red-500 !m-[0px] !text-[12px] font-normal"
+              />
             </FormControl>
           </FormItem>
         </FormField>

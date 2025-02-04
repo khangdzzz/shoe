@@ -7,6 +7,7 @@ import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
 import type { CompanyUpdateBody } from '~/models/company';
 import {
+  getConfirmPasswordRules,
   getPasswordRules,
   getTypeRegisterPayment,
   isAdminUpdatePaymentMethod,
@@ -80,8 +81,8 @@ const formSchema = toTypedSchema(
     picGivenNameKana: validateRequiredAndLimit(FIELDS.picGivenNameKana, 100, true),
     phoneNumber: validateRequiredAndLimit(FIELDS.phoneNumber, 20),
     email: validateRequiredAndLimit(FIELDS.email, 250),
-    password: getPasswordRules().optional(),
-    confirmPassword: getPasswordRules().optional(),
+    password: getPasswordRules().optional().or(z.literal('')),
+    confirmPassword: getConfirmPasswordRules().optional().or(z.literal('')),
     kaigoSoftware: z
       .string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware))
       .min(1, messageRequired(FIELDS.kaigoSoftware)),
@@ -215,6 +216,8 @@ watch(
         field !== 'confirmPassword' &&
         (formValues as any)[field] != PAYMENT_METHOD_TYPES.creditCard
       ) {
+        if (field === 'password' && (formValues as any)[field] === '') return;
+
         const japaneseFields = FIELDS[field as keyof typeof FIELDS];
         changeFields.value.push(japaneseFields);
       }
@@ -228,8 +231,9 @@ watch(
 const onSubmit = handleSubmit(
   async (values) => {
     if (!isMatchPassword.value) {
+      const message = confirmPassword.value ? MESSAGES.ERR006 : messageRequired(FIELDS.confirmPassword).message;
       system.setNotify({
-        message: MESSAGES.ERR006,
+        message: message,
         type: TYPE_MESSAGE.error
       });
       return;
@@ -624,7 +628,7 @@ const isShowBtnRegisterCreditCard = () => {
                           v-bind="componentField"
                           placeholder="英小文字、数字を含む、半角英数字８文字以上"
                           :class="{
-                            'border-red-500': errors.length || !isMatchPassword
+                            'border-red-500': errors.length
                           }"
                           class="placeholder:text-[10px]"
                           v-model="confirmPassword"

@@ -56,11 +56,15 @@ export const getPasswordRules = (messageRequire?: { message: string }) => {
   const baseSchema = messageRequire ? z.string(messageRequire) : z.string();
 
   return baseSchema
-    .min(8, { message: MESSAGES.ERR007 })
+    .min(8, messageRequire || MESSAGES.ERR007)
     .regex(/[a-zA-Z]/, MESSAGES.ERR007)
     .regex(/\d/, MESSAGES.ERR007)
     .regex(/[@$!%*?&^#()\[\]{}|\\/.,;_:`~+=<>'"-]/, MESSAGES.ERR007)
     .regex(/^(?! )[A-Za-z0-9^$*.[\]{}()?\"!@#%&/\\,><':;|_~`=+\- ]*(?<! )$/, MESSAGES.ERR007);
+};
+
+export const getConfirmPasswordRules = (messageRequire?: { message: string }) => {
+  return z.string(messageRequire).min(1, messageRequire);
 };
 
 export const validateRequiredAndLimit = (field: string, limit: number, isKana?: boolean) => {

@@ -9,7 +9,7 @@ import { Eye, EyeOff } from 'lucide-vue-next';
 import * as z from 'zod';
 import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
-import { getPasswordRules, validateRequiredAndLimit } from '~/helps';
+import { getConfirmPasswordRules, getPasswordRules, validateRequiredAndLimit } from '~/helps';
 const runtimeConfig = useRuntimeConfig();
 const termOfUseLink = runtimeConfig.public.BASE_URL + 'term-of-use';
 
@@ -35,8 +35,6 @@ const confirmPassword = ref('');
 const kaipokeUserPasswordVisible = ref(false);
 const passwordConfirmVisible = ref(false);
 const passwordVisible = ref(false);
-
-const katakanaRegex = /^[\u30A0-\u30FF]+$/;
 
 onMounted(() => {
   if (!token) {
@@ -81,7 +79,7 @@ const formSchema = toTypedSchema(
     phoneNumber: validateRequiredAndLimit(FIELDS.phoneNumber, 20),
     email: validateRequiredAndLimit(FIELDS.email, 250),
     password: getPasswordRules(messageRequired(FIELDS.password)),
-    confirmPassword: getPasswordRules(messageRequired(FIELDS.confirmPassword)),
+    confirmPassword: getConfirmPasswordRules(formatMessage(MESSAGES.ERR001, FIELDS.confirmPassword)),
     kaigoSoftware: z
       .string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware))
       .min(1, messageRequired(FIELDS.kaigoSoftware)),
