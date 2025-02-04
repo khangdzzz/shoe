@@ -57,8 +57,8 @@ const formSchema = toTypedSchema(
   z
     .object({
       email: z.string(messageRequired(FIELDS.email)).min(1, FIELDS.email),
-      password: getPasswordRules(formatMessage(MESSAGES.ERR001, FIELDS.password)),
-      passwordConfirmation: getConfirmPasswordRules(formatMessage(MESSAGES.ERR001, FIELDS.confirmPassword))
+      password: getPasswordRules({ message: MESSAGES.ERR007 }),
+      passwordConfirmation: getPasswordRules({ message: MESSAGES.ERR007 })
     })
     .refine(({ password, passwordConfirmation }) => password === passwordConfirmation, {
       message: MESSAGES.ERR006,
