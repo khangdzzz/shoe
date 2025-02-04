@@ -112,7 +112,7 @@ const formSchema = toTypedSchema(
     picGivenNameKana: validateRequiredAndLimit(FIELDS.picGivenNameKana, 100, true),
     phoneNumber: validateRequiredAndLimit(FIELDS.phoneNumber, 20),
     email: validateRequiredAndLimit(FIELDS.email, 250),
-    password: getPasswordRules().optional(),
+    password: getPasswordRules().optional().or(z.literal('')),
     kaigoSoftware: z
       .string(formatMessage(MESSAGES.ERR002, FIELDS.kaigoSoftware))
       .min(1, messageRequired(FIELDS.kaigoSoftware)),
@@ -178,6 +178,8 @@ watch(
 
     Object.keys(formValues).forEach((field) => {
       if ((formValues as any)[field] !== initialFormValues.value[field] && field !== 'confirmPassword') {
+        if (field === 'password' && (formValues as any)[field] === '') return;
+
         const japaneseFields = FIELDS[field as keyof typeof FIELDS];
         changeFields.value.push(japaneseFields);
       }
