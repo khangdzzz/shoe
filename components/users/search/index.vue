@@ -1,18 +1,47 @@
 <script lang="ts" setup>
-import { LoaderCircle } from 'lucide-vue-next';
+import { LoaderCircle, X } from 'lucide-vue-next';
+import type { Jobs } from '~/models/common';
 
 const common = useCommon();
 const companyStore = useCompanyStore();
 const userListPage = userListPageStore();
+const systemStore = useSystemStore();
 
 const officeSelected = ref('');
 const targetYearMonth = ref('');
 const isLoading = ref(false);
+const jobSearchInterval = ref<ReturnType<typeof setInterval> | null>(null);
 
 const emit = defineEmits<{
   (e: 'update:officeId', officeId: number | undefined): void;
   (e: 'update:targetYearMonth', targetYearMonth: string): void;
 }>();
+
+const searchLastJob = async () => {
+  await systemStore.searchLastJob();
+  if (!jobSearchInterval.value) {
+    jobSearchInterval.value = setInterval(async () => {
+      await systemStore.searchLastJob();
+    }, 30000);
+  }
+};
+
+const stopSearchLastJob = () => {
+  if (jobSearchInterval.value) {
+    clearInterval(jobSearchInterval.value);
+    jobSearchInterval.value = null;
+  }
+};
+
+onMounted(() => {
+  searchLastJob();
+});
+
+onUnmounted(() => {
+  stopSearchLastJob();
+});
+
+const job = computed(() => systemStore.job);
 
 const offices = computed(() => {
   const storedOfficeName = common.getLocalStorage(LOCAL_STORAGE_KEYS.officeName);
@@ -48,6 +77,7 @@ const crawlCompanyUserStatus = async () => {
   isLoading.value = true;
   try {
     const res = await companyStore.crawlCompanyUserStatus();
+    await systemStore.searchLastJob();
     if (res?.data) {
       userListPage.isOpenNotifyCrawl = true;
       setTimeout(() => {
@@ -59,6 +89,12 @@ const crawlCompanyUserStatus = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+
+const getTimeCrawl = (job: Jobs) => {
+  const time = job.status === 1 ? job.createdAt : job.updatedAt;
+
+  return time ? formatDate(time, 'YYYY/MM/DD HH:mm') : '';
 };
 </script>
 
@@ -83,12 +119,41 @@ const crawlCompanyUserStatus = async () => {
       />
     </div>
 
-    <Button @click="crawlCompanyUserStatus">
-      <LoaderCircle
-        v-if="isLoading"
-        class="w-4 h-4 mr-2 animate-spin"
-      />更新
-    </Button>
+    <div class="flex relative gap-5 pr-[20px]">
+      <Button
+        @click="crawlCompanyUserStatus"
+        :disabled="job && job.status === 1"
+        class="w-[80px] flex items-center justify-center"
+      >
+        <LoaderCircle
+          v-if="isLoading"
+          class="w-4 h-4 mr-2 animate-spin flex-shrink-0"
+        />更新
+      </Button>
+      <div
+        class="absolute top-[5px] right-[-7px]"
+        v-if="job?.status == 2"
+      >
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <X class="w-[22px] h-[22px] border rounded-full border-red-500 text-red-500 p-[2px] cursor-pointer" />
+            </TooltipTrigger>
+            <TooltipContent class="mb-2 mr-2">
+              <p class="text-[12px]">
+                {{ job?.errorMessage }}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+      <div
+        class="absolute top-[36px] left-[-30px] text-[10px] w-[200px]"
+        v-if="job && job.createdAt"
+      >
+        最終更新：{{ getTimeCrawl(job) }}
+      </div>
+    </div>
   </div>
 </template>
 

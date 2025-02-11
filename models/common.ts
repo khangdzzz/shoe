@@ -12,3 +12,12 @@ export interface Header {
   isSort: boolean;
   key: string;
 }
+
+export interface Jobs {
+  companyId: number;
+  createdAt: string;
+  errorMessage: string;
+  jobId: string;
+  status: number; // 3: success, 2: failed, 1: processing
+  updatedAt: string;
+}
