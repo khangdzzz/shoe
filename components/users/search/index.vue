@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { LoaderCircle, X } from 'lucide-vue-next';
+import { LoaderCircle, ShieldAlert } from 'lucide-vue-next';
 import type { Jobs } from '~/models/common';
 
 const common = useCommon();
@@ -137,7 +137,7 @@ const getTimeCrawl = (job: Jobs) => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <X class="w-[22px] h-[22px] border rounded-full border-red-500 text-red-500 p-[2px] cursor-pointer" />
+              <ShieldAlert class="w-[20px] h-[20px] text-red-500 cursor-pointer hover:text-red-600" />
             </TooltipTrigger>
             <TooltipContent class="mb-2 mr-2">
               <p class="text-[12px]">
