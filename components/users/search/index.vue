@@ -90,12 +90,6 @@ const crawlCompanyUserStatus = async () => {
     isLoading.value = false;
   }
 };
-
-const getTimeCrawl = (job: Jobs) => {
-  const time = job.status === 1 ? job.createdAt : job.updatedAt;
-
-  return time ? formatDate(time, 'YYYY/MM/DD HH:mm') : '';
-};
 </script>
 
 <template>
@@ -149,9 +143,9 @@ const getTimeCrawl = (job: Jobs) => {
       </div>
       <div
         class="absolute top-[36px] left-[-30px] text-[10px] w-[200px]"
-        v-if="job && job.createdAt"
+        v-if="job"
       >
-        最終更新：{{ getTimeCrawl(job) }}
+        最終更新：{{ formatDate(job.updatedAt, 'YYYY/MM/DD HH:mm') }}
       </div>
     </div>
   </div>
