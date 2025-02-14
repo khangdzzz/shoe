@@ -156,6 +156,5 @@ export const HTML_MESSAGE_CRAWL = `
 `;
 
 export const HTML_MESSAGE_CREATE_REPORT = `
-  <span>利用者の報告書／計画書実行のリクエストを受領しました。</span>
-  <span>システムからの通知メールにて状況をご確認ください</span>
+  <span>実行が完了しましたら、画面が更新されます。</span>
 `;

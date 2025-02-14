@@ -13,11 +13,15 @@ export interface Header {
   key: string;
 }
 
-export interface Jobs {
-  companyId: number;
-  createdAt: string;
+export interface Job {
   errorMessage: string;
   jobId: string;
   status: number; // 3: success, 2: failed, 1: processing
   updatedAt: string;
+}
+
+export interface LastJobResponse {
+  companyId: number;
+  requestReport: Job;
+  requestUpdate: Job;
 }

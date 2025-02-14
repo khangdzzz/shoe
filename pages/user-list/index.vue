@@ -4,6 +4,8 @@ definePageMeta({
 });
 
 const companyStore = useCompanyStore();
+const systemStore = useSystemStore();
+const jobService = useJob();
 
 const officeId = ref<number | undefined>(undefined);
 const targetYearMonth = ref<string>('');
@@ -42,7 +44,20 @@ const fetchCompanyUseStatus = (isClearKana?: boolean) => {
 };
 
 onMounted(() => {
+  systemStore.searchLastJob();
   fetchCompanyUseStatus(true);
+});
+
+onUnmounted(() => {
+  jobService.stopSearchLastJob();
+});
+
+const job = computed(() => systemStore.job);
+
+watch(job, (newValue, oldValue) => {
+  if (oldValue?.requestReport.status === 1 && newValue?.requestReport.status !== 1) {
+    fetchCompanyUseStatus(false);
+  }
 });
 </script>
 

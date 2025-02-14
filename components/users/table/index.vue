@@ -385,10 +385,13 @@ const handleExportCompanyUser = async () => {
     return;
   }
 
-  await companyStore.getCompanyUseStatus({
-    officeId: officeId?.value,
-    targetYearMonth: targetYearMonth?.value
-  });
+  await Promise.all([
+    await companyStore.getCompanyUseStatus({
+      officeId: officeId?.value,
+      targetYearMonth: targetYearMonth?.value
+    }),
+    await system.searchLastJob()
+  ]);
 
   companyStore.isLoadCompanyUsers = false;
 

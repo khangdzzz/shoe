@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { LoaderCircle, ShieldAlert } from 'lucide-vue-next';
-import type { Jobs } from '~/models/common';
 
 const common = useCommon();
 const companyStore = useCompanyStore();
@@ -10,36 +9,11 @@ const systemStore = useSystemStore();
 const officeSelected = ref('');
 const targetYearMonth = ref('');
 const isLoading = ref(false);
-const jobSearchInterval = ref<ReturnType<typeof setInterval> | null>(null);
 
 const emit = defineEmits<{
   (e: 'update:officeId', officeId: number | undefined): void;
   (e: 'update:targetYearMonth', targetYearMonth: string): void;
 }>();
-
-const searchLastJob = async () => {
-  await systemStore.searchLastJob();
-  if (!jobSearchInterval.value) {
-    jobSearchInterval.value = setInterval(async () => {
-      await systemStore.searchLastJob();
-    }, 30000);
-  }
-};
-
-const stopSearchLastJob = () => {
-  if (jobSearchInterval.value) {
-    clearInterval(jobSearchInterval.value);
-    jobSearchInterval.value = null;
-  }
-};
-
-onMounted(() => {
-  searchLastJob();
-});
-
-onUnmounted(() => {
-  stopSearchLastJob();
-});
 
 const job = computed(() => systemStore.job);
 
@@ -92,7 +66,7 @@ const crawlCompanyUserStatus = async () => {
 };
 
 const isDisableBtnCrawl = computed(() => {
-  if (job.value && job.value.status === 1) return true;
+  if (job.value && job.value.requestUpdate.status == 1) return true;
 
   const currentDate = new Date();
   const [targetYear, targetMonth] = targetYearMonth.value.split('/').map(Number);
@@ -137,7 +111,7 @@ const isDisableBtnCrawl = computed(() => {
       </Button>
       <div
         class="absolute top-[5px] right-[-7px]"
-        v-if="job?.status == 2"
+        v-if="job?.requestUpdate.status == 2"
       >
         <TooltipProvider>
           <Tooltip>
@@ -146,7 +120,7 @@ const isDisableBtnCrawl = computed(() => {
             </TooltipTrigger>
             <TooltipContent class="mb-2 mr-2">
               <p class="text-[12px]">
-                {{ job?.errorMessage }}
+                {{ job?.requestUpdate.errorMessage }}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -156,7 +130,7 @@ const isDisableBtnCrawl = computed(() => {
         class="absolute top-[36px] left-[-30px] text-[10px] w-[200px]"
         v-if="job"
       >
-        最終更新：{{ formatDate(job.updatedAt, 'YYYY/MM/DD HH:mm') }}
+        最終更新：{{ formatDate(job.requestUpdate.updatedAt, 'YYYY/MM/DD HH:mm') }}
       </div>
     </div>
   </div>
