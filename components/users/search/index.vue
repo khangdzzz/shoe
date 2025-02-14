@@ -90,6 +90,17 @@ const crawlCompanyUserStatus = async () => {
     isLoading.value = false;
   }
 };
+
+const isDisableBtnCrawl = computed(() => {
+  if (job.value && job.value.status === 1) return true;
+
+  const currentDate = new Date();
+  const [targetYear, targetMonth] = targetYearMonth.value.split('/').map(Number);
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1;
+
+  return currentYear === targetYear && currentMonth === targetMonth ? false : true;
+});
 </script>
 
 <template>
@@ -116,7 +127,7 @@ const crawlCompanyUserStatus = async () => {
     <div class="flex relative gap-5 pr-[20px]">
       <Button
         @click="crawlCompanyUserStatus"
-        :disabled="job && job.status === 1"
+        :disabled="isDisableBtnCrawl"
         class="w-[80px] flex items-center justify-center"
       >
         <LoaderCircle
