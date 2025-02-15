@@ -132,6 +132,12 @@ const isDisableBtnCrawl = computed(() => {
       >
         最終更新：{{ formatDate(job.requestUpdate.updatedAt, 'YYYY/MM/DD HH:mm') }}
       </div>
+      <div
+        class="absolute top-[36px] left-[-30px] text-[10px] w-[200px]"
+        v-else
+      >
+        最終更新：N/A
+      </div>
     </div>
   </div>
 </template>
