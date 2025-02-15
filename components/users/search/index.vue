@@ -16,13 +16,12 @@ const emit = defineEmits<{
 }>();
 
 const job = computed(() => systemStore.job);
-const isShowConfirmReloadPage = ref(false);
 
 watch(
   () => job.value,
   (newValue, oldValue) => {
     if (oldValue?.requestUpdate.status == 1 && newValue?.requestUpdate.status == 3) {
-      isShowConfirmReloadPage.value = true;
+      window.location.reload();
     }
   },
   {
@@ -89,23 +88,12 @@ const isDisableBtnCrawl = computed(() => {
 
   return currentYear === targetYear && currentMonth === targetMonth ? false : true;
 });
-
-const handleReload = () => {
-  window.location.reload();
-};
 </script>
 
 <template>
   <div
     class="search flex justify-between items-center min-h-[80px] !px-[25px] max-lg:!px-[10px] max-lg:flex-col max-lg:gap-5 max-lg:justify-start"
   >
-    <UsersModalConfirmReloadPage
-      :is-open-notify="isShowConfirmReloadPage"
-      :html-message="'新しいデータが利用可能です。<br/>ページを更新しますか？'"
-      @close="isShowConfirmReloadPage = false"
-      @reload="handleReload"
-    />
-
     <div class="office flex gap-5 items-center font-medium w-full">
       <span class="label">事業所</span>
       <ShareAutoComplete
