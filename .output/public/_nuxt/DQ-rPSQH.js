@@ -1,0 +1,1 @@
+import{b as o,E as r}from"./D2Iw1Twp.js";import{m as t,o as m,v as n,p as e,a2 as c}from"./CVo18i-A.js";const f=t({__name:"FormMessage",setup(p){const{name:s,formMessageId:a}=o();return(i,u)=>(m(),n(e(r),{id:e(a),as:"p",name:c(e(s)),class:"text-sm font-medium text-destructive"},null,8,["id","name"]))}});export{f as _};
