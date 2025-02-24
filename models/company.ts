@@ -59,6 +59,9 @@ export interface Company extends Address, Person, FrontPerson, KaipokeDetails, R
   email?: string;
   isHasPaymentMethod?: boolean;
   paymentMethodInfo?: PaymentMethodInfo;
+  isValidAccountTransfer: boolean;
+  accountTransferValidatedAt?: string | null;
+  paymentMethodUpdatedAt?: string | null;
 }
 
 export interface CompanyUpdateBody extends Address, Person, FrontPerson, KaipokeDetails, Credentials {
@@ -66,6 +69,7 @@ export interface CompanyUpdateBody extends Address, Person, FrontPerson, Kaipoke
   companyNameKana: string;
   paymentMethod: string;
   newPassword?: string;
+  paymentMethodUpdatedAt: string;
 }
 
 export interface CompanyUserStatus {

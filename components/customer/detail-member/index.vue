@@ -46,6 +46,8 @@ const isDisableButton = computed(() => changeFields.value.length == 0);
 
 const isRedirectPage = ref(false);
 
+const timeVerifyPaymentMethod = ref('');
+
 onMounted(async () => {
   isLoadingInit.value = true;
 
@@ -87,10 +89,13 @@ const initDataUser = () => {
     setFieldValue('paymentMethod', user.paymentMethod);
     setFieldValue('kaigoSoftware', user.kaigoSoftware.toString());
     setFieldValue('email', user.email);
+    setFieldValue('isValidAccountTransfer', user.isValidAccountTransfer);
 
     isRemainOldPlan.value = user.keepLastPlanContentFlg == 1 ? true : false;
 
     initialFormValues.value = { ...formValues };
+
+    timeVerifyPaymentMethod.value = user.accountTransferValidatedAt ?? '';
   }
 };
 
@@ -121,7 +126,8 @@ const formSchema = toTypedSchema(
     kaipokeUserPassword: z
       .string(messageRequired(FIELDS.kaipokeUserPassword))
       .min(1, messageRequired(FIELDS.kaipokeUserPassword)),
-    paymentMethod: z.string().nullable().optional()
+    paymentMethod: z.string().nullable().optional(),
+    isValidAccountTransfer: z.boolean().default(false).optional()
   })
 );
 
@@ -177,7 +183,11 @@ watch(
     changeFields.value = [];
 
     Object.keys(formValues).forEach((field) => {
-      if ((formValues as any)[field] !== initialFormValues.value[field] && field !== 'confirmPassword') {
+      if (
+        (formValues as any)[field] !== initialFormValues.value[field] &&
+        field !== 'confirmPassword' &&
+        field !== 'isValidAccountTransfer'
+      ) {
         if (field === 'password' && (formValues as any)[field] === '') return;
 
         const japaneseFields = FIELDS[field as keyof typeof FIELDS];
@@ -288,6 +298,20 @@ const redirectPageAfterAction = (message: string) => {
     message: message,
     type: TYPE_MESSAGE.success
   });
+};
+
+const verifyValidPayment = async (value: boolean) => {
+  setFieldValue('isValidAccountTransfer', value);
+
+  timeVerifyPaymentMethod.value = formatDate(new Date().toString(), 'YYYY-MM-DD HH:mm:ss');
+
+  const body = {
+    ...initialFormValues.value,
+    accountTransferValidatedAt: timeVerifyPaymentMethod.value,
+    isValidAccountTransfer: value
+  };
+
+  await companyAdminStore.updateCompanyById(Number(idCompany.value), body);
 };
 </script>
 
@@ -675,6 +699,23 @@ const redirectPageAfterAction = (message: string) => {
                       </FormItem>
                     </RadioGroup>
                   </FormControl>
+                </div>
+              </FormItem>
+            </FormField>
+
+            <FormField
+              v-slot="{ value, handleChange }"
+              type="checkbox"
+              name="isValidAccountTransfer"
+            >
+              <FormItem class="flex gap-5">
+                <span class="w-[160px] flex items-center">口座有効</span>
+                <div class="relative w-[82%] !m-[0px] flex gap-2 items-center">
+                  <Checkbox
+                    :checked="value"
+                    @update:checked="(value) => verifyValidPayment(value)"
+                  />
+                  <span>{{ timeVerifyPaymentMethod || '' }}</span>
                 </div>
               </FormItem>
             </FormField>

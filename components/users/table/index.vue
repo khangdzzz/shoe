@@ -495,8 +495,7 @@ const isLoadPermission = computed(() => system.isLoadPermission);
 const isDisableAllButton = computed(() => {
   const _forceUpdate = isLoadPermission.value;
 
-  const isCurrentYearMonth = checkTargetYearMonthMatchCurrentYearMonth(targetYearMonth?.value);
-  return isCurrentYearMonth && hasRegisterPaymentMethod() ? false : true;
+  return hasRegisterPaymentMethod() ? false : true;
 });
 
 const resetFilterTable = (isClearSearchName?: boolean) => {

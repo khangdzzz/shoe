@@ -53,7 +53,8 @@ const formSchema = toTypedSchema(
     kaipokeUserPassword: z
       .string(messageRequired(FIELDS.kaipokeUserPassword))
       .min(1, messageRequired(FIELDS.kaipokeUserPassword)),
-    paymentMethod: z.string().default(PAYMENT_METHOD_TYPES.bankWithdrawal)
+    paymentMethod: z.string().default(PAYMENT_METHOD_TYPES.accountTransfer),
+    isValidAccountTransfer: z.boolean().default(false).optional()
   })
 );
 
@@ -109,9 +110,12 @@ const onSubmit = handleSubmit(
 
     isLoading.value = true;
 
+    const timeUpdate = formatDate(new Date().toString(), 'YYYY-MM-DD HH:mm:ss');
+
     const body = {
       ...values,
-      keepLastPlanContentFlg: isRemainOldPlan.value ? 1 : 0
+      keepLastPlanContentFlg: isRemainOldPlan.value ? 1 : 0,
+      ...(values.isValidAccountTransfer && { accountTransferValidatedAt: timeUpdate })
     };
 
     await companyAdminStore.createNewCompany(body);
@@ -519,6 +523,22 @@ const redirectPageAfterAction = (message: string) => {
                       </FormItem>
                     </RadioGroup>
                   </FormControl>
+                </div>
+              </FormItem>
+            </FormField>
+
+            <FormField
+              v-slot="{ value, handleChange }"
+              type="checkbox"
+              name="isValidAccountTransfer"
+            >
+              <FormItem class="flex gap-5">
+                <span class="w-[160px] flex items-center">口座有効</span>
+                <div class="relative w-[82%] !m-[0px] flex gap-2 items-center">
+                  <Checkbox
+                    :checked="value"
+                    @update:checked="handleChange"
+                  />
                 </div>
               </FormItem>
             </FormField>

@@ -41,6 +41,7 @@ export const formatDate = (dateStr: string | null, regex: string): string => {
   const day = String(date.getDate()).padStart(2, '0');
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
 
   switch (regex) {
     case 'YYYY-MM-DD':
@@ -49,6 +50,8 @@ export const formatDate = (dateStr: string | null, regex: string): string => {
       return `${year}/${month}/${day}`;
     case 'YYYY-MM-DD HH:mm':
       return `${year}-${month}-${day} ${hours}:${minutes}`;
+    case 'YYYY-MM-DD HH:mm:ss':
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     case 'YYYY/MM/DD HH:mm':
       return `${year}/${month}/${day} ${hours}:${minutes}`;
     default:

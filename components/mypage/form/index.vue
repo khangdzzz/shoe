@@ -7,7 +7,6 @@ import type { PostalCode } from '~/models/masterData';
 import { LoaderCircle } from 'lucide-vue-next';
 import type { CompanyUpdateBody } from '~/models/company';
 import {
-  getConfirmPasswordRules,
   getPasswordRules,
   getTypeRegisterPayment,
   isAdminUpdatePaymentMethod,
@@ -18,6 +17,7 @@ interface InitialFormValues {
   [key: string]: any;
 }
 
+const router = useRouter();
 const dataInit = useFetchDataInit();
 const system = useSystemStore();
 const authStore = useAuthStore();
@@ -35,19 +35,18 @@ const isMatchPassword = ref(true);
 const confirmPassword = ref('');
 const initialFormValues = ref<InitialFormValues>({});
 const changeFields = ref<string[]>([]);
-
 const kaipokeUserPasswordVisible = ref(false);
 const passwordConfirmVisible = ref(false);
 const passwordVisible = ref(false);
-
 const isRedirectPage = ref(false);
-
 const isAdminUpdatePayment = ref(false);
 const typeRegisterPayment = ref('');
+const timeChangePaymentMethod = ref('');
+
 const currentUser = computed(() => {
   isAdminUpdatePayment.value = isAdminUpdatePaymentMethod();
-  typeRegisterPayment.value = getTypeRegisterPayment();
-
+  typeRegisterPayment.value = getTypeRegisterPayment() ?? PAYMENT_METHOD_TYPES.creditCard;
+  timeChangePaymentMethod.value = authStore.currentUser?.company.paymentMethodUpdatedAt ?? '';
   return authStore.currentUser;
 });
 
@@ -105,7 +104,7 @@ const {
 
 const initDataUser = () => {
   if (currentUser.value) {
-    const { company, paymentMethodInfo } = currentUser.value;
+    const { company } = currentUser.value;
 
     setFieldValue('companyName', company.companyName);
     setFieldValue('companyNameKana', company.companyNameKana);
@@ -126,17 +125,12 @@ const initDataUser = () => {
     setFieldValue('kaipokeUserPassword', company.kaipokeUserPassword);
     setFieldValue('kaipokeCompanyId', company.kaipokeCompanyId);
     setFieldValue('kaigoSoftware', company.kaigoSoftware.toString());
-    setFieldValue('paymentMethod', company.paymentMethod ?? '');
+    setFieldValue('paymentMethod', company.paymentMethod ?? PAYMENT_METHOD_TYPES.creditCard);
     setFieldValue('email', company.email);
 
-    const paymentMethod = company.paymentMethod;
-    const type = paymentMethod
-      ? paymentMethod === PAYMENT_METHOD_TYPES.creditCard
-        ? paymentMethodInfo?.ccDisplayName || PAYMENT_METHOD_OPTIONS.credit_card
-        : PAYMENT_METHOD_OPTIONS.bank_withdrawal
-      : PAYMENT_METHOD_OPTIONS.credit_card;
-
-    setFieldValue('paymentMethod', type);
+    if (company.isValidAccountTransfer) {
+      setFieldValue('paymentMethod', PAYMENT_METHOD_TYPES.accountTransfer);
+    }
 
     initialFormValues.value = { ...formValues };
   }
@@ -200,6 +194,7 @@ watch([confirmPassword, password], () => {
 
 const isDialogOpenUpdateInfo = ref(false);
 const isDialogOpenDeleteInfo = ref(false);
+const isDialogOpenRegisterInfo = ref(false);
 
 const closeDialog = () => {
   isDialogOpenUpdateInfo.value = false;
@@ -211,11 +206,7 @@ watch(
     changeFields.value = [];
 
     Object.keys(formValues).forEach((field) => {
-      if (
-        (formValues as any)[field] !== initialFormValues.value[field] &&
-        field !== 'confirmPassword' &&
-        (formValues as any)[field] != PAYMENT_METHOD_TYPES.creditCard
-      ) {
+      if ((formValues as any)[field] !== initialFormValues.value[field] && field !== 'confirmPassword') {
         if (field === 'password' && (formValues as any)[field] === '') return;
 
         const japaneseFields = FIELDS[field as keyof typeof FIELDS];
@@ -225,6 +216,31 @@ watch(
   },
   {
     deep: true
+  }
+);
+
+watch(
+  () => formValues.paymentMethod,
+  async (newValue) => {
+    if (newValue != typeRegisterPayment.value) {
+      typeRegisterPayment.value = newValue!;
+      const timeUpdate = formatDate(new Date().toString(), 'YYYY-MM-DD HH:mm:ss');
+      timeChangePaymentMethod.value = timeUpdate;
+
+      const body = {
+        ...initialFormValues.value,
+        paymentMethod: newValue,
+        paymentMethodUpdatedAt: timeUpdate
+      };
+
+      await companyStore.updateCompanyInformation(body as CompanyUpdateBody);
+
+      const currentRoute = router.currentRoute.value;
+      router.replace({
+        path: currentRoute.path,
+        query: { ...currentRoute.query, refresh: Date.now() }
+      });
+    }
   }
 );
 
@@ -253,7 +269,7 @@ const onSubmit = handleSubmit(
   }
 );
 
-const updateUserInformation = async () => {
+const onUpdateUserInformation = async () => {
   system.clearNotify();
 
   isLoading.value = true;
@@ -262,8 +278,6 @@ const updateUserInformation = async () => {
 
   delete updatedFormValues.confirmPassword;
   delete updatedFormValues.password;
-
-  updatedFormValues.paymentMethod = getTypeRegisterPayment() ?? null;
 
   const body = {
     ...updatedFormValues,
@@ -325,7 +339,14 @@ const resetForm = () => {
 };
 
 const isShowBtnRegisterCreditCard = () => {
-  return isAdminUpdatePayment && typeRegisterPayment.value == PAYMENT_METHOD_TYPES.bankWithdrawal ? false : true;
+  return typeRegisterPayment.value == PAYMENT_METHOD_TYPES.creditCard ? true : false;
+};
+
+const getPaymentValue = (paymentMethod: { value: string; type: string }) => {
+  const paymentInfo = currentUser.value?.paymentMethodInfo;
+  if (paymentMethod.type === PAYMENT_METHOD_TYPES.creditCard && paymentInfo) return paymentInfo.ccDisplayName;
+
+  return paymentMethod.value;
 };
 </script>
 
@@ -347,7 +368,7 @@ const isShowBtnRegisterCreditCard = () => {
       :isOpen="isDialogOpenUpdateInfo"
       :fields="changeFields"
       @close="closeDialog"
-      @update="updateUserInformation"
+      @update="onUpdateUserInformation"
     />
 
     <MypageModalConfirmDeleteUser
@@ -355,6 +376,11 @@ const isShowBtnRegisterCreditCard = () => {
       @close="() => (isDialogOpenDeleteInfo = false)"
       @update="deleteUserInformation"
     />
+
+    <MypageModalInforRegisterBank
+      :is-open="isDialogOpenRegisterInfo"
+      @close="() => (isDialogOpenRegisterInfo = false)"
+    ></MypageModalInforRegisterBank>
 
     <ShareLoading v-if="isLoading" />
     <form
@@ -751,29 +777,56 @@ const isShowBtnRegisterCreditCard = () => {
               name="paymentMethod"
             >
               <FormItem class="flex gap-5">
-                <span class="w-[160px] flex items-center flex-shrink-0">決済方法</span>
+                <span class="w-[160px] flex items-center flex-shrink-0">決済方法 </span>
                 <div class="relative w-[82%] !m-[0px]">
                   <FormControl>
-                    <Input
-                      type="text"
-                      disabled
+                    <Select
                       v-bind="componentField"
-                      :class="{
-                        'border-red-500': errors.length
-                      }"
-                    />
+                      :disabled="currentUser?.company.isValidAccountTransfer"
+                    >
+                      <SelectTrigger
+                        :class="{
+                          'border-red-500': errors.length && !componentField.modelValue
+                        }"
+                      >
+                        <SelectValue placeholder="Select an option" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem
+                          :value="`${paymentMethod.type}`"
+                          v-for="paymentMethod of PAYMENT_METHOD_OPTIONS_LIST"
+                        >
+                          {{ getPaymentValue(paymentMethod) }}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                   </FormControl>
+                  <div
+                    class="absolute"
+                    v-if="!!timeChangePaymentMethod"
+                  >
+                    <span class="text-[10px]">更新時間: {{ timeChangePaymentMethod || 'N/A' }}</span>
+                  </div>
                 </div>
               </FormItem>
             </FormField>
 
-            <div
-              class="flex gap-5"
-              v-if="isShowBtnRegisterCreditCard()"
-            >
+            <div class="flex gap-5 mt-3">
               <div class="w-[160px] flex items-center flex-shrink-0"></div>
               <div class="relative w-[82%] !m-[0px]">
-                <PaymentFormLinkType />
+                <PaymentFormLinkType v-if="isShowBtnRegisterCreditCard()" />
+                <div
+                  v-else
+                  class="flex"
+                >
+                  <Button
+                    type="button"
+                    class="flex self-center min-w-[120px]"
+                    @click="isDialogOpenRegisterInfo = true"
+                  >
+                    申し込み用紙ダウンロード
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

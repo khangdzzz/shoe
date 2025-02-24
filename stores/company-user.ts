@@ -1,3 +1,4 @@
+import type { ResponseApi } from '~/models/common';
 import type { BulkExportReport, CompanyUpdateBody, CompanyUserStatus, RegisterNewUser } from '~/models/company';
 import type { Office } from '~/models/office';
 
@@ -66,6 +67,12 @@ export const useCompanyStore = defineStore('company', () => {
     return await apis.archaic?.post('company-user-status/crawl', {});
   };
 
+  const downloadFileRegisterBank = async (type: string) => {
+    const res = await apis.archaic?.get(`download-application-form/${type}`);
+
+    return res?.data;
+  };
+
   return {
     offices,
     userNameKana,
@@ -73,6 +80,7 @@ export const useCompanyStore = defineStore('company', () => {
     isLoadCompanyUsers,
     charactersSelected,
     isHaveDataCompanyUsers,
+    downloadFileRegisterBank,
     getOffices,
     registerNewUser,
     bulkExportReport,

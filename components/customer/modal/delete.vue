@@ -21,7 +21,9 @@ const emit = defineEmits<{ (e: 'close'): void; (e: 'update'): void }>();
     <AlertDialogContent>
       <AlertDialogHeader class="flex flex-col gap-6 items-center mb-4">
         <AlertDialogTitle class="text-sm">削除の確認</AlertDialogTitle>
-        <AlertDialogTitle class="text-sm font-normal">顧客を削除します。よろしいですか？</AlertDialogTitle>
+        <AlertDialogTitle class="text-sm font-normal"
+          >未決済の実行ありますが、削除してもよろしいでしょうか？</AlertDialogTitle
+        >
       </AlertDialogHeader>
 
       <AlertDialogFooter class="flex !flex-col gap-5">

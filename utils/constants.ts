@@ -129,23 +129,23 @@ export const CHARACTERS = [
 ];
 
 export const PAYMENT_METHOD_TYPES = {
-  bankWithdrawal: 'bank_withdrawal',
+  accountTransfer: 'account_transfer',
   creditCard: 'credit_card'
 };
 
 export const PAYMENT_METHOD_OPTIONS = {
-  bank_withdrawal: '銀行引き落とし',
-  credit_card: 'クレジットカード'
+  accountTransfer: '預金口座振替',
+  creditCard: 'クレジットカード'
 };
 
 export const PAYMENT_METHOD_OPTIONS_LIST = [
   {
-    type: PAYMENT_METHOD_TYPES.bankWithdrawal,
-    value: PAYMENT_METHOD_OPTIONS.bank_withdrawal
+    type: PAYMENT_METHOD_TYPES.accountTransfer,
+    value: PAYMENT_METHOD_OPTIONS.accountTransfer
   },
   {
     type: PAYMENT_METHOD_TYPES.creditCard,
-    value: PAYMENT_METHOD_OPTIONS.credit_card
+    value: PAYMENT_METHOD_OPTIONS.creditCard
   }
 ];
 
@@ -159,3 +159,26 @@ export const HTML_MESSAGE_CREATE_REPORT = `
   <span>利用者の報告書／計画書実行のリクエストを受領しました。</span>
   <span>実行が完了しましたら、画面が更新されます。</span>
 `;
+
+export const FILES_NAME_DOWNLOAD = {
+  deposit_account_transfer_request_form_excel: {
+    type: 'deposit_account_transfer_request_form_excel',
+    nameFile: '「預金口座振替依頼書」Excel形式.xlsx'
+  },
+  automatic_payment_application_form: {
+    type: 'automatic_payment_application_form',
+    nameFile: '「預金口座振替依頼書／自動払込利用申込書」のお取扱い説明書.pdf'
+  },
+  deposit_account_transfer_request_form_pdf: {
+    type: 'deposit_account_transfer_request_form_pdf',
+    nameFile: '「預金口座振替依頼書」PDF形式.pdf'
+  },
+  deposit_account_transfer_request_form_electronic: {
+    type: 'deposit_account_transfer_request_form_electronic',
+    nameFile: '「預金口座振替依頼書」の電子ファイルによるご提供について.pdf.xlsx'
+  },
+  important_points: {
+    type: 'important_points',
+    nameFile: 'ゆうちょ銀行をご利用の場合　特にご留意いただきたい事項.pdf'
+  }
+};
