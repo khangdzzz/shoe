@@ -175,7 +175,7 @@ export const FILES_NAME_DOWNLOAD = {
   },
   deposit_account_transfer_request_form_electronic: {
     type: 'deposit_account_transfer_request_form_electronic',
-    nameFile: '「預金口座振替依頼書」の電子ファイルによるご提供について.pdf.xlsx'
+    nameFile: '「預金口座振替依頼書」の電子ファイルによるご提供について.pdf'
   },
   important_points: {
     type: 'important_points',
