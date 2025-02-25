@@ -145,11 +145,13 @@ const onHandleDelete = async () => {
     return;
   }
 
-  const message = '会社を削除しました';
-
-  triggerToast('default', message);
-
   emit('getCompanies');
+
+  setTimeout(() => {
+    const message = '選択した顧客を削除しました。';
+
+    triggerToast('default', message);
+  }, 1000);
 };
 
 const editCustomer = () => {
