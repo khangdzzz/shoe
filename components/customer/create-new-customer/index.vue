@@ -53,7 +53,7 @@ const formSchema = toTypedSchema(
     kaipokeUserPassword: z
       .string(messageRequired(FIELDS.kaipokeUserPassword))
       .min(1, messageRequired(FIELDS.kaipokeUserPassword)),
-    paymentMethod: z.string().default(PAYMENT_METHOD_TYPES.accountTransfer),
+    paymentMethod: z.string().default(PAYMENT_METHOD_TYPES.creditCard),
     isValidAccountTransfer: z.boolean().default(false).optional()
   })
 );

@@ -778,13 +778,14 @@ const getPaymentValue = (paymentMethod: { value: string; type: string }) => {
             >
               <FormItem class="flex gap-5">
                 <span class="w-[160px] flex items-center flex-shrink-0">決済方法 </span>
-                <div class="relative w-[82%] !m-[0px]">
+                <div class="relative !m-[0px] flex gap-10">
                   <FormControl>
                     <Select
                       v-bind="componentField"
                       :disabled="currentUser?.company.isValidAccountTransfer"
                     >
                       <SelectTrigger
+                        class="!w-[200px]"
                         :class="{
                           'border-red-500': errors.length && !componentField.modelValue
                         }"
@@ -801,8 +802,23 @@ const getPaymentValue = (paymentMethod: { value: string; type: string }) => {
                       </SelectContent>
                     </Select>
                   </FormControl>
+                  <div class="!m-[0px]">
+                    <PaymentFormLinkType v-if="isShowBtnRegisterCreditCard()" />
+                    <div
+                      v-else
+                      class="flex"
+                    >
+                      <Button
+                        type="button"
+                        class="flex self-center min-w-[120px]"
+                        @click="isDialogOpenRegisterInfo = true"
+                      >
+                        申し込み用紙ダウンロード
+                      </Button>
+                    </div>
+                  </div>
                   <div
-                    class="absolute"
+                    class="absolute top-[30px]"
                     v-if="!!timeChangePaymentMethod"
                   >
                     <span class="text-[10px]">更新時間: {{ timeChangePaymentMethod || 'N/A' }}</span>
@@ -810,25 +826,6 @@ const getPaymentValue = (paymentMethod: { value: string; type: string }) => {
                 </div>
               </FormItem>
             </FormField>
-
-            <div class="flex gap-5 mt-3">
-              <div class="w-[160px] flex items-center flex-shrink-0"></div>
-              <div class="relative w-[82%] !m-[0px]">
-                <PaymentFormLinkType v-if="isShowBtnRegisterCreditCard()" />
-                <div
-                  v-else
-                  class="flex"
-                >
-                  <Button
-                    type="button"
-                    class="flex self-center min-w-[120px]"
-                    @click="isDialogOpenRegisterInfo = true"
-                  >
-                    申し込み用紙ダウンロード
-                  </Button>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

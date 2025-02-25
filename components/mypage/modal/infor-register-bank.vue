@@ -81,33 +81,33 @@ const triggerToast = (message: string, variant: 'default' | 'destructive' | null
       <div class="flex flex-col gap-4 ml-[20px] mt-[20px]">
         <div class="version">
           <span class="title font-bold">◆ 資料</span>
-          <div class="content flex flex-col m-[15px] gap-[2px]">
+          <div class="content flex flex-col m-[15px] gap-[3px]">
             <span
-              class="cursor-pointer hover:text-[#5d62b9]"
+              class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline"
               @click="downloadFile(FILES_NAME_DOWNLOAD.deposit_account_transfer_request_form_electronic)"
             >
               「預金口座振替依頼書」の電子ファイルによるご提供について
             </span>
             <span
-              class="cursor-pointer hover:text-[#5d62b9]"
+              class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline"
               @click="downloadFile(FILES_NAME_DOWNLOAD.automatic_payment_application_form)"
             >
               「預金口座振替依頼書･自動払込利用申込書」のお取扱い説明書
             </span>
             <span
-              class="cursor-pointer hover:text-[#5d62b9]"
+              class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline"
               @click="downloadFile(FILES_NAME_DOWNLOAD.important_points)"
             >
-              ゆうちょ銀行をご利用の場合　特にご留意いただきたい事項」
+              ゆうちょ銀行をご利用の場合　特にご留意いただきたい事項
             </span>
             <span
-              class="cursor-pointer hover:text-[#5d62b9]"
+              class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline"
               @click="downloadFile(FILES_NAME_DOWNLOAD.deposit_account_transfer_request_form_excel)"
             >
               「預金口座振替依頼書」Excel形式
             </span>
             <span
-              class="cursor-pointer hover:text-[#5d62b9]"
+              class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline"
               @click="downloadFile(FILES_NAME_DOWNLOAD.deposit_account_transfer_request_form_pdf)"
             >
               「預金口座振替依頼書」PDF形式

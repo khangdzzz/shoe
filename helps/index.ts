@@ -19,7 +19,7 @@ export const hasRegisterPaymentMethod = () => {
 
   if (isAdminUpdatePayment || currentUser?.isHasPaymentMethod) {
     if (
-      (typeRegisterPayment === PAYMENT_METHOD_TYPES.accountTransfer && currentUser.company?.isValidAccountTransfer) ||
+      typeRegisterPayment === PAYMENT_METHOD_TYPES.accountTransfer ||
       (typeRegisterPayment === PAYMENT_METHOD_TYPES.creditCard && paymentInfo)
     ) {
       return true;
