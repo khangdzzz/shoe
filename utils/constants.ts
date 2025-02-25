@@ -140,12 +140,12 @@ export const PAYMENT_METHOD_OPTIONS = {
 
 export const PAYMENT_METHOD_OPTIONS_LIST = [
   {
-    type: PAYMENT_METHOD_TYPES.accountTransfer,
-    value: PAYMENT_METHOD_OPTIONS.accountTransfer
-  },
-  {
     type: PAYMENT_METHOD_TYPES.creditCard,
     value: PAYMENT_METHOD_OPTIONS.creditCard
+  },
+  {
+    type: PAYMENT_METHOD_TYPES.accountTransfer,
+    value: PAYMENT_METHOD_OPTIONS.accountTransfer
   }
 ];
 
