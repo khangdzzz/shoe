@@ -548,13 +548,14 @@ const redirectPageAfterAction = (message: string) => {
               v-if="formValues.paymentMethod == PAYMENT_METHOD_TYPES.accountTransfer"
             >
               <FormItem class="flex gap-5">
-                <span class="w-[160px] flex items-center">口座有効</span>
+                <span class="w-[160px] flex items-center flex-shrink-0"></span>
                 <div class="relative w-[82%] !m-[0px] flex gap-2 items-center">
                   <Checkbox
                     :checked="value"
                     @update:checked="handleChange"
                   />
-                  <span>{{ timeCheckboxVerifyBank || '' }}</span>
+                  <span>口座有効</span>
+                  <span v-if="formValues.isValidAccountTransfer">{{ timeCheckboxVerifyBank || '' }}</span>
                 </div>
               </FormItem>
             </FormField>

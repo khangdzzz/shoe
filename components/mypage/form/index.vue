@@ -799,19 +799,18 @@ const getPaymentValue = (paymentMethod: { value: string; type: string }) => {
                       </SelectContent>
                     </Select>
                   </FormControl>
-                  <div class="!m-[0px]">
+                  <div class="!m-[0px] flex items-center">
                     <PaymentFormLinkType v-if="isShowBtnRegisterCreditCard()" />
                     <div
                       v-else
                       class="flex"
                     >
-                      <Button
-                        type="button"
-                        class="flex self-center w-[220px]"
+                      <span
+                        class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline w-[220px]"
                         @click="isDialogOpenRegisterInfo = true"
                       >
                         申し込み用紙ダウンロード
-                      </Button>
+                      </span>
                     </div>
                   </div>
                   <div
