@@ -778,14 +778,14 @@ const getPaymentValue = (paymentMethod: { value: string; type: string }) => {
             >
               <FormItem class="flex gap-5">
                 <span class="w-[160px] flex items-center flex-shrink-0">決済方法 </span>
-                <div class="relative !m-[0px] flex gap-10">
+                <div class="relative w-[100%] !m-[0px] flex gap-10">
                   <FormControl>
                     <Select
                       v-bind="componentField"
                       :disabled="currentUser?.company.isValidAccountTransfer"
                     >
                       <SelectTrigger
-                        class="!w-[200px]"
+                        class="!w-[70%]"
                         :class="{
                           'border-red-500': errors.length && !componentField.modelValue
                         }"
@@ -810,7 +810,7 @@ const getPaymentValue = (paymentMethod: { value: string; type: string }) => {
                     >
                       <Button
                         type="button"
-                        class="flex self-center min-w-[120px]"
+                        class="flex self-center w-[220px]"
                         @click="isDialogOpenRegisterInfo = true"
                       >
                         申し込み用紙ダウンロード

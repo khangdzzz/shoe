@@ -202,7 +202,7 @@ const handleSubmit = async (event: Event) => {
     <div>
       <Button
         type="submit"
-        class="flex self-center min-w-[120px] !m-[0px]"
+        class="flex self-center w-[220px] !m-[0px]"
         :disabled="isSubmitting || isLoading"
       >
         <LoaderCircle

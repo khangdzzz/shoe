@@ -26,6 +26,8 @@ const isRemainOldPlan = ref(false);
 
 const isRedirectPage = ref(false);
 
+const timeCheckboxVerifyBank = ref('');
+
 const formSchema = toTypedSchema(
   z.object({
     companyName: validateRequiredAndLimit(FIELDS.companyName, 250),
@@ -104,18 +106,23 @@ const searchPostalCode = async () => {
   isLoadPostalCode.value = false;
 };
 
+watch(
+  () => formValues?.isValidAccountTransfer,
+  () => {
+    timeCheckboxVerifyBank.value = formatDate(new Date().toString(), 'YYYY-MM-DD HH:mm:ss');
+  }
+);
+
 const onSubmit = handleSubmit(
   async (values) => {
     system.clearNotify();
 
     isLoading.value = true;
 
-    const timeUpdate = formatDate(new Date().toString(), 'YYYY-MM-DD HH:mm:ss');
-
     const body = {
       ...values,
       keepLastPlanContentFlg: isRemainOldPlan.value ? 1 : 0,
-      ...(values.isValidAccountTransfer && { accountTransferValidatedAt: timeUpdate })
+      ...(values.isValidAccountTransfer && { accountTransferValidatedAt: timeCheckboxVerifyBank.value })
     };
 
     await companyAdminStore.createNewCompany(body);
@@ -539,6 +546,7 @@ const redirectPageAfterAction = (message: string) => {
                     :checked="value"
                     @update:checked="handleChange"
                   />
+                  <span>{{ timeCheckboxVerifyBank || '' }}</span>
                 </div>
               </FormItem>
             </FormField>

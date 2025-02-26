@@ -70,67 +70,71 @@ const triggerToast = (message: string, variant: 'default' | 'destructive' | null
 <template>
   <AlertDialog v-model:open="isOpenDialog">
     <AlertDialogContent class="w-[800px]">
-      <AlertDialogHeader class="flex flex-row justify-between gap-4">
-        <AlertDialogTitle class="text-sm font-bold">申し込み用紙ダウンロード</AlertDialogTitle>
-        <LoaderCircle
-          v-if="isLoading"
-          class="w-4 h-4 mr-2 animate-spin"
-        />
-      </AlertDialogHeader>
-
-      <div class="flex flex-col gap-4 ml-[20px] mt-[20px]">
-        <div class="version">
-          <span class="title font-bold">◆ 資料</span>
-          <div class="content flex flex-col m-[15px] gap-[3px]">
-            <span
-              class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline"
-              @click="downloadFile(FILES_NAME_DOWNLOAD.deposit_account_transfer_request_form_electronic)"
-            >
-              「預金口座振替依頼書」の電子ファイルによるご提供について
-            </span>
-            <span
-              class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline"
-              @click="downloadFile(FILES_NAME_DOWNLOAD.automatic_payment_application_form)"
-            >
-              「預金口座振替依頼書･自動払込利用申込書」のお取扱い説明書
-            </span>
-            <span
-              class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline"
-              @click="downloadFile(FILES_NAME_DOWNLOAD.important_points)"
-            >
-              ゆうちょ銀行をご利用の場合　特にご留意いただきたい事項
-            </span>
-            <span
-              class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline"
-              @click="downloadFile(FILES_NAME_DOWNLOAD.deposit_account_transfer_request_form_excel)"
-            >
-              「預金口座振替依頼書」Excel形式
-            </span>
-            <span
-              class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline"
-              @click="downloadFile(FILES_NAME_DOWNLOAD.deposit_account_transfer_request_form_pdf)"
-            >
-              「預金口座振替依頼書」PDF形式
-            </span>
-          </div>
-        </div>
-        <div class="destination">
-          <span class="title font-bold">◆ 送り先</span>
-          <div class="content flex flex-col m-[15px] gap-[2px]">
-            <span>ファイナリーエージェント株式会社</span>
-            <span>神奈川県横浜市港北区樽町4-10-40 ラフィーネ港北Ⅲ201</span>
-            <span>045-442-7077</span>
-          </div>
-        </div>
+      <div
+        v-if="isLoading"
+        class="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10"
+      >
+        <LoaderCircle class="w-8 h-8 animate-spin text-gray-500" />
       </div>
-      <AlertDialogFooter class="flex !flex-col gap-4">
-        <AlertDialogCancel
-          class="flex self-center border border-gray-300 min-w-[120px]"
-          :disabled="isLoading"
-          @click="handleClose"
-          >閉じる</AlertDialogCancel
-        >
-      </AlertDialogFooter>
+      <div class="bg-red">
+        <AlertDialogHeader class="flex flex-row justify-between gap-4">
+          <AlertDialogTitle class="text-sm font-bold">申し込み用紙ダウンロード</AlertDialogTitle>
+        </AlertDialogHeader>
+
+        <div class="flex flex-col gap-4 ml-[20px] mt-[20px]">
+          <div class="version">
+            <span class="title font-bold">◆ 資料</span>
+            <div class="content flex flex-col m-[15px] gap-[3px]">
+              <span
+                class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline"
+                @click="downloadFile(FILES_NAME_DOWNLOAD.deposit_account_transfer_request_form_electronic)"
+              >
+                「預金口座振替依頼書」の電子ファイルによるご提供について
+              </span>
+              <span
+                class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline"
+                @click="downloadFile(FILES_NAME_DOWNLOAD.automatic_payment_application_form)"
+              >
+                「預金口座振替依頼書･自動払込利用申込書」のお取扱い説明書
+              </span>
+              <span
+                class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline"
+                @click="downloadFile(FILES_NAME_DOWNLOAD.important_points)"
+              >
+                ゆうちょ銀行をご利用の場合　特にご留意いただきたい事項
+              </span>
+              <span
+                class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline"
+                @click="downloadFile(FILES_NAME_DOWNLOAD.deposit_account_transfer_request_form_excel)"
+              >
+                「預金口座振替依頼書」Excel形式
+              </span>
+              <span
+                class="cursor-pointer text-[#0f17ae] hover:text-[#2631f2] underline"
+                @click="downloadFile(FILES_NAME_DOWNLOAD.deposit_account_transfer_request_form_pdf)"
+              >
+                「預金口座振替依頼書」PDF形式
+              </span>
+            </div>
+          </div>
+          <div class="destination">
+            <span class="title font-bold">◆ 送り先</span>
+            <div class="content flex flex-col m-[15px] gap-[2px]">
+              <span>ファイナリーエージェント株式会社</span>
+              <span>神奈川県横浜市港北区樽町4-10-40 ラフィーネ港北Ⅲ201</span>
+              <span>045-442-7077</span>
+            </div>
+          </div>
+        </div>
+        <AlertDialogFooter class="flex !flex-col gap-4">
+          <AlertDialogCancel
+            class="flex self-center border border-gray-300 min-w-[120px]"
+            :disabled="isLoading"
+            @click="handleClose"
+            >閉じる</AlertDialogCancel
+          >
+        </AlertDialogFooter>
+      </div>
     </AlertDialogContent>
   </AlertDialog>
 </template>
