@@ -126,7 +126,7 @@ const triggerToast = (message: string, variant: 'default' | 'destructive' | null
             </div>
           </div>
         </div>
-        <AlertDialogFooter class="flex !flex-col gap-4">
+        <AlertDialogFooter class="flex !flex-col mt-6">
           <AlertDialogCancel
             class="flex self-center border border-gray-300 min-w-[120px]"
             :disabled="isLoading"

@@ -47,6 +47,7 @@ const currentUser = computed(() => {
   isAdminUpdatePayment.value = isAdminUpdatePaymentMethod();
   typeRegisterPayment.value = getTypeRegisterPayment() ?? PAYMENT_METHOD_TYPES.creditCard;
   timeChangePaymentMethod.value = authStore.currentUser?.company.paymentMethodUpdatedAt ?? '';
+
   return authStore.currentUser;
 });
 
@@ -127,10 +128,6 @@ const initDataUser = () => {
     setFieldValue('kaigoSoftware', company.kaigoSoftware.toString());
     setFieldValue('paymentMethod', company.paymentMethod ?? PAYMENT_METHOD_TYPES.creditCard);
     setFieldValue('email', company.email);
-
-    if (company.isValidAccountTransfer) {
-      setFieldValue('paymentMethod', PAYMENT_METHOD_TYPES.accountTransfer);
-    }
 
     initialFormValues.value = { ...formValues };
   }
@@ -782,7 +779,7 @@ const getPaymentValue = (paymentMethod: { value: string; type: string }) => {
                   <FormControl>
                     <Select
                       v-bind="componentField"
-                      :disabled="currentUser?.company.isValidAccountTransfer"
+                      :disabled="isAdminUpdatePayment"
                     >
                       <SelectTrigger
                         class="!w-[70%]"

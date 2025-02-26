@@ -707,6 +707,7 @@ const verifyValidPayment = async (value: boolean) => {
               v-slot="{ value, handleChange }"
               type="checkbox"
               name="isValidAccountTransfer"
+              v-if="formValues.paymentMethod === PAYMENT_METHOD_TYPES.accountTransfer"
             >
               <FormItem class="flex gap-5">
                 <span class="w-[160px] flex items-center">口座有効</span>
