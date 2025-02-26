@@ -719,7 +719,11 @@ const verifyValidPayment = async (value: boolean) => {
                     @update:checked="(value) => verifyValidPayment(value)"
                   />
                   <span>口座有効</span>
-                  <span v-if="formValues.isValidAccountTransfer">{{ timeVerifyPaymentMethod || '' }}</span>
+                  <span
+                    v-if="formValues.isValidAccountTransfer"
+                    class="ml-[20px]"
+                    >最終更新: {{ formatDate(timeVerifyPaymentMethod, 'YYYY-MM-DD HH:mm:ss') || '' }}</span
+                  >
                 </div>
               </FormItem>
             </FormField>

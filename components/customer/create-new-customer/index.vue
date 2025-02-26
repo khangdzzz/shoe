@@ -555,7 +555,11 @@ const redirectPageAfterAction = (message: string) => {
                     @update:checked="handleChange"
                   />
                   <span>口座有効</span>
-                  <span v-if="formValues.isValidAccountTransfer">{{ timeCheckboxVerifyBank || '' }}</span>
+                  <span
+                    v-if="formValues.isValidAccountTransfer"
+                    class="ml-[20px]"
+                    >最終更新: {{ formatDate(timeCheckboxVerifyBank, 'YYYY-MM-DD HH:mm:ss') || '' }}</span
+                  >
                 </div>
               </FormItem>
             </FormField>
