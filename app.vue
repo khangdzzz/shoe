@@ -1,10 +1,4 @@
-<script setup lang="ts">
-const useFetchInitData = useFetchDataInit();
-
-onMounted(async () => {
-  await useFetchInitData.initData();
-});
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <Suspense>
