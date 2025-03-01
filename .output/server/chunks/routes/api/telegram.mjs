@@ -1,4 +1,4 @@
-import { d as defineEventHandler, r as readBody } from '../../runtime.mjs';
+import { d as defineEventHandler, r as readBody } from '../../nitro/nitro.mjs';
 import TelegramBot from 'node-telegram-bot-api';
 import 'node:http';
 import 'node:https';

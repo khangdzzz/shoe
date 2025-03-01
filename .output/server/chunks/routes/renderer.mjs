@@ -1,46 +1,15 @@
 import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import { getRequestDependencies, getPreloadLinks, getPrefetchLinks, createRenderer } from 'vue-bundle-renderer/runtime';
-import { u as useRuntimeConfig, e as eventHandler, s as setResponseHeader, a as send, g as getResponseStatus, b as setResponseStatus, c as setResponseHeaders, f as useNitroApp, j as joinRelativeURL, h as getQuery, i as createError, k as getRouteRules, l as getResponseStatusText } from '../runtime.mjs';
+import { j as joinRelativeURL, u as useRuntimeConfig, a as defineRenderHandler, g as getQuery, c as createError, b as getRouteRules, e as useNitroApp, f as getResponseStatusText, h as getResponseStatus } from '../nitro/nitro.mjs';
 import { stringify, uneval } from 'devalue';
 import { propsToString, renderSSRHead } from '@unhead/ssr';
 import { createServerHead as createServerHead$1, CapoPlugin } from 'unhead';
-import { version, unref } from 'vue';
+import { unref, version } from 'vue';
 import { defineHeadPlugin } from '@unhead/shared';
 import 'node:http';
 import 'node:https';
 import 'node:fs';
 import 'node:path';
 import 'node:url';
-
-function defineRenderHandler(handler) {
-  const runtimeConfig = useRuntimeConfig();
-  return eventHandler(async (event) => {
-    if (event.path === `${runtimeConfig.app.baseURL}favicon.ico`) {
-      setResponseHeader(event, "Content-Type", "image/x-icon");
-      return send(
-        event,
-        "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-      );
-    }
-    const response = await handler(event);
-    if (!response) {
-      const _currentStatus = getResponseStatus(event);
-      setResponseStatus(event, _currentStatus === 200 ? 500 : _currentStatus);
-      return send(
-        event,
-        "No response returned from render handler: " + event.path
-      );
-    }
-    const nitroApp = useNitroApp();
-    await nitroApp.hooks.callHook("render:response", response, { event });
-    if (response.headers) {
-      setResponseHeaders(event, response.headers);
-    }
-    if (response.statusCode || response.statusMessage) {
-      setResponseStatus(event, response.statusCode, response.statusMessage);
-    }
-    return response.body;
-  });
-}
 
 const Vue3 = version[0] === "3";
 
@@ -136,7 +105,11 @@ globalThis.__publicAssetsURL = publicAssetsURL;
 const getClientManifest = () => import('../build/client.manifest.mjs').then((r) => r.default || r).then((r) => typeof r === "function" ? r() : r);
 const getSPARenderer = lazyCachedFunction(async () => {
   const manifest = await getClientManifest();
-  const spaTemplate = await import('../virtual/_virtual_spa-template.mjs').then((r) => r.template).catch(() => "").then((r) => APP_ROOT_OPEN_TAG + r + APP_ROOT_CLOSE_TAG);
+  const spaTemplate = await import('../virtual/_virtual_spa-template.mjs').then((r) => r.template).catch(() => "").then((r) => {
+    {
+      return APP_ROOT_OPEN_TAG + r + APP_ROOT_CLOSE_TAG;
+    }
+  });
   const options = {
     manifest,
     renderToString: () => spaTemplate,
@@ -181,7 +154,7 @@ const renderer = defineRenderHandler(async (event) => {
   const isRenderingIsland = componentIslands;
   const islandContext = void 0;
   let url = ssrError?.url || islandContext?.url || event.path;
-  const isRenderingPayload = PAYLOAD_URL_RE.test(url) && !isRenderingIsland;
+  const isRenderingPayload = PAYLOAD_URL_RE.test(url) && true;
   if (isRenderingPayload) {
     url = url.substring(0, url.lastIndexOf("/")) || "/";
     event._path = url;
@@ -199,7 +172,7 @@ const renderer = defineRenderHandler(async (event) => {
     url,
     event,
     runtimeConfig: useRuntimeConfig(event),
-    noSSR: !!true,
+    noSSR: true,
     head,
     error: !!ssrError,
     nuxt: void 0,
@@ -232,22 +205,28 @@ const renderer = defineRenderHandler(async (event) => {
   const inlinedStyles = [];
   const NO_SCRIPTS = routeOptions.experimentalNoScripts;
   const { styles, scripts } = getRequestDependencies(ssrContext, renderer.rendererContext);
+  if (ssrContext._preloadManifest) {
+    head.push({
+      link: [
+        { rel: "preload", as: "fetch", fetchpriority: "low", crossorigin: "anonymous", href: buildAssetsURL(`builds/meta/${ssrContext.runtimeConfig.app.buildId}.json`) }
+      ]
+    }, { ...headEntryOptions, tagPriority: "low" });
+  }
   if (inlinedStyles.length) {
     head.push({ style: inlinedStyles });
   }
   {
     const link = [];
-    for (const style in styles) {
-      const resource = styles[style];
+    for (const resource of Object.values(styles)) {
       {
-        link.push({ rel: "stylesheet", href: renderer.rendererContext.buildAssetsURL(resource.file) });
+        link.push({ rel: "stylesheet", href: renderer.rendererContext.buildAssetsURL(resource.file), crossorigin: "" });
       }
     }
     if (link.length) {
       head.push({ link }, headEntryOptions);
     }
   }
-  if (!NO_SCRIPTS && !isRenderingIsland) {
+  if (!NO_SCRIPTS && true) {
     head.push({
       link: getPreloadLinks(ssrContext, renderer.rendererContext)
     }, headEntryOptions);
@@ -263,7 +242,7 @@ const renderer = defineRenderHandler(async (event) => {
       tagPriority: "high"
     });
   }
-  if (!routeOptions.experimentalNoScripts && !isRenderingIsland) {
+  if (!routeOptions.experimentalNoScripts && true) {
     head.push({
       script: Object.values(scripts).map((resource) => ({
         type: resource.module ? "module" : null,
@@ -345,7 +324,7 @@ function renderPayloadJsonScript(opts) {
     "type": "application/json",
     "innerHTML": contents,
     "data-nuxt-data": appId,
-    "data-ssr": !(true)
+    "data-ssr": false
   };
   {
     payload.id = "__NUXT_DATA__";
