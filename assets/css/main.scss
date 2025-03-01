@@ -1,2 +1,2 @@
-@import './default.scss';
-@import './style.scss';
+@use './style' as *;
+@use './default' as *;
