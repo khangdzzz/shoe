@@ -93,7 +93,7 @@ const currentTrigger = ref('');
             </a>
 
             <div
-              class="absolute left-0 top-[33px] w-full bg-white shadow-lg rounded-lg p-5 hidden group-hover:flex flex-wrap gap-20 justify-start"
+              class="absolute left-0 top-[33px] w-full bg-white shadow-lg rounded-lg p-5 hidden group-hover:flex flex-wrap gap-20 justify-start z-10"
             >
               <div
                 v-for="brand in BRANDS"
