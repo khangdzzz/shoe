@@ -3996,7 +3996,7 @@ const appConfig = defuFn(inlineAppConfig);
 const _inlineRuntimeConfig = {
   "app": {
     "baseURL": "/",
-    "buildId": "7ffe8986-7bd4-47ef-8f4c-fd53a5c5e841",
+    "buildId": "27dce518-2fad-4924-84ed-0670c366f1f3",
     "buildAssetsDir": "/_nuxt/",
     "cdnURL": ""
   },
@@ -5284,248 +5284,255 @@ const errorHandler = (async function errorhandler(error, event) {
 });
 
 const assets = {
+  "/favicon.ico": {
+    "type": "image/vnd.microsoft.icon",
+    "etag": "\"10be-n8egyE9tcb7sKGr/pYCaQ4uWqxI\"",
+    "mtime": "2025-03-01T02:10:38.673Z",
+    "size": 4286,
+    "path": "../public/favicon.ico"
+  },
   "/favicon.jpg": {
     "type": "image/jpeg",
     "etag": "\"a0b64-FCCPZYlTdZqmqTnG41Tl1E7gJhM\"",
-    "mtime": "2025-03-01T02:05:36.606Z",
+    "mtime": "2025-03-01T02:10:38.675Z",
     "size": 658276,
     "path": "../public/favicon.jpg"
   },
-  "/_nuxt/CBrwgK95.js": {
+  "/_nuxt/C-FBABq1.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"7bdf-De1vcrYoQ2lUGiiV7aVWw+UpOK4\"",
-    "mtime": "2025-03-01T02:05:36.596Z",
-    "size": 31711,
-    "path": "../public/_nuxt/CBrwgK95.js"
-  },
-  "/_nuxt/CdkHJBYG.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"243a-slFqCZme8mpTraByyr1H+CVes74\"",
-    "mtime": "2025-03-01T02:05:36.597Z",
-    "size": 9274,
-    "path": "../public/_nuxt/CdkHJBYG.js"
-  },
-  "/_nuxt/Ch2_-oIP.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"180-jV75qWSmoQRmP8eIksuFEd6x09o\"",
-    "mtime": "2025-03-01T02:05:36.596Z",
-    "size": 384,
-    "path": "../public/_nuxt/Ch2_-oIP.js"
-  },
-  "/_nuxt/D0Pc5T77.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"d52-w2OxuEAXH0P1Af4HcB3JHv4huJw\"",
-    "mtime": "2025-03-01T02:05:36.596Z",
-    "size": 3410,
-    "path": "../public/_nuxt/D0Pc5T77.js"
-  },
-  "/_nuxt/DmExcAZB.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"1f99-qKnuv1eBmZjhNFv7zML7zK9Be48\"",
-    "mtime": "2025-03-01T02:05:36.597Z",
+    "etag": "\"1f99-9xkhItEJvDrlyXJfn1ITs394/6s\"",
+    "mtime": "2025-03-01T02:10:38.663Z",
     "size": 8089,
-    "path": "../public/_nuxt/DmExcAZB.js"
+    "path": "../public/_nuxt/C-FBABq1.js"
   },
-  "/_nuxt/WDEiyWZw.js": {
+  "/_nuxt/C0jBZQgF.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"28e15-16iNEGp1i5jkcwiLa5Z1W9vcJcE\"",
-    "mtime": "2025-03-01T02:05:36.596Z",
+    "etag": "\"d52-vA0Oj08+U2XtufRyjmApQ6kOLng\"",
+    "mtime": "2025-03-01T02:10:38.663Z",
+    "size": 3410,
+    "path": "../public/_nuxt/C0jBZQgF.js"
+  },
+  "/_nuxt/CFFmf1Nf.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"243a-Wc7FpmR4o4blto3xZiNZby0apXw\"",
+    "mtime": "2025-03-01T02:10:38.663Z",
+    "size": 9274,
+    "path": "../public/_nuxt/CFFmf1Nf.js"
+  },
+  "/_nuxt/D0bF-UUH.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"7bdf-ipORlb2ndWcbg0ORl9PtJW9sjNY\"",
+    "mtime": "2025-03-01T02:10:38.664Z",
+    "size": 31711,
+    "path": "../public/_nuxt/D0bF-UUH.js"
+  },
+  "/_nuxt/D1nSI0_j.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"180-vCZg3KDYruCYn0wYCuKERCcsme4\"",
+    "mtime": "2025-03-01T02:10:38.663Z",
+    "size": 384,
+    "path": "../public/_nuxt/D1nSI0_j.js"
+  },
+  "/_nuxt/DjnJpXkT.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"2a07-SzSi3wPdlluTX/Jq+lWNtXOi/hM\"",
+    "mtime": "2025-03-01T02:10:38.664Z",
+    "size": 10759,
+    "path": "../public/_nuxt/DjnJpXkT.js"
+  },
+  "/_nuxt/ENqbSnxi.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"28e15-RvgRDhGc0GooXdAuSMHixVTqoWE\"",
+    "mtime": "2025-03-01T02:10:38.664Z",
     "size": 167445,
-    "path": "../public/_nuxt/WDEiyWZw.js"
+    "path": "../public/_nuxt/ENqbSnxi.js"
   },
   "/_nuxt/entry.BIYvlsAu.css": {
     "type": "text/css; charset=utf-8",
     "etag": "\"9697-oV4AJRqqZFRc4lAkVmAyYp18Fyk\"",
-    "mtime": "2025-03-01T02:05:36.597Z",
+    "mtime": "2025-03-01T02:10:38.663Z",
     "size": 38551,
     "path": "../public/_nuxt/entry.BIYvlsAu.css"
   },
   "/_nuxt/error-404.ygbHJO5Q.css": {
     "type": "text/css; charset=utf-8",
     "etag": "\"de4-4evKWTXkUTbWWn6byp5XsW9Tgo8\"",
-    "mtime": "2025-03-01T02:05:36.596Z",
+    "mtime": "2025-03-01T02:10:38.663Z",
     "size": 3556,
     "path": "../public/_nuxt/error-404.ygbHJO5Q.css"
   },
   "/_nuxt/error-500.B11Ibp8J.css": {
     "type": "text/css; charset=utf-8",
     "etag": "\"75c-tP5N9FT3eOu7fn6vCvyZRfUcniY\"",
-    "mtime": "2025-03-01T02:05:36.597Z",
+    "mtime": "2025-03-01T02:10:38.664Z",
     "size": 1884,
     "path": "../public/_nuxt/error-500.B11Ibp8J.css"
   },
   "/_nuxt/forrest-01.D4fn3tUs.png": {
     "type": "image/png",
     "etag": "\"3103-GYoB9ppBcKVya+3b6bxVgILPUKQ\"",
-    "mtime": "2025-03-01T02:05:36.597Z",
+    "mtime": "2025-03-01T02:10:38.664Z",
     "size": 12547,
     "path": "../public/_nuxt/forrest-01.D4fn3tUs.png"
   },
-  "/_nuxt/index.CQMgX3qS.css": {
+  "/_nuxt/index.MpN2oGDv.css": {
     "type": "text/css; charset=utf-8",
-    "etag": "\"139a-r5IU8l89gA0fVhFNIBr1UI7byp0\"",
-    "mtime": "2025-03-01T02:05:36.597Z",
-    "size": 5018,
-    "path": "../public/_nuxt/index.CQMgX3qS.css"
-  },
-  "/_nuxt/u-nj5H59.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"2a07-LPq1NxP2J158UxloeGOoqMcK52Y\"",
-    "mtime": "2025-03-01T02:05:36.597Z",
-    "size": 10759,
-    "path": "../public/_nuxt/u-nj5H59.js"
+    "etag": "\"139e-kVX1xFtb3BgS0ipjdMCfNv6gTg0\"",
+    "mtime": "2025-03-01T02:10:38.664Z",
+    "size": 5022,
+    "path": "../public/_nuxt/index.MpN2oGDv.css"
   },
   "/images/10km.webp": {
     "type": "image/webp",
     "etag": "\"2082-8V34qe0zoqmK9SgrwTCt6xZuX/k\"",
-    "mtime": "2025-03-01T02:05:36.600Z",
+    "mtime": "2025-03-01T02:10:38.667Z",
     "size": 8322,
     "path": "../public/images/10km.webp"
   },
   "/images/21km.webp": {
     "type": "image/webp",
     "etag": "\"3c26-SEKRCgBKcaKYT55HbEQD+uLNgbI\"",
-    "mtime": "2025-03-01T02:05:36.600Z",
+    "mtime": "2025-03-01T02:10:38.670Z",
     "size": 15398,
     "path": "../public/images/21km.webp"
   },
   "/images/42km.webp": {
     "type": "image/webp",
     "etag": "\"c42c-ydbkRAmlzfWljcgweKo1FSf9oCA\"",
-    "mtime": "2025-03-01T02:05:36.601Z",
+    "mtime": "2025-03-01T02:10:38.672Z",
     "size": 50220,
     "path": "../public/images/42km.webp"
   },
   "/images/adidas.webp": {
     "type": "image/webp",
     "etag": "\"1040-zN/4z2K8Z5POkOT5X0H578RZ5+U\"",
-    "mtime": "2025-03-01T02:05:36.600Z",
+    "mtime": "2025-03-01T02:10:38.670Z",
     "size": 4160,
     "path": "../public/images/adidas.webp"
   },
   "/images/all.svg": {
     "type": "image/svg+xml",
     "etag": "\"18b-Tdzjp+owd6AMZeCOweD2QZrrJUM\"",
-    "mtime": "2025-03-01T02:05:36.600Z",
+    "mtime": "2025-03-01T02:10:38.670Z",
     "size": 395,
     "path": "../public/images/all.svg"
   },
   "/images/asics.webp": {
     "type": "image/webp",
     "etag": "\"136e-DLwVi0S0T7H3EeoF7EOL8uhIOzE\"",
-    "mtime": "2025-03-01T02:05:36.600Z",
+    "mtime": "2025-03-01T02:10:38.671Z",
     "size": 4974,
     "path": "../public/images/asics.webp"
   },
   "/images/bg-shoe-run.webp": {
     "type": "image/webp",
     "etag": "\"f1a-+jDZrwrd312N6o1WlqFnk2vb964\"",
-    "mtime": "2025-03-01T02:05:36.600Z",
+    "mtime": "2025-03-01T02:10:38.671Z",
     "size": 3866,
     "path": "../public/images/bg-shoe-run.webp"
   },
   "/images/event.webp": {
     "type": "image/webp",
     "etag": "\"90b8-hKHdYEG6D65kkHzUyJHtAgnkfZQ\"",
-    "mtime": "2025-03-01T02:05:36.601Z",
+    "mtime": "2025-03-01T02:10:38.671Z",
     "size": 37048,
     "path": "../public/images/event.webp"
   },
   "/images/girl-shoe.svg": {
     "type": "image/svg+xml",
     "etag": "\"19d9-FLPTBr0SRPms0BtZ1+H4Om0yXu0\"",
-    "mtime": "2025-03-01T02:05:36.601Z",
+    "mtime": "2025-03-01T02:10:38.671Z",
     "size": 6617,
     "path": "../public/images/girl-shoe.svg"
   },
   "/images/hoka.webp": {
     "type": "image/webp",
     "etag": "\"151e-WVbSwGqtLKjFTq7dElg6BtmLCeM\"",
-    "mtime": "2025-03-01T02:05:36.601Z",
+    "mtime": "2025-03-01T02:10:38.671Z",
     "size": 5406,
     "path": "../public/images/hoka.webp"
   },
   "/images/man-shoe.svg": {
     "type": "image/svg+xml",
     "etag": "\"187b-HXGbIY8+GE5vnj40j2xUdAFTunM\"",
-    "mtime": "2025-03-01T02:05:36.601Z",
+    "mtime": "2025-03-01T02:10:38.671Z",
     "size": 6267,
     "path": "../public/images/man-shoe.svg"
   },
   "/images/nike.webp": {
     "type": "image/webp",
     "etag": "\"e98-+yCYMj1kTNzNr21Oj0SgjOnPfGE\"",
-    "mtime": "2025-03-01T02:05:36.601Z",
+    "mtime": "2025-03-01T02:10:38.672Z",
     "size": 3736,
     "path": "../public/images/nike.webp"
   },
   "/images/phukien.svg": {
     "type": "image/svg+xml",
     "etag": "\"80e-fw/vjN8nIiMS9XqptMK/8+4JJ2A\"",
-    "mtime": "2025-03-01T02:05:36.602Z",
+    "mtime": "2025-03-01T02:10:38.672Z",
     "size": 2062,
     "path": "../public/images/phukien.svg"
   },
   "/images/sale.webp": {
     "type": "image/webp",
     "etag": "\"90b8-hKHdYEG6D65kkHzUyJHtAgnkfZQ\"",
-    "mtime": "2025-03-01T02:05:36.602Z",
+    "mtime": "2025-03-01T02:10:38.672Z",
     "size": 37048,
     "path": "../public/images/sale.webp"
   },
   "/images/slider01.jpeg": {
     "type": "image/jpeg",
     "etag": "\"4ae1c-4duadu2ZjtH0VpyIHRqDuBdRwH8\"",
-    "mtime": "2025-03-01T02:05:36.603Z",
+    "mtime": "2025-03-01T02:10:38.674Z",
     "size": 306716,
     "path": "../public/images/slider01.jpeg"
   },
   "/images/slider02.jpeg": {
     "type": "image/jpeg",
     "etag": "\"7f6b4-YOQKzQNZNBXaq0zC8QoKjhs3hXU\"",
-    "mtime": "2025-03-01T02:05:36.604Z",
+    "mtime": "2025-03-01T02:10:38.674Z",
     "size": 521908,
     "path": "../public/images/slider02.jpeg"
   },
   "/images/slider03.webp": {
     "type": "image/webp",
     "etag": "\"2a6f8-SvHMC2i/8Unp4H+yhfH+ujp3HoU\"",
-    "mtime": "2025-03-01T02:05:36.603Z",
+    "mtime": "2025-03-01T02:10:38.673Z",
     "size": 173816,
     "path": "../public/images/slider03.webp"
   },
   "/images/tail.svg": {
     "type": "image/svg+xml",
     "etag": "\"26e7-jRTpPPhtUH4lqgFhP9JEOpxwgVI\"",
-    "mtime": "2025-03-01T02:05:36.602Z",
+    "mtime": "2025-03-01T02:10:38.672Z",
     "size": 9959,
     "path": "../public/images/tail.svg"
   },
   "/_nuxt/builds/latest.json": {
     "type": "application/json",
-    "etag": "\"47-/j4KmPc+6b/9e22w3xDtqIPg4jo\"",
-    "mtime": "2025-03-01T02:05:36.594Z",
+    "etag": "\"47-OSibWoZkyt+j+i9uh2lKf6P/820\"",
+    "mtime": "2025-03-01T02:10:38.661Z",
     "size": 71,
     "path": "../public/_nuxt/builds/latest.json"
   },
   "/images/spin/bg.svg": {
     "type": "image/svg+xml",
     "etag": "\"7afc-DDHN6oF1nxete1KtWwzTWzY2URs\"",
-    "mtime": "2025-03-01T02:05:36.600Z",
+    "mtime": "2025-03-01T02:10:38.671Z",
     "size": 31484,
     "path": "../public/images/spin/bg.svg"
   },
-  "/_nuxt/builds/meta/7ffe8986-7bd4-47ef-8f4c-fd53a5c5e841.json": {
+  "/_nuxt/builds/meta/27dce518-2fad-4924-84ed-0670c366f1f3.json": {
     "type": "application/json",
-    "etag": "\"8b-s/+HBRBUtD3TxuSAa6GcSI7LUd0\"",
-    "mtime": "2025-03-01T02:05:36.592Z",
+    "etag": "\"8b-Q0sZJjq0LfJlS6tR28DH69dGfMM\"",
+    "mtime": "2025-03-01T02:10:38.659Z",
     "size": 139,
-    "path": "../public/_nuxt/builds/meta/7ffe8986-7bd4-47ef-8f4c-fd53a5c5e841.json"
+    "path": "../public/_nuxt/builds/meta/27dce518-2fad-4924-84ed-0670c366f1f3.json"
   },
   "/images/product/nike/forrestrun-vn-193.webp": {
     "type": "image/webp",
     "etag": "\"e7e0-p1+yzRgik1qlzdk2V9KEMqKfvJ0\"",
-    "mtime": "2025-03-01T02:05:36.603Z",
+    "mtime": "2025-03-01T02:10:38.673Z",
     "size": 59360,
     "path": "../public/images/product/nike/forrestrun-vn-193.webp"
   }
