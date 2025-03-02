@@ -1,27 +1,55 @@
 <script setup lang="ts">
-import { NavigationMenuLink } from 'radix-vue';
-
-const props = defineProps({
-  title: String
-});
+import {
+  SheetContent,
+  SheetClose,
+  SheetHeader,
+  SheetFooter,
+  SheetDescription,
+  SheetTitle
+} from '@/components/ui/sheet';
 </script>
 
 <template>
-  <li>
-    <NavigationMenuLink as-child>
-      <a
-        v-bind="$attrs"
-        class="focus:shadow-[0_0_0_2px] focus:shadow-green7 hover:bg-mauve3 block select-none rounded-[6px] p-3 text-[15px] leading-none no-underline outline-none transition-colors"
-      >
-        <div class="text-green12 mb-[5px] font-medium leading-[1.2]">
-          {{ props.title }}
-        </div>
-        <p class="text-mauve11 my-0 leading-[1.4]">
-          <slot />
-        </p>
-      </a>
-    </NavigationMenuLink>
-  </li>
+  <SheetContent
+    :side="'left'"
+    class="w-full md:w-[540px]"
+  >
+    <SheetHeader>
+      <SheetTitle>Edit profile</SheetTitle>
+      <SheetDescription> Make changes to your profile here. Click save when you're done. </SheetDescription>
+    </SheetHeader>
+    <div class="grid gap-4 py-4">
+      <div class="grid grid-cols-4 items-center gap-4">
+        <Label
+          for="name"
+          class="text-right"
+        >
+          Name
+        </Label>
+        <Input
+          id="name"
+          value="Pedro Duarte"
+          class="col-span-3"
+        />
+      </div>
+      <div class="grid grid-cols-4 items-center gap-4">
+        <Label
+          for="username"
+          class="text-right"
+        >
+          Username
+        </Label>
+        <Input
+          id="username"
+          value="@peduarte"
+          class="col-span-3"
+        />
+      </div>
+    </div>
+    <SheetFooter>
+      <SheetClose as-child>
+        <Button type="submit"> Save changes </Button>
+      </SheetClose>
+    </SheetFooter>
+  </SheetContent>
 </template>
-
-<style scoped lang="scss"></style>

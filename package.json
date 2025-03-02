@@ -30,7 +30,7 @@
     "reka-ui": "^2.0.2",
     "shadcn-nuxt": "^1.0.2",
     "spin-wheel": "^5.0.2",
-    "tailwind-merge": "^2.6.0",
+    "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
     "vee-validate": "^4.15.0",
     "vue": "latest",
@@ -56,5 +56,6 @@
     "sass-loader": "^16.0.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3"
-  }
+  },
+  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
 }

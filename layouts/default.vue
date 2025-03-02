@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { Search, ShoppingCart, Phone, Menu, ChevronDown } from 'lucide-vue-next';
+import { Sheet, SheetTrigger } from '@/components/ui/sheet';
 import { BRANDS } from '~/utils/constants/brand';
+
 const isFixed = ref(false);
 const isMobile = ref(window.innerWidth < 768);
-
+const isMenuOpen = ref(false);
 const handleScroll = () => {
   if (window.innerWidth < 768 && window.scrollY > 300) {
     isFixed.value = true;
@@ -57,7 +59,15 @@ onUnmounted(() => {
               />
               <Search class="absolute w-4 h-4 left-3 top-1/2 transform -translate-y-1/2 text-orange-500" />
             </div>
-            <Menu class="w-8 h-8 hover:text-orange-500 hidden max-lg:block" />
+            <Sheet
+              v-model:open="isMenuOpen"
+              class="hidden max-lg:block"
+            >
+              <SheetTrigger>
+                <Menu class="w-8 h-8 hover:text-orange-500 cursor-pointer" />
+              </SheetTrigger>
+              <MenuItem />
+            </Sheet>
           </div>
 
           <div class="flex items-center space-x-2">
@@ -161,7 +171,7 @@ onUnmounted(() => {
         </div>
       </nav>
     </header>
-    <div class="main">
+    <div :class="['main transition-transform duration-500 ease-in-out']">
       <slot />
     </div>
     <Footer />
