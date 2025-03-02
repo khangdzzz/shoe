@@ -43,7 +43,22 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'Running Store VN',
-      meta: [{ charset: 'utf-8' }, { name: 'viewport', content: 'width=device-width, initial-scale=1' }],
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'description', content: 'Mô tả trang web' },
+
+        { property: 'og:title', content: 'Running Store VN' },
+        { property: 'og:description', content: 'Running Store VN' },
+        { property: 'og:image', content: '/favicon.jpg' },
+        { property: 'og:url', content: '/favicon.jpg' },
+        { property: 'og:type', content: 'website' },
+
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: 'Running Store VN' },
+        { name: 'twitter:description', content: 'Running Store VN' },
+        { name: 'twitter:image', content: '/favicon.jpg' }
+      ],
       link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.jpg' }]
     }
   }
