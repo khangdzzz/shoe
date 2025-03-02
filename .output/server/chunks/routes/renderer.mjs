@@ -74,7 +74,7 @@ const unheadPlugins = true ? [CapoPlugin({ track: true })] : [];
 
 const renderSSRHeadOptions = {"omitLineBreaks":false};
 
-const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"name":"description","content":"Mô tả trang web"},{"property":"og:title","content":"Running Store VN"},{"property":"og:description","content":"Running Store VN"},{"property":"og:image","content":"/favicon.jpg"},{"property":"og:url","content":"/favicon.jpg"},{"property":"og:type","content":"website"},{"name":"twitter:card","content":"summary_large_image"},{"name":"twitter:title","content":"Running Store VN"},{"name":"twitter:description","content":"Running Store VN"},{"name":"twitter:image","content":"/favicon.jpg"}],"link":[{"rel":"icon","type":"image/x-icon","href":"/favicon.jpg"}],"style":[],"script":[],"noscript":[],"title":"Running Store VN"};
+const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"name":"description","content":"Mô tả trang web"},{"property":"og:title","content":"Running Store VN"},{"property":"og:description","content":"Running Store VN"},{"property":"og:image","content":"https://running-store.click/favicon.jpg"},{"property":"og:url","content":"https://running-store.click/favicon.jpg"},{"property":"og:type","content":"website"},{"name":"twitter:card","content":"summary_large_image"},{"name":"twitter:title","content":"Running Store VN"},{"name":"twitter:description","content":"Running Store VN"},{"name":"twitter:image","content":"https://running-store.click/favicon.jpg"}],"link":[{"rel":"icon","type":"image/x-icon","href":"/favicon.jpg"}],"style":[],"script":[],"noscript":[],"title":"Running Store VN"};
 
 const appRootTag = "div";
 
