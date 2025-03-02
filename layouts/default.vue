@@ -1,21 +1,6 @@
 <script setup lang="ts">
 import { Search, ShoppingCart, Phone, Menu, ChevronDown } from 'lucide-vue-next';
 import { BRANDS } from '~/utils/constants/brand';
-import { NEWS } from '~/utils/constants/news';
-import { Icon } from '@iconify/vue';
-import { ref } from 'vue';
-import {
-  NavigationMenuContent,
-  NavigationMenuIndicator,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuRoot,
-  NavigationMenuTrigger,
-  NavigationMenuViewport
-} from 'radix-vue';
-
-const currentTrigger = ref('');
 </script>
 <template>
   <div class="wrapper">
@@ -147,6 +132,7 @@ const currentTrigger = ref('');
     <div class="main">
       <slot />
     </div>
+    <Footer />
   </div>
 </template>
 
