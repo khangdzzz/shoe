@@ -1,6 +1,33 @@
 <script setup lang="ts">
 import { Search, ShoppingCart, Phone, Menu, ChevronDown } from 'lucide-vue-next';
 import { BRANDS } from '~/utils/constants/brand';
+const isFixed = ref(false);
+const isMobile = ref(window.innerWidth < 768);
+
+const handleScroll = () => {
+  if (window.innerWidth < 768 && window.scrollY > 300) {
+    isFixed.value = true;
+  } else {
+    isFixed.value = false;
+  }
+};
+
+const handleResize = () => {
+  isMobile.value = window.innerWidth < 768;
+  if (!isMobile.value) {
+    isFixed.value = false;
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll);
+  window.addEventListener('resize', handleResize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+  window.removeEventListener('resize', handleResize);
+});
 </script>
 <template>
   <div class="wrapper">
@@ -14,7 +41,12 @@ import { BRANDS } from '~/utils/constants/brand';
         >
       </div>
 
-      <div class="w-full">
+      <div
+        :class="[
+          'w-full transition-all duration-500 ease-in-out',
+          isFixed ? 'fixed top-0 left-0 right-0 z-50 bg-white shadow-md opacity-100 translate-y-0' : ' '
+        ]"
+      >
         <div class="container mx-auto flex items-center justify-between py-4 px-4 lg:px-8">
           <div>
             <div class="relative w-full max-w-md min-w-[300px] max-lg:hidden">
