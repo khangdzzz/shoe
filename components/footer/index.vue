@@ -127,7 +127,7 @@
     </div>
 
     <div class="text-center mt-8 border-t border-white/20 py-2">
-      Copyright 2025 © Running Store - 1 sản phẩm của tập đoàn HK GROUP (Khangdz)
+      Copyright 2025 © Running Store - 1 sản phẩm của tập đoàn HK GROUP
     </div>
   </footer>
 </template>
