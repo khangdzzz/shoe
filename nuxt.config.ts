@@ -50,14 +50,14 @@ export default defineNuxtConfig({
 
         { property: 'og:title', content: 'Running Store VN' },
         { property: 'og:description', content: 'Running Store VN' },
-        { property: 'og:image', content: '/favicon.jpg' },
-        { property: 'og:url', content: '/favicon.jpg' },
+        { property: 'og:image', content: 'https://running-store.click/favicon.jpg' },
+        { property: 'og:url', content: 'https://running-store.click/favicon.jpg' },
         { property: 'og:type', content: 'website' },
 
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'Running Store VN' },
         { name: 'twitter:description', content: 'Running Store VN' },
-        { name: 'twitter:image', content: '/favicon.jpg' }
+        { name: 'twitter:image', content: 'https://running-store.click/favicon.jpg' }
       ],
       link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.jpg' }]
     }
