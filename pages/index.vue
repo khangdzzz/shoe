@@ -5,6 +5,7 @@ import { props } from '~/utils/spin/props';
 definePageMeta({
   layout: false
 });
+const route = useRoute();
 
 let modifier = 0;
 const result = ref('');
@@ -12,6 +13,7 @@ const wheel = ref(null);
 const idDisableBtn = ref(false);
 const isShowFireworks = ref(false);
 const isShowroomMessage = ref(false);
+const isShowOpenForceCloseTap = ref(false);
 const items = ref([...props.items].reverse());
 const dataUser = ref(null);
 
@@ -101,12 +103,11 @@ const initImage = (obj, pName) => {
 };
 
 onMounted(async () => {
+  const name = route.query.name;
+  if (!name) isShowOpenForceCloseTap.value = true;
+  await findUserByName('spins', name);
   await initProject();
 });
-
-const sendDataUser = (data) => {
-  dataUser.value = data;
-};
 
 const updateInfoUser = async (fileName = 'spins') => {
   try {
@@ -128,6 +129,22 @@ const sendMessage = async (text) => {
     });
   } catch (error) {
     console.error('Error sending message:', error);
+  }
+};
+
+const findUserByName = async (fileName, name) => {
+  try {
+    const res = await $fetch('/api/file/find-by-name', {
+      method: 'POST',
+      params: { fileName, name }
+    });
+
+    if (!res) {
+      isShowOpenForceCloseTap.value = true;
+      return;
+    } else dataUser.value = res;
+  } catch (error) {
+    console.error('Lỗi khi gọi API:', error);
   }
 };
 </script>
@@ -154,7 +171,7 @@ const sendMessage = async (text) => {
       <span>{{ result || 'QUAY' }}</span>
     </div>
   </div>
-  <SpinConfirmName @close="sendDataUser"></SpinConfirmName>
+  <SpinConfirmName :is-open="isShowOpenForceCloseTap"></SpinConfirmName>
 </template>
 
 <style scoped>

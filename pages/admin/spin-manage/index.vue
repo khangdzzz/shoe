@@ -74,6 +74,38 @@ const columns: ColumnDef<Spin>[] = [
 
       return h('div', { class: 'text-center font-medium' }, formatted);
     }
+  },
+  {
+    accessorKey: 'url',
+    header: () => h('div', { class: 'text-center font-bold' }, 'URL'),
+    cell: ({ row }) => {
+      const status = row.getValue('status');
+      const name = row.getValue('name');
+
+      const url = `https://running-store.click?name=${encodeURIComponent(name)}`;
+
+      const copyToClipboard = () => {
+        navigator.clipboard.writeText(url).then(() => {
+          toast({
+            title: 'Bạn đã copy thành công !!!',
+            duration: 1000
+          });
+        });
+      };
+
+      return h('div', { class: 'font-medium flex items-start gap-2' }, [
+        h('span', url),
+        status === 'pending' &&
+          h(
+            'button',
+            {
+              class: 'ml-2 text-blue-500 hover:underline',
+              onClick: copyToClipboard
+            },
+            'Copy'
+          )
+      ]);
+    }
   }
 ];
 
@@ -202,7 +234,7 @@ const addUser = async (body: any, fileName: string) => {
 </script>
 
 <template>
-  <div class="ml-20 w-[800px] h-[100vh] overflow-hidden pt-10">
+  <div class="w-[100%] h-[100vh] overflow-hidden pt-10 md:w-[800px] md:pl-20">
     <h1 class="text-3xl font-bold mb-4 flex items-center font-bold">QUẢN LÝ VÒNG QUAY</h1>
     <form
       class="w-1/3 space-y-2"
@@ -265,7 +297,7 @@ const addUser = async (body: any, fileName: string) => {
       />
       <Button @click="randomize"> Tìm kiếm </Button>
     </div>
-    <div class="rounded-md border h-[calc(100vh-300px)] overflow-auto">
+    <div class="w-[100%] rounded-md border h-[calc(100vh-300px)] overflow-auto md:w-full">
       <Table>
         <TableHeader>
           <TableRow
