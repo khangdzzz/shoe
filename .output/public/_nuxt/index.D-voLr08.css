@@ -1,0 +1,1 @@
+.animate-float{animation:float 3s ease-in-out infinite}@keyframes float{0%,to{transform:translateY(0)}50%{transform:translateY(-15px)}}@keyframes pulseScale{0%,to{transform:scale(1)}50%{transform:scale(1.1)}}.animate-pulse-scale{animation:pulseScale 1.5s infinite}
