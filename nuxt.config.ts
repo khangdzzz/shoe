@@ -14,6 +14,7 @@ export default defineNuxtConfig({
   ],
   css: ['~/assets/css/main.scss'],
   shadcn: {
+    prefix: '',
     componentDir: './components/ui'
   },
   vite: {

@@ -1,11 +1,11 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
   message: String,
   type: {
     type: String,
-    default: "info",
+    default: 'info'
   },
   isVisible: {
     type: Boolean,
@@ -13,7 +13,7 @@ const props = defineProps({
   },
   duration: {
     type: Number,
-    default: 3000, // 3 seconds
+    default: 1000
   }
 });
 
@@ -24,11 +24,17 @@ watch(
   () => props.isVisible,
   (newValue) => {
     visible.value = newValue;
-})
+  }
+);
 </script>
 
 <template>
-  <div v-if="visible" :class="['toast', type]" @mouseenter="pauseTimer" @mouseleave="resumeTimer">
+  <div
+    v-if="visible"
+    :class="['toast', type]"
+    @mouseenter="pauseTimer"
+    @mouseleave="resumeTimer"
+  >
     <span class="message">{{ message }}</span>
   </div>
 </template>
@@ -47,15 +53,22 @@ watch(
 }
 
 .message {
-    font-size: 16px;
+  font-size: 16px;
 }
 
-.success { background: #28a745; }
-.error { background: #dc3545; }
-.warning { background: #ffc107; color: #333; }
-.info { background: #17a2b8; }
-
-
+.success {
+  background: #28a745;
+}
+.error {
+  background: #dc3545;
+}
+.warning {
+  background: #ffc107;
+  color: #333;
+}
+.info {
+  background: #17a2b8;
+}
 
 .close-btn {
   background: transparent;
@@ -67,7 +80,13 @@ watch(
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

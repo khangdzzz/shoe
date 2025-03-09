@@ -12,6 +12,8 @@ const wheel = ref(null);
 const idDisableBtn = ref(false);
 const isShowFireworks = ref(false);
 const isShowroomMessage = ref(false);
+const items = ref([...props.items].reverse());
+const dataUser = ref(null);
 
 const initProject = async () => {
   await loadFonts(props.itemLabelFont);
@@ -41,6 +43,7 @@ const initProject = async () => {
       onRest: () => {
         isShowFireworks.value = true;
         isShowroomMessage.value = true;
+        updateInfoUser();
         sendMessage(result.value);
 
         setTimeout(() => {
@@ -55,16 +58,30 @@ const initProject = async () => {
   });
 };
 
-const spin = () => {
-  const { duration, winningItemRotaion } = calcSpinToValues();
+const spin = (winningLabel = null) => {
+  const { duration, winningItemRotaion } = calcSpinToValues(winningLabel);
   wheel.value.spinTo(winningItemRotaion, duration);
 };
 
-const calcSpinToValues = () => {
+const calcSpinToValues = (winningLabel = null) => {
   const duration = 3000;
-  const winningItemRotaion = getRandomInt(360, 360 * 3) + modifier;
 
-  modifier += 360 * 3;
+  let winningItemRotaion;
+  if (winningLabel) {
+    const winningIndex = [...items.value].findIndex((item) => item.label === winningLabel);
+    if (winningIndex === -1) {
+      console.warn('Hệ thống vòng quay có lỗi , bạn vui lòng liên hệ với người quản trị Running Store');
+      return;
+    }
+
+    const sliceAngle = 360 / items.value.length;
+    const baseRotation = winningIndex * sliceAngle;
+    const randomSpin = Math.floor(Math.random() * (10 - 1 + 1)) + 1;
+
+    winningItemRotaion = baseRotation + sliceAngle / 2 + 360 * 5 + randomSpin * 360;
+  } else {
+    winningItemRotaion = getRandomInt(360, 360 * 3) + modifier;
+  }
 
   return { duration, winningItemRotaion };
 };
@@ -87,11 +104,27 @@ onMounted(async () => {
   await initProject();
 });
 
+const sendDataUser = (data) => {
+  dataUser.value = data;
+};
+
+const updateInfoUser = async (fileName = 'spins') => {
+  try {
+    console.log('update');
+    await $fetch('/api/file/update-by-id', {
+      method: 'POST',
+      params: { fileName, id: dataUser.value.id }
+    });
+  } catch (error) {
+    console.error('Lỗi khi gọi API:', error);
+  }
+};
+
 const sendMessage = async (text) => {
   try {
-    const response = await $fetch('/api/telegram', {
+    await $fetch('/api/telegram/send-message', {
       method: 'POST',
-      body: { message: `🎉 Chúc mừng! Bạn đã quay trúng thưởng ${text} 🏆✨` }
+      body: { message: `🎉 Chúc mừng ${dataUser.value.name}! \n Bạn đã quay trúng thưởng ${text} 🏆✨` }
     });
   } catch (error) {
     console.error('Error sending message:', error);
@@ -115,12 +148,13 @@ const sendMessage = async (text) => {
   >
     <div
       class="btn-spin"
-      @click="spin"
       :class="{ disabled: idDisableBtn }"
+      @click="spin(dataUser.amount)"
     >
       <span>{{ result || 'QUAY' }}</span>
     </div>
   </div>
+  <SpinConfirmName @close="sendDataUser"></SpinConfirmName>
 </template>
 
 <style scoped>

@@ -4,6 +4,7 @@
   <Suspense>
     <template #default>
       <NuxtLayout>
+        <Toaster />
         <NuxtLoadingIndicator />
         <NuxtPage />
       </NuxtLayout>
