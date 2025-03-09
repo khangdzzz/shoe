@@ -13,8 +13,8 @@ const write = defineEventHandler(async (event) => {
   const body = await readBody(event);
   const query = getQuery(event);
   const fileName = query.fileName ? `${query.fileName}.json` : "users.json";
-  console.log(body);
-  appendData(fileName, body);
+  const parsedBody = typeof body === "string" ? JSON.parse(body) : body;
+  appendData(fileName, parsedBody);
   return { success: true, message: "D\u1EEF li\u1EC7u \u0111\xE3 \u0111\u01B0\u1EE3c ghi v\xE0o file!" };
 });
 
