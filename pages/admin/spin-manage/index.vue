@@ -29,7 +29,19 @@ interface Spin {
   name: string;
 }
 
-const AMOUNTS = ['500.000', '600.000', '700.000', '800.000', '1.000.000', '1.200.000', '1.300.000', '1.500.000'];
+const AMOUNTS = [
+  '10.000',
+  '20.000',
+  '30.000',
+  '40.000',
+  '50.000',
+  '60.000',
+  '70.000',
+  '80.000',
+  '500.000',
+  '1.000.000',
+  '1.500.000'
+];
 
 const data = ref<Spin[]>([]);
 
@@ -247,10 +259,10 @@ const addUser = async (body: any, fileName: string) => {
       >
         <FormItem
           v-auto-animate
-          class="flex align-center justify-between gap-2 items-center"
+          class="flex align-center justify-between gap-2 items-center w-[400px]"
         >
           <span class="w-[120px] flex-shrink-0">Tên tài khoản</span>
-          <FormControl>
+          <FormControl class="w-[300px]">
             <Input
               type="text"
               v-bind="componentField"
@@ -266,13 +278,13 @@ const addUser = async (body: any, fileName: string) => {
       >
         <FormItem
           v-auto-animate
-          class="flex align-center justify-between gap-2 items-center"
+          class="flex align-center justify-between gap-2 items-center w-[400px]"
         >
           <span class="w-[120px] flex-shrink-0">Số tiền quay trúng</span>
           <FormControl>
             <Select v-bind="componentField">
               <SelectTrigger>
-                <SelectValue placeholder="Select an option" />
+                <SelectValue placeholder="Số tiền" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem

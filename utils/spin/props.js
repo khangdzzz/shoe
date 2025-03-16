@@ -19,31 +19,33 @@ export const props = {
   overlayImage: './images/spin/bg.svg',
   items: [
     {
-      label: '500.000'
+      label: '10.000'
     },
     {
-      label: '600.000'
-    },
-    {
-      label: '1.200.000',
+      label: '1.000.000',
       backgroundColor: '#f23925',
       labelColor: '#fff'
     },
     {
-      label: '500.000'
+      label: '20.000'
     },
     {
-      label: '600.000'
+      label: '30.000'
     },
     {
-      label: '1.000.000',
-      backgroundColor: '#b1ddff'
+      label: '40.000'
     },
     {
-      label: '500.000'
+      label: '50.000'
     },
     {
-      label: '600.000'
+      label: '60.000'
+    },
+    {
+      label: '70.000'
+    },
+    {
+      label: '80.000'
     },
     {
       label: '1.500.000',
@@ -51,35 +53,45 @@ export const props = {
       labelColor: '#fff'
     },
     {
-      label: '700.000'
+      label: '30.000'
     },
     {
-      label: '800.000'
+      label: '40.000'
     },
     {
-      label: '1.000.000',
-      backgroundColor: '#b1ddff'
+      label: '50.000'
     },
     {
-      label: '500.000'
+      label: '60.000'
     },
     {
-      label: '600.000'
+      label: '70.000'
     },
     {
-      label: '1.300.000',
+      label: '80.000'
+    },
+    {
+      label: '500.000',
       backgroundColor: '#f23925',
       labelColor: '#fff'
     },
     {
-      label: '500.000'
+      label: '30.000'
     },
     {
-      label: '800.000'
+      label: '40.000'
     },
     {
-      label: '1.00.000',
-      backgroundColor: '#b1ddff'
+      label: '50.000'
+    },
+    {
+      label: '60.000'
+    },
+    {
+      label: '70.000'
+    },
+    {
+      label: '80.000'
     }
   ]
 };
