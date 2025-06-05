@@ -1,0 +1,54 @@
+name: Auto Update Version and Commit to Develop
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - deploy/dev
+
+jobs:
+  update-version:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔄 Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: 🔁 Checkout develop
+        run: |
+          git config user.name "khangdzzz"
+          git config user.email "dvk10102000@github.com"
+          git checkout develop
+
+      - name: 📅 Update version
+        run: |
+          ENV_FILE=src/environments/environment.development.ts
+          TODAY=$(date +%Y%m%d)
+          CURRENT_LINE=$(grep "version:" "$ENV_FILE" || echo "")
+
+          if [[ $CURRENT_LINE =~ v([0-9]+)-([0-9]{8})-build ]]; then
+            NUM="${BASH_REMATCH[1]}"
+            DATE="${BASH_REMATCH[2]}"
+            if [[ "$DATE" == "$TODAY" ]]; then
+              NEXT=$((NUM + 1))
+            else
+              NEXT=2
+            fi
+          else
+            NEXT=2
+          fi
+
+          VERSION="v${NEXT}-${TODAY}-build"
+          ESCAPED=$(printf '%s\n' "$VERSION" | sed 's/[&/\]/\\&/g')
+          sed -i "s/version: '.*'/version: '$ESCAPED'/" "$ENV_FILE"
+
+          echo "✅ Updated version to $VERSION"
+
+      - name: ✅ Commit and push back to develop
+        run: |
+          git add src/environments/environment.development.ts
+          git commit -m "chore: bump version to latest build"
+          git push origin develop
