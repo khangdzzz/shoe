@@ -49,6 +49,6 @@ jobs:
 
       - name: Commit and push back to develop
         run: |
-          git add src/environments/environment.development.ts
+          git add ./environment.development.ts
           git commit -m "chore: bump version to latest build"
           git push origin develop
