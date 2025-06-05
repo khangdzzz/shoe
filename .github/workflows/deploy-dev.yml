@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🔄 Checkout code
+      - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: 🔁 Checkout develop
+      - name: Checkout develop
         run: |
           git config user.name "khangdzzz"
           git config user.email "dvk10102000@github.com"
