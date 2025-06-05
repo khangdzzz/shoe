@@ -23,9 +23,9 @@ jobs:
           git config user.email "dvk10102000@github.com"
           git checkout develop
 
-      - name: 📅 Update version
+      - name: Update version
         run: |
-          ENV_FILE=src/environments/environment.development.ts
+          ENV_FILE=./environment.development.ts
           TODAY=$(date +%Y%m%d)
           CURRENT_LINE=$(grep "version:" "$ENV_FILE" || echo "")
 
@@ -45,9 +45,9 @@ jobs:
           ESCAPED=$(printf '%s\n' "$VERSION" | sed 's/[&/\]/\\&/g')
           sed -i "s/version: '.*'/version: '$ESCAPED'/" "$ENV_FILE"
 
-          echo "✅ Updated version to $VERSION"
+          echo "Updated version to $VERSION"
 
-      - name: ✅ Commit and push back to develop
+      - name: Commit and push back to develop
         run: |
           git add src/environments/environment.development.ts
           git commit -m "chore: bump version to latest build"
